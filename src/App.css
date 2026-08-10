@@ -1,66 +1,1725 @@
+/* ============================================================
+   Career & Growth
+   MVP v0.3 — Growth Intelligence + Child's Space
+   Complete synchronized App.css
+   ============================================================ */
+
 #root {
   min-height: 100vh;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+html {
+  background: #f6f8fc;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+
+  background: #f6f8fc;
+  color: #172033;
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(61, 84, 128, 0.18);
+  outline-offset: 2px;
+}
+
+
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+
 .page {
+  width: 100%;
   min-height: 100vh;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+
+  padding: 1.4rem;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(225, 232, 255, 0.6),
+      transparent 28rem
+    ),
+    linear-gradient(
+      180deg,
+      #fbfcff 0%,
+      #f3f5fa 100%
+    );
+
   color: #172033;
 }
+
+h1,
+h2,
+h3,
+p {
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3 {
+  margin-top: 0;
+  color: #172033;
+}
+
+h1 {
+  margin-bottom: 0;
+
+  font-size: clamp(2.1rem, 5vw, 3.8rem);
+  line-height: 1.06;
+
+  letter-spacing: -0.035em;
+  font-weight: 800;
+}
+
+h2 {
+  margin-bottom: 0;
+
+  font-size: clamp(1.55rem, 3vw, 2.1rem);
+  line-height: 1.15;
+
+  letter-spacing: -0.025em;
+  font-weight: 800;
+}
+
+h3 {
+  margin-bottom: 0;
+
+  font-size: 1rem;
+  line-height: 1.3;
+  font-weight: 800;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+
+  color: #536078;
+
+  font-size: 0.7rem;
+  font-weight: 800;
+
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.subtext {
+  color: #46536b;
+
+  font-size: 0.98rem;
+  line-height: 1.58;
+}
+
+.cta {
+  margin-top: 1.2rem;
+
+  padding: 0.7rem 1.15rem;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: #172033;
+  color: #ffffff;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.cta:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 7px 18px rgba(23, 32, 51, 0.16);
+}
+
+.backButton {
+  border: 0;
+  padding: 0.25rem 0;
+
+  background: transparent;
+  color: #526078;
+
+  font-size: 0.84rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.backButton:hover {
+  color: #172033;
+}
+
+
+/* ============================================================
+   LANDING
+   ============================================================ */
 
 .hero {
   width: 100%;
   max-width: 900px;
-  text-align: center;
-  padding: 4rem 2rem;
-}
 
-.eyebrow {
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-h1 {
   margin: 0 auto;
+  padding: 2.4rem 1.5rem;
+
+  text-align: center;
+}
+
+.hero h1 {
   max-width: 850px;
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  line-height: 1.05;
-  letter-spacing: -0.04em;
+  margin: 0 auto;
 }
 
-.subtext {
-  max-width: 680px;
-  margin: 1.75rem auto 0;
-  font-size: 1.2rem;
-  line-height: 1.7;
-  color: #536078;
-}
+.hero .subtext {
+  max-width: 650px;
 
-.cta {
-  margin-top: 2rem;
-  padding: 0.95rem 1.6rem;
-  border: 0;
-  border-radius: 999px;
+  margin: 1.15rem auto 0;
+
   font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  background: #172033;
-  color: white;
-}
-
-.cta:hover {
-  opacity: 0.9;
 }
 
 .tagline {
-  margin-top: 2rem;
+  margin: 1.25rem 0 0;
+
+  color: #667188;
+
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+
+/* ============================================================
+   PARENT SETUP
+   ============================================================ */
+
+.setup {
+  width: 100%;
+  max-width: 680px;
+
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.setup > .backButton {
+  margin-bottom: 0.9rem;
+}
+
+.setupHeader {
+  max-width: 600px;
+
+  margin: 0 auto 1.25rem;
+
+  text-align: center;
+}
+
+.setupHeader h2 {
+  font-size: 1.9rem;
+}
+
+.setupHeader .subtext {
+  max-width: 530px;
+
+  margin: 0.75rem auto 0;
+
+  font-size: 0.93rem;
+  line-height: 1.5;
+}
+
+.profileForm {
+  max-width: 500px;
+
+  margin: 0 auto;
+  padding: 1.45rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 10px 28px rgba(23, 32, 51, 0.055);
+}
+
+.profileForm label {
+  display: block;
+
+  margin-bottom: 0.95rem;
+
+  color: #29344a;
+
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.profileForm input,
+.profileForm select {
+  display: block;
+  width: 100%;
+
+  margin-top: 0.38rem;
+  padding: 0.68rem 0.8rem;
+
+  border: 1px solid #cfd6e3;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #172033;
+}
+
+.formCta {
+  width: 100%;
+  margin-top: 0.2rem;
+}
+
+
+/* ============================================================
+   CHILD'S SPACE HOME
+   ============================================================ */
+
+.childSpace {
+  width: 100%;
+  max-width: 1040px;
+
+  margin: 0 auto;
+  padding: 1.2rem 0.5rem 2.2rem;
+}
+
+.spaceHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1.5rem;
+
+  margin-bottom: 1.2rem;
+}
+
+.spaceEyebrow {
+  margin: 0 0 0.3rem;
+
+  color: #68748a;
+
+  font-size: 0.68rem;
+  font-weight: 800;
+
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.spaceTitle {
+  margin: 0;
+
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  line-height: 1.08;
+}
+
+.spaceSubtitle {
+  margin: 0.4rem 0 0;
+
+  color: #59667d;
+
+  font-size: 0.9rem;
+}
+
+.spaceProfilePill {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+
+  padding: 0.55rem 0.8rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 5px 14px rgba(23, 32, 51, 0.04);
+}
+
+.spaceAvatar {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #172033;
+  color: #ffffff;
+
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.spaceProfilePill div {
+  display: flex;
+  flex-direction: column;
+}
+
+.spaceProfilePill strong {
+  color: #172033;
+
+  font-size: 0.82rem;
+}
+
+.spaceProfilePill span {
+  color: #69758a;
+
+  font-size: 0.7rem;
+}
+
+.spaceWelcome {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+
+  padding: 1rem 1.1rem;
+
+  border: 1px solid #dce2ec;
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  margin-bottom: 1rem;
+}
+
+.spaceWelcomeComplete {
+  background: #f6f8fc;
+}
+
+.spaceWelcomeEmoji {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.spaceWelcome h2 {
+  margin: 0;
+
+  font-size: 1.05rem;
+  letter-spacing: 0;
+}
+
+.spaceWelcome p {
+  margin: 0.2rem 0 0;
+
+  color: #59667d;
+
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.spaceStats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 0.7rem;
+
+  margin-bottom: 1.2rem;
+}
+
+.spaceStat {
+  padding: 0.8rem 0.9rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 14px;
+
+  background: #ffffff;
+}
+
+.spaceStat strong {
+  display: block;
+
+  color: #172033;
+
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.spaceStat span {
+  display: block;
+
+  margin-top: 0.3rem;
+
+  color: #68748a;
+
+  font-size: 0.74rem;
+}
+
+.spaceSectionHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin: 1.2rem 0 0.65rem;
+}
+
+.spaceSectionHeader h2 {
+  margin: 0;
+
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.spaceSectionHeader p {
+  margin: 0.18rem 0 0;
+
+  color: #667188;
+
+  font-size: 0.78rem;
+}
+
+.spaceGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 0.75rem;
+}
+
+.spaceCard {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 210px;
+
+  padding: 1rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 6px 16px rgba(23, 32, 51, 0.035);
+}
+
+.spaceCardLocked {
+  background: #f8f9fc;
+}
+
+.spaceCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 0.6rem;
+
+  margin-bottom: 0.75rem;
+}
+
+.spaceCardIcon {
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.spaceStatusComplete {
+  padding: 0.25rem 0.45rem;
+
+  border-radius: 999px;
+
+  background: #eef2f7;
+  color: #526078;
+
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.spaceCard h3 {
+  font-size: 0.96rem;
+}
+
+.spaceCard p {
+  flex: 1;
+
+  margin: 0.5rem 0 0;
+
+  color: #566278;
+
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.spaceAction {
+  align-self: flex-start;
+
+  margin-top: 0.9rem;
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+  color: #172033;
+
+  font-size: 0.78rem;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.spaceAction:hover {
+  text-decoration: underline;
+}
+
+.spaceLockedText,
+.spaceCompletedText {
+  display: block;
+
+  margin-top: 0.9rem;
+
+  color: #778196;
+
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+.parentSectionHeader {
+  margin-top: 1.6rem;
+}
+
+.parentSpaceCard {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 0.9rem;
+
+  padding: 1rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 16px;
+
+  background: #ffffff;
+}
+
+.parentSpaceIcon {
+  font-size: 1.6rem;
+}
+
+.parentSpaceContent {
+  flex: 1;
+}
+
+.parentSpaceHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  flex-wrap: wrap;
+}
+
+.parentSpaceHeading h3 {
+  margin: 0;
+}
+
+.comingNextBadge {
+  padding: 0.22rem 0.42rem;
+
+  border-radius: 999px;
+
+  background: #eef1f6;
+  color: #657086;
+
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.parentSpaceContent p {
+  max-width: 760px;
+
+  margin: 0.4rem 0 0;
+
+  color: #566278;
+
+  font-size: 0.79rem;
+  line-height: 1.5;
+}
+
+
+/* ============================================================
+   DISCOVERY
+   ============================================================ */
+
+.discoveryLayout {
+  width: 100%;
+  max-width: 1120px;
+
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns:
+    230px minmax(0, 1fr);
+
+  gap: 1.3rem;
+
+  align-items: start;
+}
+
+.discoveryCompanion {
+  position: sticky;
+  top: 1.4rem;
+
+  padding: 1rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 17px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 8px 22px rgba(23, 32, 51, 0.04);
+}
+
+.companionProfile {
+  display: flex;
+  align-items: center;
+
+  gap: 0.65rem;
+}
+
+.companionAvatar {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #172033;
+  color: #ffffff;
+
   font-size: 0.95rem;
-  color: #7b8496;
+  font-weight: 800;
+}
+
+.companionName {
+  margin: 0;
+
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.companionMeta {
+  margin: 0.1rem 0 0;
+
+  color: #667188;
+
+  font-size: 0.72rem;
+}
+
+.companionDivider {
+  height: 1px;
+
+  margin: 0.9rem 0;
+
+  background: #e3e7ef;
+}
+
+.companionHeading {
+  margin: 0 0 0.65rem;
+
+  color: #566278;
+
+  font-size: 0.68rem;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.journeyList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.journeyItem {
+  display: flex;
+  align-items: center;
+
+  gap: 0.45rem;
+
+  min-height: 27px;
+  padding: 0.22rem 0.3rem;
+
+  border-radius: 7px;
+
+  color: #707b90;
+
+  font-size: 0.76rem;
+}
+
+.journeyItemCurrent {
+  background: #eef2f8;
+  color: #172033;
+
+  font-weight: 700;
+}
+
+.journeyStatus {
+  width: 16px;
+
+  text-align: center;
+  font-weight: 800;
+}
+
+.discoveryMain {
+  min-width: 0;
+}
+
+.discoveryTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1rem;
+}
+
+.questionCounter {
+  color: #59667d;
+
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 6px;
+
+  margin-top: 0.65rem;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #dfe4ef;
+}
+
+.progressBar {
+  height: 100%;
+
+  border-radius: 999px;
+
+  background: #172033;
+
+  transition: width 0.3s ease;
+}
+
+.questionCard {
+  width: 100%;
+
+  margin-top: 1rem;
+  padding: 1.8rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  text-align: center;
+
+  box-shadow:
+    0 12px 28px rgba(23, 32, 51, 0.05);
+}
+
+.questionTitle {
+  max-width: 650px;
+
+  margin: 0 auto;
+
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  line-height: 1.18;
+}
+
+.answerGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 0.7rem;
+
+  margin-top: 1.35rem;
+}
+
+.answerCard {
+  min-height: 70px;
+
+  padding: 0.8rem 0.9rem;
+
+  border: 1px solid #ced5e2;
+  border-radius: 13px;
+
+  background: #ffffff;
+  color: #172033;
+
+  font-size: 0.88rem;
+  font-weight: 700;
+
+  line-height: 1.35;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.answerCard:hover {
+  border-color: #8d99af;
+
+  background: #fafbfe;
+
+  box-shadow:
+    0 5px 14px rgba(23, 32, 51, 0.05);
+}
+
+
+/* ============================================================
+   DISCOVERY COMPLETE / HANDOFF
+   ============================================================ */
+
+.handoff {
+  width: 100%;
+  max-width: 720px;
+
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.handoffCard {
+  max-width: 610px;
+
+  margin: 0 auto;
+  padding: 2.1rem 1.8rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 22px;
+
+  background: #ffffff;
+
+  text-align: center;
+
+  box-shadow:
+    0 12px 30px rgba(23, 32, 51, 0.06);
+}
+
+.handoffEmoji {
+  margin-bottom: 0.65rem;
+
+  font-size: 2.7rem;
+  line-height: 1;
+}
+
+.handoffCard h2 {
+  font-size: 1.8rem;
+}
+
+.handoffIntro {
+  margin: 0.9rem auto 0;
+
+  color: #29344a;
+
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.handoffText {
+  max-width: 500px;
+
+  margin: 0.6rem auto 0;
+
+  color: #526078;
+
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.profileSummary {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 0.4rem;
+
+  margin-top: 0.9rem;
+
+  color: #606c82;
+
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+
+/* ============================================================
+   GROWTH PROFILE
+   ============================================================ */
+
+.growthProfile {
+  width: 100%;
+  max-width: 940px;
+
+  margin: 0 auto;
+  padding: 1.2rem 1rem 2.2rem;
+}
+
+.growthProfile > .backButton {
+  margin-bottom: 0.75rem;
+}
+
+.profileHero {
+  max-width: 720px;
+
+  margin: 0 auto 1.6rem;
+
+  text-align: center;
+}
+
+.profileHero .eyebrow {
+  margin-bottom: 0.4rem;
+
+  color: #172033;
+
+  font-size: 1.45rem;
+  font-weight: 800;
+
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.profileHero h2 {
+  max-width: 680px;
+
+  margin: 0 auto;
+
+  color: #455169;
+
+  font-size: 1rem;
+  line-height: 1.5;
+
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.profileIntro {
+  max-width: 600px;
+
+  margin: 0.55rem auto 0;
+
+  color: #657086;
+
+  font-size: 0.86rem;
+  line-height: 1.48;
+}
+
+.profileSection {
+  max-width: 800px;
+
+  margin: 0 auto 1.25rem;
+}
+
+.profileSectionLabel {
+  margin: 0 0 0.58rem;
+
+  color: #3f4c63;
+
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.signalCards {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 0.5rem;
+}
+
+.signalCard {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.38rem;
+
+  padding: 0.5rem 0.7rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 11px;
+
+  background: #ffffff;
+  color: #172033;
+
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.signalEmoji {
+  font-size: 0.95rem;
+}
+
+.completedSection {
+  max-width: 800px;
+
+  margin: 0 auto 1.4rem;
+}
+
+.completedAdventures {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.42rem;
+}
+
+.completedAdventure {
+  display: flex;
+  align-items: center;
+
+  gap: 0.55rem;
+
+  padding: 0.65rem 0.8rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.completedCheck {
+  margin-left: auto;
+
+  color: #566278;
+
+  font-size: 0.72rem;
+}
+
+.profileFooterActions {
+  max-width: 800px;
+
+  margin: 1.5rem auto 0;
+
+  text-align: center;
+}
+
+
+/* ============================================================
+   ADVENTURES HUB
+   ============================================================ */
+
+.adventureHub {
+  width: 100%;
+  max-width: 900px;
+
+  margin: 0 auto;
+  padding: 1.2rem 0.8rem 2rem;
+}
+
+.adventureHub > .backButton {
+  margin-bottom: 0.8rem;
+}
+
+.adventureHubHeader {
+  max-width: 680px;
+
+  margin: 0 auto 1.25rem;
+
+  text-align: center;
+}
+
+.adventureHubHeader .eyebrow {
+  margin-bottom: 0.35rem;
+
+  color: #172033;
+
+  font-size: 1.4rem;
+
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.adventureHubHeader h2 {
+  color: #455169;
+
+  font-size: 1rem;
+  line-height: 1.45;
+
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+.adventureHubHeader p {
+  max-width: 590px;
+
+  margin: 0.5rem auto 0;
+
+  color: #657086;
+
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.recommendationGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 0.8rem;
+}
+
+.recommendationCard {
+  display: flex;
+  flex-direction: column;
+
+  padding: 1rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 15px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 6px 16px rgba(23, 32, 51, 0.035);
+}
+
+.recommendationEmoji {
+  margin-bottom: 0.5rem;
+
+  font-size: 1.7rem;
+}
+
+.recommendationCard h3 {
+  font-size: 0.96rem;
+}
+
+.recommendationCard p {
+  flex: 1;
+
+  margin: 0.45rem 0 0;
+
+  color: #526078;
+
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.exploreButton {
+  margin-top: 0.8rem;
+
+  padding: 0.52rem 0.75rem;
+
+  border: 1px solid #172033;
+  border-radius: 999px;
+
+  background: transparent;
+  color: #172033;
+
+  font-size: 0.78rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.exploreButton:hover {
+  background: #172033;
+  color: #ffffff;
+}
+
+.exploreButtonDisabled,
+.exploreButtonDisabled:disabled {
+  border-color: #c7cfdd;
+
+  background: #f7f8fb;
+  color: #778196;
+
+  cursor: default;
+}
+
+
+/* ============================================================
+   EXPLORATION
+   ============================================================ */
+
+.exploration {
+  width: 100%;
+  max-width: 760px;
+
+  margin: 0 auto;
+}
+
+.explorationCard {
+  width: 100%;
+
+  padding: 1.8rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  text-align: center;
+
+  box-shadow:
+    0 12px 28px rgba(23, 32, 51, 0.05);
+}
+
+.explorationBack {
+  display: block;
+
+  margin-bottom: 0.8rem;
+}
+
+.explorationHeroEmoji {
+  margin-bottom: 0.6rem;
+
+  font-size: 2.8rem;
+  line-height: 1;
+}
+
+.explorationCard h2 {
+  max-width: 650px;
+
+  margin: 0 auto;
+
+  font-size: 1.6rem;
+}
+
+.explorationText {
+  max-width: 580px;
+
+  margin: 0.7rem auto 0;
+
+  color: #4c5870;
+
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.missionBox {
+  max-width: 580px;
+
+  margin: 1.1rem auto 0;
+  padding: 0.9rem;
+
+  border: 1px solid #dce2ec;
+  border-radius: 13px;
+
+  background: #f3f6fa;
+
+  text-align: left;
+}
+
+.missionLabel {
+  display: block;
+
+  margin-bottom: 0.3rem;
+
+  color: #4f5d74;
+
+  font-size: 0.68rem;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.missionBox p {
+  margin: 0;
+
+  color: #29344a;
+
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.challengeProgress {
+  margin-bottom: 0.8rem;
+
+  color: #566278;
+
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+
+/* ============================================================
+   REFLECTION
+   ============================================================ */
+
+.reflectionGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 0.65rem;
+
+  max-width: 540px;
+
+  margin: 1.25rem auto 0;
+}
+
+.reflectionButton {
+  min-height: 60px;
+
+  padding: 0.7rem 0.85rem;
+
+  border: 1px solid #ced5e2;
+  border-radius: 12px;
+
+  background: #ffffff;
+  color: #172033;
+
+  font-size: 0.86rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.reflectionButton:hover {
+  border-color: #8d99af;
+}
+
+
+/* ============================================================
+   PROFILE GREW
+   ============================================================ */
+
+.profileGrew {
+  width: 100%;
+  max-width: 720px;
+
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.profileGrewCard {
+  max-width: 640px;
+
+  margin: 0 auto;
+  padding: 2rem 1.8rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  text-align: center;
+
+  box-shadow:
+    0 12px 28px rgba(23, 32, 51, 0.05);
+}
+
+.profileGrewEmoji {
+  margin-bottom: 0.55rem;
+
+  font-size: 2.8rem;
+}
+
+.profileGrewCard .eyebrow {
+  margin-bottom: 0.35rem;
+
+  color: #172033;
+
+  font-size: 1.3rem;
+
+  letter-spacing: -0.015em;
+  text-transform: none;
+}
+
+.profileGrewCard h2 {
+  max-width: 580px;
+
+  margin: 0 auto;
+
+  color: #455169;
+
+  font-size: 1rem;
+  line-height: 1.45;
+
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.profileGrewIntro {
+  max-width: 530px;
+
+  margin: 0.7rem auto 0;
+
+  color: #536078;
+
+  font-size: 0.86rem;
+  line-height: 1.48;
+}
+
+.growthSignalList {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.4rem;
+
+  max-width: 410px;
+
+  margin: 1.1rem auto 0;
+}
+
+.growthSignal {
+  display: flex;
+  align-items: center;
+
+  gap: 0.5rem;
+
+  padding: 0.58rem 0.75rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 11px;
+
+  background: #f5f7fb;
+
+  font-size: 0.82rem;
+  font-weight: 700;
+
+  text-align: left;
+}
+
+.growthSignalEmoji {
+  font-size: 0.95rem;
+}
+
+.growthArrow {
+  margin-left: auto;
+}
+
+.profileGrewNote {
+  max-width: 520px;
+
+  margin: 1rem auto 0;
+
+  color: #59667d;
+
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.profileGrewActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.75rem;
+
+  flex-wrap: wrap;
+}
+
+.secondaryAction {
+  margin-top: 1.2rem;
+
+  padding: 0.65rem 1rem;
+
+  border: 1px solid #cfd6e3;
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: #3f4c63;
+
+  font-size: 0.84rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.secondaryAction:hover {
+  background: #f6f8fc;
+}
+
+
+/* ============================================================
+   DEVELOPMENT INSPECTOR
+   ============================================================ */
+
+details,
+details summary,
+details strong {
+  color: #172033;
+}
+
+
+/* ============================================================
+   TABLET
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .page {
+    align-items: flex-start;
+  }
+
+  .spaceHeader {
+    align-items: flex-start;
+  }
+
+  .spaceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .spaceCard {
+    min-height: auto;
+  }
+
+  .discoveryLayout {
+    grid-template-columns: 1fr;
+
+    max-width: 780px;
+  }
+
+  .discoveryCompanion {
+    position: static;
+  }
+
+  .journeyList {
+    display: grid;
+
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+  }
+
+  .recommendationGrid {
+    grid-template-columns: 1fr;
+
+    max-width: 540px;
+
+    margin: 0 auto;
+  }
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 600px) {
+  .page {
+    padding: 0.8rem;
+  }
+
+  .hero {
+    padding: 2rem 0.4rem;
+  }
+
+  .spaceHeader {
+    flex-direction: column;
+
+    gap: 0.8rem;
+  }
+
+  .spaceProfilePill {
+    align-self: flex-start;
+  }
+
+  .spaceStats {
+    grid-template-columns: 1fr;
+  }
+
+  .spaceWelcome {
+    align-items: flex-start;
+  }
+
+  .parentSpaceCard {
+    flex-direction: column;
+  }
+
+  .profileForm,
+  .handoffCard,
+  .questionCard,
+  .explorationCard,
+  .profileGrewCard {
+    padding: 1.35rem;
+  }
+
+  .journeyList {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .answerGrid,
+  .reflectionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .answerCard {
+    min-height: 62px;
+  }
+
+  .growthProfile {
+    padding: 1rem 0 2rem;
+  }
+
+  .profileHero {
+    margin-bottom: 1.2rem;
+  }
+
+  .profileHero .eyebrow {
+    font-size: 1.3rem;
+  }
+
+  .signalCard {
+    padding: 0.48rem 0.62rem;
+
+    font-size: 0.8rem;
+  }
+
+  .profileGrewActions {
+    flex-direction: column;
+  }
+
+  .secondaryAction,
+  .profileGrewActions .cta {
+    width: 100%;
+  }
 }
