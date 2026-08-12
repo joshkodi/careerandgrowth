@@ -766,6 +766,7 @@ export const confidenceLevels = [
 
 export const evidenceSourceTypes = {
   DISCOVERY: 'discovery',
+  PARENT_OBSERVATION: 'parent_observation',
   ADVENTURE_QUESTION: 'adventure_question',
   ADVENTURE_CHOICE: 'adventure_choice',
   REFLECTION: 'reflection',

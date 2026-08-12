@@ -24,7 +24,6 @@ html {
 body {
   min-width: 320px;
   margin: 0;
-
   background: #f6f8fc;
   color: #172033;
 
@@ -100,27 +99,22 @@ h3 {
 
 h1 {
   margin-bottom: 0;
-
   font-size: clamp(2.1rem, 5vw, 3.8rem);
   line-height: 1.06;
-
   letter-spacing: -0.035em;
   font-weight: 800;
 }
 
 h2 {
   margin-bottom: 0;
-
   font-size: clamp(1.55rem, 3vw, 2.1rem);
   line-height: 1.15;
-
   letter-spacing: -0.025em;
   font-weight: 800;
 }
 
 h3 {
   margin-bottom: 0;
-
   font-size: 1rem;
   line-height: 1.3;
   font-weight: 800;
@@ -128,26 +122,21 @@ h3 {
 
 .eyebrow {
   margin: 0 0 0.5rem;
-
   color: #536078;
-
   font-size: 0.7rem;
   font-weight: 800;
-
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
 .subtext {
   color: #46536b;
-
   font-size: 0.98rem;
   line-height: 1.58;
 }
 
 .cta {
   margin-top: 1.2rem;
-
   padding: 0.7rem 1.15rem;
 
   border: 0;
@@ -169,7 +158,6 @@ h3 {
 
 .cta:hover {
   transform: translateY(-1px);
-
   box-shadow:
     0 7px 18px rgba(23, 32, 51, 0.16);
 }
@@ -199,10 +187,8 @@ h3 {
 .hero {
   width: 100%;
   max-width: 900px;
-
   margin: 0 auto;
   padding: 2.4rem 1.5rem;
-
   text-align: center;
 }
 
@@ -213,30 +199,25 @@ h3 {
 
 .hero .subtext {
   max-width: 650px;
-
   margin: 1.15rem auto 0;
-
   font-size: 1rem;
 }
 
 .tagline {
   margin: 1.25rem 0 0;
-
   color: #667188;
-
   font-size: 0.82rem;
   font-weight: 600;
 }
 
 
 /* ============================================================
-   PARENT SETUP
+   CREATE CHILD'S SPACE
    ============================================================ */
 
 .setup {
   width: 100%;
   max-width: 680px;
-
   margin: 0 auto;
   padding: 1rem;
 }
@@ -247,9 +228,7 @@ h3 {
 
 .setupHeader {
   max-width: 600px;
-
   margin: 0 auto 1.25rem;
-
   text-align: center;
 }
 
@@ -259,16 +238,13 @@ h3 {
 
 .setupHeader .subtext {
   max-width: 530px;
-
   margin: 0.75rem auto 0;
-
   font-size: 0.93rem;
   line-height: 1.5;
 }
 
 .profileForm {
   max-width: 500px;
-
   margin: 0 auto;
   padding: 1.45rem;
 
@@ -283,11 +259,8 @@ h3 {
 
 .profileForm label {
   display: block;
-
   margin-bottom: 0.95rem;
-
   color: #29344a;
-
   font-size: 0.86rem;
   font-weight: 700;
 }
@@ -296,7 +269,6 @@ h3 {
 .profileForm select {
   display: block;
   width: 100%;
-
   margin-top: 0.38rem;
   padding: 0.68rem 0.8rem;
 
@@ -314,13 +286,12 @@ h3 {
 
 
 /* ============================================================
-   CHILD'S SPACE HOME
+   CHILD'S SPACE
    ============================================================ */
 
 .childSpace {
   width: 100%;
   max-width: 1040px;
-
   margin: 0 auto;
   padding: 1.2rem 0.5rem 2.2rem;
 }
@@ -329,36 +300,28 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 1.5rem;
-
   margin-bottom: 1.2rem;
 }
 
 .spaceEyebrow {
   margin: 0 0 0.3rem;
-
   color: #68748a;
-
   font-size: 0.68rem;
   font-weight: 800;
-
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
 .spaceTitle {
   margin: 0;
-
   font-size: clamp(1.9rem, 4vw, 2.8rem);
   line-height: 1.08;
 }
 
 .spaceSubtitle {
   margin: 0.4rem 0 0;
-
   color: #59667d;
-
   font-size: 0.9rem;
 }
 
@@ -366,7 +329,6 @@ h3 {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-
   padding: 0.55rem 0.8rem;
 
   border: 1px solid #d9deea;
@@ -386,8 +348,6 @@ h3 {
   align-items: center;
   justify-content: center;
 
-  flex-shrink: 0;
-
   border-radius: 50%;
 
   background: #172033;
@@ -404,13 +364,11 @@ h3 {
 
 .spaceProfilePill strong {
   color: #172033;
-
   font-size: 0.82rem;
 }
 
 .spaceProfilePill span {
   color: #69758a;
-
   font-size: 0.7rem;
 }
 
@@ -440,28 +398,22 @@ h3 {
 
 .spaceWelcome h2 {
   margin: 0;
-
   font-size: 1.05rem;
   letter-spacing: 0;
 }
 
 .spaceWelcome p {
   margin: 0.2rem 0 0;
-
   color: #59667d;
-
   font-size: 0.82rem;
   line-height: 1.4;
 }
 
 .spaceStats {
   display: grid;
-
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
-
   gap: 0.7rem;
-
   margin-bottom: 1.2rem;
 }
 
@@ -476,20 +428,15 @@ h3 {
 
 .spaceStat strong {
   display: block;
-
   color: #172033;
-
   font-size: 1.2rem;
   line-height: 1;
 }
 
 .spaceStat span {
   display: block;
-
   margin-top: 0.3rem;
-
   color: #68748a;
-
   font-size: 0.74rem;
 }
 
@@ -497,40 +444,32 @@ h3 {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-
   margin: 1.2rem 0 0.65rem;
 }
 
 .spaceSectionHeader h2 {
   margin: 0;
-
   font-size: 1.05rem;
   letter-spacing: -0.01em;
 }
 
 .spaceSectionHeader p {
   margin: 0.18rem 0 0;
-
   color: #667188;
-
   font-size: 0.78rem;
 }
 
 .spaceGrid {
   display: grid;
-
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
-
   gap: 0.75rem;
 }
 
 .spaceCard {
   display: flex;
   flex-direction: column;
-
-  min-height: 210px;
-
+  min-height: 205px;
   padding: 1rem;
 
   border: 1px solid #d9deea;
@@ -550,9 +489,7 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 0.6rem;
-
   margin-bottom: 0.75rem;
 }
 
@@ -563,12 +500,9 @@ h3 {
 
 .spaceStatusComplete {
   padding: 0.25rem 0.45rem;
-
   border-radius: 999px;
-
   background: #eef2f7;
   color: #526078;
-
   font-size: 0.68rem;
   font-weight: 700;
 }
@@ -579,18 +513,14 @@ h3 {
 
 .spaceCard p {
   flex: 1;
-
   margin: 0.5rem 0 0;
-
   color: #566278;
-
   font-size: 0.8rem;
   line-height: 1.45;
 }
 
 .spaceAction {
   align-self: flex-start;
-
   margin-top: 0.9rem;
   padding: 0;
 
@@ -612,14 +542,16 @@ h3 {
 .spaceLockedText,
 .spaceCompletedText {
   display: block;
-
   margin-top: 0.9rem;
-
   color: #778196;
-
   font-size: 0.73rem;
   font-weight: 700;
 }
+
+
+/* ============================================================
+   FOR PARENTS
+   ============================================================ */
 
 .parentSectionHeader {
   margin-top: 1.6rem;
@@ -628,9 +560,7 @@ h3 {
 .parentSpaceCard {
   display: flex;
   align-items: flex-start;
-
   gap: 0.9rem;
-
   padding: 1rem;
 
   border: 1px solid #d9deea;
@@ -651,7 +581,6 @@ h3 {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-
   flex-wrap: wrap;
 }
 
@@ -659,25 +588,10 @@ h3 {
   margin: 0;
 }
 
-.comingNextBadge {
-  padding: 0.22rem 0.42rem;
-
-  border-radius: 999px;
-
-  background: #eef1f6;
-  color: #657086;
-
-  font-size: 0.65rem;
-  font-weight: 700;
-}
-
 .parentSpaceContent p {
   max-width: 760px;
-
   margin: 0.4rem 0 0;
-
   color: #566278;
-
   font-size: 0.79rem;
   line-height: 1.5;
 }
@@ -690,13 +604,11 @@ h3 {
 .discoveryLayout {
   width: 100%;
   max-width: 1120px;
-
   margin: 0 auto;
 
   display: grid;
   grid-template-columns:
     230px minmax(0, 1fr);
-
   gap: 1.3rem;
 
   align-items: start;
@@ -705,7 +617,6 @@ h3 {
 .discoveryCompanion {
   position: sticky;
   top: 1.4rem;
-
   padding: 1rem;
 
   border: 1px solid #d9deea;
@@ -720,7 +631,6 @@ h3 {
 .companionProfile {
   display: flex;
   align-items: center;
-
   gap: 0.65rem;
 }
 
@@ -743,35 +653,27 @@ h3 {
 
 .companionName {
   margin: 0;
-
   font-size: 0.9rem;
   font-weight: 800;
 }
 
 .companionMeta {
   margin: 0.1rem 0 0;
-
   color: #667188;
-
   font-size: 0.72rem;
 }
 
 .companionDivider {
   height: 1px;
-
   margin: 0.9rem 0;
-
   background: #e3e7ef;
 }
 
 .companionHeading {
   margin: 0 0 0.65rem;
-
   color: #566278;
-
   font-size: 0.68rem;
   font-weight: 800;
-
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -785,29 +687,24 @@ h3 {
 .journeyItem {
   display: flex;
   align-items: center;
-
   gap: 0.45rem;
-
   min-height: 27px;
   padding: 0.22rem 0.3rem;
 
   border-radius: 7px;
 
   color: #707b90;
-
   font-size: 0.76rem;
 }
 
 .journeyItemCurrent {
   background: #eef2f8;
   color: #172033;
-
   font-weight: 700;
 }
 
 .journeyStatus {
   width: 16px;
-
   text-align: center;
   font-weight: 800;
 }
@@ -820,13 +717,11 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 1rem;
 }
 
 .questionCounter {
   color: #59667d;
-
   font-size: 0.78rem;
   font-weight: 700;
 }
@@ -834,9 +729,7 @@ h3 {
 .progressTrack {
   width: 100%;
   height: 6px;
-
   margin-top: 0.65rem;
-
   overflow: hidden;
 
   border-radius: 999px;
@@ -846,17 +739,13 @@ h3 {
 
 .progressBar {
   height: 100%;
-
   border-radius: 999px;
-
   background: #172033;
-
   transition: width 0.3s ease;
 }
 
 .questionCard {
   width: 100%;
-
   margin-top: 1rem;
   padding: 1.8rem;
 
@@ -873,27 +762,21 @@ h3 {
 
 .questionTitle {
   max-width: 650px;
-
   margin: 0 auto;
-
   font-size: clamp(1.4rem, 3vw, 1.9rem);
   line-height: 1.18;
 }
 
 .answerGrid {
   display: grid;
-
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
-
   gap: 0.7rem;
-
   margin-top: 1.35rem;
 }
 
 .answerCard {
   min-height: 70px;
-
   padding: 0.8rem 0.9rem;
 
   border: 1px solid #ced5e2;
@@ -913,7 +796,6 @@ h3 {
 
 .answerCard:hover {
   border-color: #8d99af;
-
   background: #fafbfe;
 
   box-shadow:
@@ -922,20 +804,18 @@ h3 {
 
 
 /* ============================================================
-   DISCOVERY COMPLETE / HANDOFF
+   DISCOVERY COMPLETE
    ============================================================ */
 
 .handoff {
   width: 100%;
   max-width: 720px;
-
   margin: 0 auto;
   padding: 1rem;
 }
 
 .handoffCard {
   max-width: 610px;
-
   margin: 0 auto;
   padding: 2.1rem 1.8rem;
 
@@ -952,7 +832,6 @@ h3 {
 
 .handoffEmoji {
   margin-bottom: 0.65rem;
-
   font-size: 2.7rem;
   line-height: 1;
 }
@@ -961,191 +840,553 @@ h3 {
   font-size: 1.8rem;
 }
 
-.handoffIntro {
-  margin: 0.9rem auto 0;
-
-  color: #29344a;
-
-  font-size: 1rem;
-  font-weight: 700;
-}
-
 .handoffText {
   max-width: 500px;
-
   margin: 0.6rem auto 0;
-
   color: #526078;
-
   font-size: 0.9rem;
   line-height: 1.5;
 }
 
-.profileSummary {
+
+/* ============================================================
+   GROWTH PROFILE V0.3
+   ============================================================ */
+
+.growthProfileV03 {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1rem 0.75rem 2.4rem;
+}
+
+.growthProfileV03 > .backButton {
+  margin-bottom: 1rem;
+}
+
+.growthProfileHeader {
+  max-width: 760px;
+  margin: 0 auto 1.4rem;
+  text-align: center;
+}
+
+.growthProfileKicker {
+  margin: 0 0 0.35rem;
+  color: #172033;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.growthProfileHeader h1 {
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  line-height: 1.1;
+}
+
+.growthProfileLead {
+  max-width: 650px;
+  margin: 0.7rem auto 0;
+  color: #566278;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.growthProfileSummary {
+  max-width: 760px;
+  margin: 0 auto 1rem;
+
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.growthSummaryItem {
+  padding: 0.7rem 0.8rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  text-align: center;
+}
+
+.growthSummaryItem strong {
+  display: block;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.growthSummaryItem span {
+  display: block;
+  margin-top: 0.25rem;
+  color: #68748a;
+  font-size: 0.7rem;
+}
+
+.growthProfileNotice {
+  max-width: 760px;
+  margin: 0 auto 1.4rem;
+  padding: 0.8rem 0.9rem;
+
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.7rem;
 
-  gap: 0.4rem;
+  border: 1px solid #dce2ec;
+  border-radius: 13px;
 
-  margin-top: 0.9rem;
+  background: #f5f7fb;
+}
 
-  color: #606c82;
+.growthProfileNotice > span {
+  font-size: 1rem;
+}
 
-  font-size: 0.8rem;
-  font-weight: 600;
+.growthProfileNotice strong {
+  color: #29344a;
+  font-size: 0.82rem;
+}
+
+.growthProfileNotice p {
+  margin: 0.2rem 0 0;
+  color: #59667d;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.growthProfileSection {
+  max-width: 860px;
+  margin: 0 auto 1.7rem;
+}
+
+.growthSectionHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 0.7rem;
+}
+
+.growthSectionHeading h2 {
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+
+.growthSectionHeading > p {
+  max-width: 310px;
+  margin: 0;
+  color: #68748a;
+  font-size: 0.73rem;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.growthSectionKicker {
+  margin: 0 0 0.2rem;
+  color: #68748a;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 
 /* ============================================================
-   GROWTH PROFILE
+   TRAITS
    ============================================================ */
 
-.growthProfile {
-  width: 100%;
-  max-width: 940px;
-
-  margin: 0 auto;
-  padding: 1.2rem 1rem 2.2rem;
+.growthTraitGrid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
 }
 
-.growthProfile > .backButton {
-  margin-bottom: 0.75rem;
+.growthTraitCard {
+  padding: 0.9rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 5px 14px rgba(23, 32, 51, 0.03);
 }
 
-.profileHero {
-  max-width: 720px;
-
-  margin: 0 auto 1.6rem;
-
-  text-align: center;
-}
-
-.profileHero .eyebrow {
-  margin-bottom: 0.4rem;
-
-  color: #172033;
-
-  font-size: 1.45rem;
-  font-weight: 800;
-
-  letter-spacing: -0.02em;
-  text-transform: none;
-}
-
-.profileHero h2 {
-  max-width: 680px;
-
-  margin: 0 auto;
-
-  color: #455169;
-
-  font-size: 1rem;
-  line-height: 1.5;
-
-  letter-spacing: 0;
-  font-weight: 500;
-}
-
-.profileIntro {
-  max-width: 600px;
-
-  margin: 0.55rem auto 0;
-
-  color: #657086;
-
-  font-size: 0.86rem;
-  line-height: 1.48;
-}
-
-.profileSection {
-  max-width: 800px;
-
-  margin: 0 auto 1.25rem;
-}
-
-.profileSectionLabel {
-  margin: 0 0 0.58rem;
-
-  color: #3f4c63;
-
-  font-size: 0.88rem;
-  font-weight: 800;
-}
-
-.signalCards {
+.growthTraitTop {
   display: flex;
-  flex-wrap: wrap;
-
-  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
 }
 
-.signalCard {
+.growthTraitEmoji {
+  font-size: 1.35rem;
+}
+
+.growthTraitCard h3 {
+  margin-top: 0.55rem;
+  font-size: 0.92rem;
+}
+
+.growthTraitInterpretation {
+  margin: 0.3rem 0 0;
+  color: #46536b;
+  font-size: 0.77rem;
+  font-weight: 700;
+}
+
+.growthEvidenceCopy {
+  margin: 0.3rem 0 0;
+  color: #68748a;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+
+/* ============================================================
+   CONFIDENCE
+   ============================================================ */
+
+.growthConfidenceBadge {
   display: inline-flex;
   align-items: center;
 
-  gap: 0.38rem;
-
-  padding: 0.5rem 0.7rem;
+  padding: 0.22rem 0.42rem;
 
   border: 1px solid #d9deea;
-  border-radius: 11px;
+  border-radius: 999px;
 
-  background: #ffffff;
-  color: #172033;
-
-  font-size: 0.84rem;
-  font-weight: 700;
-}
-
-.signalEmoji {
-  font-size: 0.95rem;
-}
-
-.completedSection {
-  max-width: 800px;
-
-  margin: 0 auto 1.4rem;
-}
-
-.completedAdventures {
-  display: flex;
-  flex-direction: column;
-
-  gap: 0.42rem;
-}
-
-.completedAdventure {
-  display: flex;
-  align-items: center;
-
-  gap: 0.55rem;
-
-  padding: 0.65rem 0.8rem;
-
-  border: 1px solid #d9deea;
-  border-radius: 11px;
-
-  background: #ffffff;
-
-  font-size: 0.84rem;
-  font-weight: 700;
-}
-
-.completedCheck {
-  margin-left: auto;
-
+  background: #f5f7fb;
   color: #566278;
 
-  font-size: 0.72rem;
+  font-size: 0.64rem;
+  font-weight: 800;
 }
 
-.profileFooterActions {
-  max-width: 800px;
+.growthConfidence-exploratory {
+  background: #f7f8fa;
+}
 
-  margin: 1.5rem auto 0;
+.growthConfidence-emerging {
+  background: #f3f6fb;
+}
+
+.growthConfidence-developing {
+  background: #eef3f8;
+}
+
+.growthConfidence-strong {
+  background: #e8eef6;
+}
+
+
+/* ============================================================
+   DOMAINS
+   ============================================================ */
+
+.growthDomainList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.growthDomainCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+
+  padding: 0.75rem 0.85rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 13px;
+
+  background: #ffffff;
+}
+
+.growthDomainEmoji {
+  margin-top: 0.05rem;
+  font-size: 1.25rem;
+}
+
+.growthDomainContent {
+  flex: 1;
+}
+
+.growthDomainHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.growthDomainHeading h3 {
+  font-size: 0.88rem;
+}
+
+.growthDomainContent p {
+  margin: 0.28rem 0 0;
+  color: #68748a;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+
+/* ============================================================
+   WHY WE'RE SEEING THIS
+   ============================================================ */
+
+.growthEvidenceSources {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.growthEvidenceSource {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+
+  min-height: 110px;
+  padding: 0.75rem;
+
+  border: 1px solid #dde2eb;
+  border-radius: 13px;
+
+  background: #f7f8fb;
+
+  opacity: 0.7;
+}
+
+.growthEvidenceSourceActive {
+  background: #ffffff;
+  opacity: 1;
+}
+
+.growthEvidenceSource > span {
+  font-size: 1.15rem;
+}
+
+.growthEvidenceSource strong {
+  font-size: 0.8rem;
+}
+
+.growthEvidenceSource p {
+  margin: 0.25rem 0 0;
+  color: #657086;
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+
+/* ============================================================
+   PATHWAYS
+   ============================================================ */
+
+.growthPathwayGrid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.growthPathwayCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+
+  padding: 0.85rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 14px;
+
+  background: #ffffff;
+}
+
+.growthPathwayEmoji {
+  font-size: 1.3rem;
+}
+
+.growthPathwayLabel {
+  margin: 0 0 0.15rem;
+  color: #68748a;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.growthPathwayCard h3 {
+  font-size: 0.88rem;
+}
+
+.growthPathwayCard p:last-child {
+  margin: 0.3rem 0 0;
+  color: #657086;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+
+/* ============================================================
+   PROFILE NEXT ACTION
+   ============================================================ */
+
+.growthProfileNext {
+  max-width: 860px;
+  margin: 1.8rem auto 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+
+  padding: 1rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 15px;
+
+  background: #ffffff;
+}
+
+.growthProfileNext h2 {
+  max-width: 550px;
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.growthProfileNext p:last-child {
+  max-width: 600px;
+  margin: 0.35rem 0 0;
+  color: #657086;
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
+.growthProfileNext .cta {
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
+.growthEmptyState {
+  padding: 0.8rem;
+
+  border: 1px dashed #cfd6e3;
+  border-radius: 12px;
+
+  color: #68748a;
+  background: #f8f9fb;
+
+  font-size: 0.76rem;
+}
+
+
+/* ============================================================
+   PARENT PERSPECTIVE
+   ============================================================ */
+
+.parentPerspective {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.parentPerspective > .backButton {
+  margin-bottom: 0.8rem;
+}
+
+.parentPerspectiveIntroCard {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 20px;
+
+  background: #ffffff;
 
   text-align: center;
+
+  box-shadow:
+    0 12px 28px rgba(23, 32, 51, 0.05);
+}
+
+.parentPerspectiveEmoji {
+  margin-bottom: 0.6rem;
+  font-size: 2.8rem;
+  line-height: 1;
+}
+
+.parentPerspectiveIntroCard h2 {
+  font-size: 1.65rem;
+}
+
+.parentPerspectiveIntroText {
+  max-width: 520px;
+  margin: 0.65rem auto 0;
+  color: #526078;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.parentEvidenceNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+
+  max-width: 520px;
+  margin: 1.2rem auto 0;
+  padding: 0.8rem 0.9rem;
+
+  border: 1px solid #dce2ec;
+  border-radius: 13px;
+
+  background: #f5f7fb;
+
+  text-align: left;
+}
+
+.parentEvidenceNote p {
+  margin: 0;
+  color: #526078;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.parentPerspectiveTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.parentQuestionCard {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1.8rem;
+
+  border: 1px solid #d9deea;
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  text-align: center;
+
+  box-shadow:
+    0 12px 28px rgba(23, 32, 51, 0.05);
+}
+
+.parentQuestionTitle {
+  max-width: 650px;
+  margin: 0 auto;
+  font-size: 1.45rem;
+  line-height: 1.2;
 }
 
 
@@ -1156,7 +1397,6 @@ h3 {
 .adventureHub {
   width: 100%;
   max-width: 900px;
-
   margin: 0 auto;
   padding: 1.2rem 0.8rem 2rem;
 }
@@ -1167,57 +1407,44 @@ h3 {
 
 .adventureHubHeader {
   max-width: 680px;
-
   margin: 0 auto 1.25rem;
-
   text-align: center;
 }
 
 .adventureHubHeader .eyebrow {
   margin-bottom: 0.35rem;
-
   color: #172033;
-
   font-size: 1.4rem;
-
   letter-spacing: -0.02em;
   text-transform: none;
 }
 
 .adventureHubHeader h2 {
   color: #455169;
-
   font-size: 1rem;
   line-height: 1.45;
-
   letter-spacing: 0;
   font-weight: 600;
 }
 
 .adventureHubHeader p {
   max-width: 590px;
-
   margin: 0.5rem auto 0;
-
   color: #657086;
-
   font-size: 0.84rem;
   line-height: 1.45;
 }
 
 .recommendationGrid {
   display: grid;
-
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
-
   gap: 0.8rem;
 }
 
 .recommendationCard {
   display: flex;
   flex-direction: column;
-
   padding: 1rem;
 
   border: 1px solid #d9deea;
@@ -1231,7 +1458,6 @@ h3 {
 
 .recommendationEmoji {
   margin-bottom: 0.5rem;
-
   font-size: 1.7rem;
 }
 
@@ -1241,18 +1467,14 @@ h3 {
 
 .recommendationCard p {
   flex: 1;
-
   margin: 0.45rem 0 0;
-
   color: #526078;
-
   font-size: 0.8rem;
   line-height: 1.45;
 }
 
 .exploreButton {
   margin-top: 0.8rem;
-
   padding: 0.52rem 0.75rem;
 
   border: 1px solid #172033;
@@ -1275,10 +1497,8 @@ h3 {
 .exploreButtonDisabled,
 .exploreButtonDisabled:disabled {
   border-color: #c7cfdd;
-
   background: #f7f8fb;
   color: #778196;
-
   cursor: default;
 }
 
@@ -1290,13 +1510,11 @@ h3 {
 .exploration {
   width: 100%;
   max-width: 760px;
-
   margin: 0 auto;
 }
 
 .explorationCard {
   width: 100%;
-
   padding: 1.8rem;
 
   border: 1px solid #d9deea;
@@ -1312,39 +1530,31 @@ h3 {
 
 .explorationBack {
   display: block;
-
   margin-bottom: 0.8rem;
 }
 
 .explorationHeroEmoji {
   margin-bottom: 0.6rem;
-
   font-size: 2.8rem;
   line-height: 1;
 }
 
 .explorationCard h2 {
   max-width: 650px;
-
   margin: 0 auto;
-
   font-size: 1.6rem;
 }
 
 .explorationText {
   max-width: 580px;
-
   margin: 0.7rem auto 0;
-
   color: #4c5870;
-
   font-size: 0.9rem;
   line-height: 1.5;
 }
 
 .missionBox {
   max-width: 580px;
-
   margin: 1.1rem auto 0;
   padding: 0.9rem;
 
@@ -1358,32 +1568,24 @@ h3 {
 
 .missionLabel {
   display: block;
-
   margin-bottom: 0.3rem;
-
   color: #4f5d74;
-
   font-size: 0.68rem;
   font-weight: 800;
-
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .missionBox p {
   margin: 0;
-
   color: #29344a;
-
   font-size: 0.88rem;
   line-height: 1.45;
 }
 
 .challengeProgress {
   margin-bottom: 0.8rem;
-
   color: #566278;
-
   font-size: 0.76rem;
   font-weight: 700;
 }
@@ -1395,20 +1597,15 @@ h3 {
 
 .reflectionGrid {
   display: grid;
-
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
-
   gap: 0.65rem;
-
   max-width: 540px;
-
   margin: 1.25rem auto 0;
 }
 
 .reflectionButton {
   min-height: 60px;
-
   padding: 0.7rem 0.85rem;
 
   border: 1px solid #ced5e2;
@@ -1423,10 +1620,6 @@ h3 {
   cursor: pointer;
 }
 
-.reflectionButton:hover {
-  border-color: #8d99af;
-}
-
 
 /* ============================================================
    PROFILE GREW
@@ -1435,14 +1628,12 @@ h3 {
 .profileGrew {
   width: 100%;
   max-width: 720px;
-
   margin: 0 auto;
   padding: 1rem;
 }
 
 .profileGrewCard {
   max-width: 640px;
-
   margin: 0 auto;
   padding: 2rem 1.8rem;
 
@@ -1459,42 +1650,31 @@ h3 {
 
 .profileGrewEmoji {
   margin-bottom: 0.55rem;
-
   font-size: 2.8rem;
 }
 
 .profileGrewCard .eyebrow {
   margin-bottom: 0.35rem;
-
   color: #172033;
-
   font-size: 1.3rem;
-
   letter-spacing: -0.015em;
   text-transform: none;
 }
 
 .profileGrewCard h2 {
   max-width: 580px;
-
   margin: 0 auto;
-
   color: #455169;
-
   font-size: 1rem;
   line-height: 1.45;
-
   letter-spacing: 0;
   font-weight: 500;
 }
 
 .profileGrewIntro {
   max-width: 530px;
-
   margin: 0.7rem auto 0;
-
   color: #536078;
-
   font-size: 0.86rem;
   line-height: 1.48;
 }
@@ -1502,20 +1682,15 @@ h3 {
 .growthSignalList {
   display: flex;
   flex-direction: column;
-
   gap: 0.4rem;
-
   max-width: 410px;
-
   margin: 1.1rem auto 0;
 }
 
 .growthSignal {
   display: flex;
   align-items: center;
-
   gap: 0.5rem;
-
   padding: 0.58rem 0.75rem;
 
   border: 1px solid #d9deea;
@@ -1539,11 +1714,8 @@ h3 {
 
 .profileGrewNote {
   max-width: 520px;
-
   margin: 1rem auto 0;
-
   color: #59667d;
-
   font-size: 0.78rem;
   line-height: 1.45;
 }
@@ -1552,15 +1724,12 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-
   gap: 0.75rem;
-
   flex-wrap: wrap;
 }
 
 .secondaryAction {
   margin-top: 1.2rem;
-
   padding: 0.65rem 1rem;
 
   border: 1px solid #cfd6e3;
@@ -1575,13 +1744,9 @@ h3 {
   cursor: pointer;
 }
 
-.secondaryAction:hover {
-  background: #f6f8fc;
-}
-
 
 /* ============================================================
-   DEVELOPMENT INSPECTOR
+   DEV INSPECTOR
    ============================================================ */
 
 details,
@@ -1614,7 +1779,6 @@ details strong {
 
   .discoveryLayout {
     grid-template-columns: 1fr;
-
     max-width: 780px;
   }
 
@@ -1624,17 +1788,18 @@ details strong {
 
   .journeyList {
     display: grid;
-
     grid-template-columns:
       repeat(4, minmax(0, 1fr));
   }
 
   .recommendationGrid {
     grid-template-columns: 1fr;
-
     max-width: 540px;
-
     margin: 0 auto;
+  }
+
+  .growthEvidenceSources {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1648,13 +1813,8 @@ details strong {
     padding: 0.8rem;
   }
 
-  .hero {
-    padding: 2rem 0.4rem;
-  }
-
   .spaceHeader {
     flex-direction: column;
-
     gap: 0.8rem;
   }
 
@@ -1662,7 +1822,8 @@ details strong {
     align-self: flex-start;
   }
 
-  .spaceStats {
+  .spaceStats,
+  .growthProfileSummary {
     grid-template-columns: 1fr;
   }
 
@@ -1677,6 +1838,8 @@ details strong {
   .profileForm,
   .handoffCard,
   .questionCard,
+  .parentPerspectiveIntroCard,
+  .parentQuestionCard,
   .explorationCard,
   .profileGrewCard {
     padding: 1.35rem;
@@ -1688,7 +1851,9 @@ details strong {
   }
 
   .answerGrid,
-  .reflectionGrid {
+  .reflectionGrid,
+  .growthTraitGrid,
+  .growthPathwayGrid {
     grid-template-columns: 1fr;
   }
 
@@ -1696,22 +1861,22 @@ details strong {
     min-height: 62px;
   }
 
-  .growthProfile {
-    padding: 1rem 0 2rem;
+  .growthSectionHeading {
+    display: block;
   }
 
-  .profileHero {
-    margin-bottom: 1.2rem;
+  .growthSectionHeading > p {
+    margin-top: 0.35rem;
+    text-align: left;
   }
 
-  .profileHero .eyebrow {
-    font-size: 1.3rem;
+  .growthProfileNext {
+    display: block;
   }
 
-  .signalCard {
-    padding: 0.48rem 0.62rem;
-
-    font-size: 0.8rem;
+  .growthProfileNext .cta {
+    width: 100%;
+    margin-top: 0.8rem;
   }
 
   .profileGrewActions {
