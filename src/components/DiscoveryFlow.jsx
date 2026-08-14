@@ -1,24 +1,11 @@
 // ============================================================
 // Career & Growth
-// MVP v0.3
+// MVP v0.5 — Discover You
 //
-// Discovery Flow
-//
-// Presentation component for the Discovering You questionnaire.
-//
-// This component:
-// - Displays child context
-// - Displays question progress
-// - Displays the current question and answers
-// - Sends navigation/answer events back to App.jsx
-//
-// It intentionally does NOT:
-// - own Discovery state
-// - create evidence events
-// - calculate Growth Intelligence
-// - persist responses
+// Presentation-only component.
+// Discovery state, evidence, scoring, persistence, and Growth
+// Intelligence remain owned by App.jsx.
 // ============================================================
-
 
 function DiscoveryFlow({
   childProfile,
@@ -28,201 +15,249 @@ function DiscoveryFlow({
   onBack,
   onAnswer,
 }) {
-  if (
-    !currentQuestion ||
-    !questions?.length
-  ) {
+  if (!currentQuestion || !questions?.length) {
     return null
   }
 
   const childName =
-    childProfile.name.trim()
+    childProfile?.name?.trim() || 'Explorer'
 
   const childInitial =
-    childName
-      .charAt(0)
-      .toUpperCase()
+    childName.charAt(0).toUpperCase()
+
+  const currentNumber =
+    currentQuestionIndex + 1
 
   const progressPercentage =
-    ((currentQuestionIndex + 1) /
-      questions.length) *
-    100
+    (currentNumber / questions.length) * 100
 
+  const currentTopic =
+    currentQuestion.shortLabel ||
+    'Getting to know you'
 
   return (
-    <section className="discoveryLayout">
+    <section className="discoverV05">
 
-      {/* ======================================================
-          LEFT COMPANION / JOURNEY
-         ====================================================== */}
+      <div className="discoverV05Shell">
 
-      <aside className="discoveryCompanion">
-
-        <div className="companionProfile">
-
-          <div className="companionAvatar">
-            {childInitial}
-          </div>
-
-
-          <div>
-
-            <p className="companionName">
-              {childName}
-            </p>
-
-            <p className="companionMeta">
-              Age {childProfile.age}
-              {' · '}
-              {childProfile.grade}
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div className="companionDivider" />
-
-
-        <p className="companionHeading">
-          Discovering You
-        </p>
-
-
-        <div className="journeyList">
-
-          {questions.map(
-            (
-              question,
-              index
-            ) => {
-              const isComplete =
-                index <
-                currentQuestionIndex
-
-              const isCurrent =
-                index ===
-                currentQuestionIndex
-
-              return (
-                <div
-                  key={
-                    question.id
-                  }
-                  className={`journeyItem ${
-                    isCurrent
-                      ? 'journeyItemCurrent'
-                      : ''
-                  }`}
-                >
-
-                  <span className="journeyStatus">
-                    {isComplete
-                      ? '✓'
-                      : isCurrent
-                        ? '→'
-                        : '○'}
-                  </span>
-
-
-                  <span>
-                    {
-                      question.shortLabel
-                    }
-                  </span>
-
-                </div>
-              )
-            }
-          )}
-
-        </div>
-
-      </aside>
-
-
-      {/* ======================================================
-          QUESTION AREA
-         ====================================================== */}
-
-      <div className="discoveryMain">
-
-        <div className="discoveryTop">
+        <header className="discoverV05Header">
 
           <button
-            className="backButton"
+            type="button"
+            className="discoverV05Back"
             onClick={onBack}
           >
-            ← Back
+            <span aria-hidden="true">←</span>
+            Back
           </button>
 
+          <div className="discoverV05Brand">
+            <span className="discoverV05BrandMark">
+              🌱
+            </span>
 
-          <span className="questionCounter">
-            {currentQuestionIndex + 1}
-            {' '}of{' '}
-            {questions.length}
-          </span>
-
-        </div>
-
-
-        {/* ====================================================
-            PROGRESS
-           ==================================================== */}
-
-        <div className="progressTrack">
-
-          <div
-            className="progressBar"
-            style={{
-              width:
-                `${progressPercentage}%`,
-            }}
-          />
-
-        </div>
-
-
-        {/* ====================================================
-            CURRENT QUESTION
-           ==================================================== */}
-
-        <div className="questionCard">
-
-          <p className="eyebrow">
-            Discovering You
-          </p>
-
-
-          <h2 className="questionTitle">
-            {
-              currentQuestion.question
-            }
-          </h2>
-
-
-          <div className="answerGrid">
-
-            {currentQuestion.answers.map(
-              (answer) => (
-                <button
-                  key={
-                    answer.id
-                  }
-                  className="answerCard"
-                  onClick={() =>
-                    onAnswer(
-                      answer
-                    )
-                  }
-                >
-                  {answer.label}
-                </button>
-              )
-            )}
-
+            <span>
+              Career & Growth
+            </span>
           </div>
+
+        </header>
+
+
+        <div className="discoverV05Layout">
+
+          <aside className="discoverV05Context">
+
+            <div className="discoverV05Profile">
+
+              <div className="discoverV05Avatar">
+                {childInitial}
+              </div>
+
+              <div>
+                <strong>
+                  {childName}
+                </strong>
+
+                <span>
+                  Age {childProfile?.age}
+                  {' · '}
+                  {childProfile?.grade}
+                </span>
+              </div>
+
+            </div>
+
+
+            <div className="discoverV05ContextIntro">
+
+              <span className="discoverV05Eyebrow">
+                DISCOVER YOU
+              </span>
+
+              <h2>
+                We're getting to know
+                what feels like you.
+              </h2>
+
+              <p>
+                Your answers give us clues
+                about what you enjoy, how
+                you like to think, and what
+                makes you curious.
+              </p>
+
+            </div>
+
+
+            <div className="discoverV05CurrentTopic">
+
+              <span>
+                Exploring now
+              </span>
+
+              <strong>
+                {currentTopic}
+              </strong>
+
+            </div>
+
+
+            <div className="discoverV05Reminders">
+
+              <div>
+                <span aria-hidden="true">✓</span>
+                <p>
+                  There are no right or
+                  wrong answers.
+                </p>
+              </div>
+
+              <div>
+                <span aria-hidden="true">♡</span>
+                <p>
+                  Pick what feels most
+                  like you today.
+                </p>
+              </div>
+
+              <div>
+                <span aria-hidden="true">↻</span>
+                <p>
+                  What we learn can keep
+                  changing as you grow.
+                </p>
+              </div>
+
+            </div>
+
+          </aside>
+
+
+          <main className="discoverV05Main">
+
+            <div className="discoverV05ProgressRow">
+
+              <div>
+                <span className="discoverV05Eyebrow">
+                  DISCOVERING YOU
+                </span>
+
+                <strong>
+                  Question {currentNumber}
+                  {' '}of{' '}
+                  {questions.length}
+                </strong>
+              </div>
+
+              <span className="discoverV05ProgressPercent">
+                {Math.round(progressPercentage)}%
+              </span>
+
+            </div>
+
+
+            <div
+              className="discoverV05ProgressTrack"
+              aria-label={`Question ${currentNumber} of ${questions.length}`}
+            >
+              <div
+                className="discoverV05ProgressBar"
+                style={{
+                  width: `${progressPercentage}%`,
+                }}
+              />
+            </div>
+
+
+            <article className="discoverV05QuestionCard">
+
+              <div className="discoverV05QuestionIntro">
+
+                <span className="discoverV05QuestionNumber">
+                  {String(currentNumber).padStart(2, '0')}
+                </span>
+
+                <div>
+                  <span className="discoverV05Eyebrow">
+                    {currentTopic}
+                  </span>
+
+                  <h1>
+                    {currentQuestion.question}
+                  </h1>
+
+                  <p>
+                    Choose the answer that
+                    sounds most like you.
+                    Don't overthink it.
+                  </p>
+                </div>
+
+              </div>
+
+
+              <div className="discoverV05Answers">
+
+                {currentQuestion.answers.map(
+                  (answer, index) => (
+                    <button
+                      type="button"
+                      key={answer.id}
+                      className="discoverV05Answer"
+                      onClick={() =>
+                        onAnswer(answer)
+                      }
+                    >
+                      <span className="discoverV05AnswerIndex">
+                        {String.fromCharCode(65 + index)}
+                      </span>
+
+                      <span className="discoverV05AnswerLabel">
+                        {answer.label}
+                      </span>
+
+                      <span
+                        className="discoverV05AnswerArrow"
+                        aria-hidden="true"
+                      >
+                        →
+                      </span>
+                    </button>
+                  )
+                )}
+
+              </div>
+
+            </article>
+
+
+            <div className="discoverV05FooterNote">
+              <span aria-hidden="true">✨</span>
+              Each answer adds another small clue to your Growth Profile.
+            </div>
+
+          </main>
 
         </div>
 

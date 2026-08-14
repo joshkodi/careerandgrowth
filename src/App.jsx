@@ -1,10 +1,15 @@
-import { useState } from 'react'
+import {
+  useEffect,
+  useState,
+} from 'react'
+
 import './App.css'
 
 import { explorations } from './data/explorations'
 import { discoveryQuestions } from './data/discoveryQuestions'
+import { getGrowExperience } from './data/growExperiences'
 
-import ChildSpaceHome from './components/ChildSpaceHome'
+import GrowthHome from './components/GrowthHome'
 import DiscoveryFlow from './components/DiscoveryFlow'
 import GrowthProfileView from './components/GrowthProfileView'
 import ParentPerspectiveFlow from './components/ParentPerspectiveFlow'
@@ -72,25 +77,112 @@ import {
   getChildEvidenceId,
 } from './utils/session'
 
+import {
+  createGrowthIntent,
+  growthIntentActors,
+  growthIntentTypes,
+} from './intelligence/growthLoopModels'
+
+import {
+  getGrowthIntents,
+  saveGrowthIntent,
+} from './storage/growthLoopStorage'
+
+import {
+  getGrowthRecommendations,
+} from './intelligence/growthRecommendationEngine'
+
+import {
+  createJourneyItem,
+  journeyOrigins,
+  updateJourneyProgress,
+  completeJourneyWithReflection,
+} from './intelligence/journeyModels'
+
+import {
+  findJourneyByExperience,
+  getJourneyItems,
+  saveJourneyItem,
+} from './storage/journeyStorage'
+
+
+// ============================================================
+// V0.4 APP STATE PERSISTENCE
+// ============================================================
+
+const APP_STATE_STORAGE_KEY =
+  'careerGrowth.v04.appState'
+
+
+const defaultChildProfile = {
+  name: '',
+  age: '11',
+  grade: '6th Grade',
+}
+
+
+const readStoredAppState = () => {
+  try {
+    const raw =
+      localStorage.getItem(
+        APP_STATE_STORAGE_KEY
+      )
+
+    if (!raw) {
+      return null
+    }
+
+    const parsed =
+      JSON.parse(raw)
+
+    return parsed &&
+      typeof parsed === 'object'
+      ? parsed
+      : null
+  } catch (error) {
+    console.error(
+      'Unable to restore Career & Growth app state.',
+      error
+    )
+
+    return null
+  }
+}
+
+
+const storedAppState =
+  readStoredAppState()
+
 
 // ============================================================
 // APP
 // ============================================================
 
 function App() {
-  const [
-    screen,
-    setScreen,
-  ] = useState('landing')
+  const [screen, setScreen] =
+    useState(
+      storedAppState
+        ?.childProfile
+        ?.name
+        ?.trim()
+        ? (
+            storedAppState
+              .screen ===
+              'journey'
+              ? 'journey'
+              : 'childSpace'
+          )
+        : 'landing'
+    )
 
   const [
     childProfile,
     setChildProfile,
-  ] = useState({
-    name: '',
-    age: '11',
-    grade: '6th Grade',
-  })
+  ] = useState(
+    storedAppState
+      ?.childProfile ||
+      defaultChildProfile
+  )
 
   const [
     currentQuestionIndex,
@@ -105,7 +197,11 @@ function App() {
   const [
     discoveryComplete,
     setDiscoveryComplete,
-  ] = useState(false)
+  ] = useState(
+    storedAppState
+      ?.discoveryComplete ||
+      false
+  )
 
   const [
     activeExploration,
@@ -135,7 +231,11 @@ function App() {
   const [
     completedExplorations,
     setCompletedExplorations,
-  ] = useState([])
+  ] = useState(
+    storedAppState
+      ?.completedExplorations ||
+      []
+  )
 
   const [
     discoverySessionId,
@@ -150,7 +250,11 @@ function App() {
   const [
     parentPerspectiveComplete,
     setParentPerspectiveComplete,
-  ] = useState(false)
+  ] = useState(
+    storedAppState
+      ?.parentPerspectiveComplete ||
+      false
+  )
 
   const [
     parentQuestionIndex,
@@ -176,6 +280,27 @@ function App() {
     evidenceEventCount,
     setEvidenceEventCount,
   ] = useState(0)
+
+  const [
+    studentGrowthIntents,
+    setStudentGrowthIntents,
+  ] = useState([])
+
+  const [
+    parentGrowthIntents,
+    setParentGrowthIntents,
+  ] = useState([])
+
+  const [
+    journeyItems,
+    setJourneyItems,
+  ] = useState([])
+
+
+  const [
+    completedJourneyInsight,
+    setCompletedJourneyInsight,
+  ] = useState(null)
 
 
   // ==========================================================
@@ -264,6 +389,690 @@ function App() {
 
 
   // ==========================================================
+  // V0.4 GROWTH RECOMMENDATIONS
+  // ==========================================================
+
+  const journeyExperienceIds =
+    journeyItems
+      .map(
+        (item) =>
+          item.experienceId
+      )
+      .filter(Boolean)
+
+  const growthRecommendations =
+    getGrowthRecommendations({
+      age:
+        childProfile.age,
+
+      growthProfile:
+        growthIntelligenceProfile,
+
+      studentIntents:
+        studentGrowthIntents,
+
+      parentIntents:
+        parentGrowthIntents,
+
+      completedExperienceIds:
+        journeyExperienceIds,
+
+      limit: 5,
+    })
+
+
+  // ==========================================================
+  // LOAD / RESTORE V0.4 LOCAL DATA
+  // ==========================================================
+
+  useEffect(
+    () => {
+      if (
+        !childProfile.name.trim()
+      ) {
+        setStudentGrowthIntents([])
+        setParentGrowthIntents([])
+        setJourneyItems([])
+        setGrowthIntelligenceProfile(null)
+        setEvidenceEventCount(0)
+
+        return
+      }
+
+      const childId =
+        getChildEvidenceId(
+          childProfile
+        )
+
+      // Restore Student + Parent Intent.
+
+      const storedIntents =
+        getGrowthIntents({
+          childId,
+        })
+
+      setStudentGrowthIntents(
+        storedIntents.filter(
+          (intent) =>
+            intent.actor ===
+            growthIntentActors.STUDENT
+        )
+      )
+
+      setParentGrowthIntents(
+        storedIntents.filter(
+          (intent) =>
+            intent.actor ===
+            growthIntentActors.PARENT
+        )
+      )
+
+      // Restore Journey.
+
+      setJourneyItems(
+        getJourneyItems({
+          childId,
+        })
+      )
+
+      // Restore/rebuild Growth Intelligence
+      // from the evidence store. Evidence is
+      // the source of truth for intelligence.
+
+      const storedEvidence =
+        getEvidenceEvents({
+          childId,
+        })
+
+      setEvidenceEventCount(
+        storedEvidence.length
+      )
+
+      if (
+        storedEvidence.length > 0
+      ) {
+        const restoredProfile =
+          buildGrowthProfile({
+            childId,
+            evidenceEvents:
+              storedEvidence,
+          })
+
+        setGrowthIntelligenceProfile(
+          restoredProfile
+        )
+
+        saveGrowthProfile(
+          restoredProfile
+        )
+
+        // If an older app-state record is
+        // missing completion flags, infer
+        // them from persisted evidence.
+
+        const hasDiscoveryEvidence =
+          storedEvidence.some(
+            (event) =>
+              event.source?.type ===
+              evidenceSourceTypes
+                .DISCOVERY
+          )
+
+        const hasParentEvidence =
+          storedEvidence.some(
+            (event) =>
+              event.source?.type ===
+              evidenceSourceTypes
+                .PARENT_OBSERVATION
+          )
+
+        if (hasDiscoveryEvidence) {
+          setDiscoveryComplete(true)
+        }
+
+        if (hasParentEvidence) {
+          setParentPerspectiveComplete(
+            true
+          )
+        }
+      }
+    },
+
+    [
+      childProfile.name,
+      childProfile.age,
+      childProfile.grade,
+    ]
+  )
+
+
+  // ==========================================================
+  // SAVE V0.4 APP/UI STATE
+  // ==========================================================
+
+  useEffect(
+    () => {
+      if (
+        !childProfile.name.trim()
+      ) {
+        return
+      }
+
+      const safeScreen =
+        screen === 'journey'
+          ? 'journey'
+          : 'childSpace'
+
+      const appState = {
+        childProfile,
+
+        discoveryComplete,
+
+        parentPerspectiveComplete,
+
+        completedExplorations,
+
+        screen:
+          safeScreen,
+
+        updatedAt:
+          new Date().toISOString(),
+      }
+
+      localStorage.setItem(
+        APP_STATE_STORAGE_KEY,
+        JSON.stringify(
+          appState
+        )
+      )
+    },
+
+    [
+      childProfile,
+      discoveryComplete,
+      parentPerspectiveComplete,
+      completedExplorations,
+      screen,
+    ]
+  )
+
+
+  // ==========================================================
+  // STUDENT INTENT
+  // ==========================================================
+
+  const handleSaveStudentIntent =
+    (text) => {
+      if (!text?.trim()) {
+        return null
+      }
+
+      const childId =
+        getChildEvidenceId(
+          childProfile
+        )
+
+      const intent =
+        createGrowthIntent({
+          childId,
+
+          actor:
+            growthIntentActors.STUDENT,
+
+          type:
+            growthIntentTypes.OPEN_ENDED,
+
+          text,
+
+          source:
+            'growth_home',
+        })
+
+      saveGrowthIntent(
+        intent
+      )
+
+      setStudentGrowthIntents(
+        (current) => [
+          ...current,
+          intent,
+        ]
+      )
+
+      return intent
+    }
+
+
+  // ==========================================================
+  // PARENT INTENT
+  // ==========================================================
+
+  const handleSaveParentIntent =
+    (text) => {
+      if (!text?.trim()) {
+        return null
+      }
+
+      const childId =
+        getChildEvidenceId(
+          childProfile
+        )
+
+      const intent =
+        createGrowthIntent({
+          childId,
+
+          actor:
+            growthIntentActors.PARENT,
+
+          type:
+            growthIntentTypes.GOAL,
+
+          text,
+
+          source:
+            'parent_view',
+        })
+
+      saveGrowthIntent(
+        intent
+      )
+
+      setParentGrowthIntents(
+        (current) => [
+          ...current,
+          intent,
+        ]
+      )
+
+      return intent
+    }
+
+
+  // ==========================================================
+  // JOURNEY
+  // ==========================================================
+
+  const handleStartGrow =
+    (recommendation) => {
+      if (
+        !recommendation
+          ?.experienceId
+      ) {
+        return null
+      }
+
+      const childId =
+        getChildEvidenceId(
+          childProfile
+        )
+
+      const existingJourney =
+        findJourneyByExperience({
+          childId,
+
+          experienceId:
+            recommendation
+              .experienceId,
+        })
+
+      if (existingJourney) {
+        setScreen('journey')
+
+        return existingJourney
+      }
+
+      const experience =
+        getGrowExperience(
+          recommendation
+            .experienceId
+        )
+
+      const journeyItem =
+        createJourneyItem({
+          childId,
+
+          experienceId:
+            recommendation
+              .experienceId,
+
+          title:
+            experience?.title ||
+            recommendation.title,
+
+          emoji:
+            experience?.emoji ||
+            recommendation.emoji ||
+            '🌱',
+
+          description:
+            experience?.description ||
+            '',
+
+          origin:
+            journeyOrigins
+              .RECOMMENDATION,
+
+          recommendation,
+        })
+
+      saveJourneyItem(
+        journeyItem
+      )
+
+      setJourneyItems(
+        (current) => [
+          ...current,
+          journeyItem,
+        ]
+      )
+
+      console.group(
+        '🛤️ Journey v1'
+      )
+
+      console.log(
+        'Started Grow:',
+        journeyItem
+      )
+
+      console.groupEnd()
+
+      setScreen('journey')
+
+      return journeyItem
+    }
+
+
+  const goToJourney = () => {
+    setScreen('journey')
+  }
+
+
+  const handleJourneyProgress =
+    (
+      journeyId,
+      percent
+    ) => {
+      const currentItem =
+        journeyItems.find(
+          (item) =>
+            item.id ===
+            journeyId
+        )
+
+      if (!currentItem) {
+        return null
+      }
+
+      const updatedItem =
+        updateJourneyProgress(
+          currentItem,
+          percent
+        )
+
+      saveJourneyItem(
+        updatedItem
+      )
+
+      setJourneyItems(
+        (current) =>
+          current.map(
+            (item) =>
+              item.id ===
+              updatedItem.id
+                ? updatedItem
+                : item
+          )
+      )
+
+      return updatedItem
+    }
+
+
+  const handleCompleteJourney =
+    (
+      journeyId,
+      reflection
+    ) => {
+      const currentItem =
+        journeyItems.find(
+          (item) =>
+            item.id ===
+            journeyId
+        )
+
+      if (!currentItem) {
+        return null
+      }
+
+      const completedItem =
+        completeJourneyWithReflection(
+          currentItem,
+          reflection
+        )
+
+      saveJourneyItem(
+        completedItem
+      )
+
+      setJourneyItems(
+        (current) =>
+          current.map(
+            (item) =>
+              item.id ===
+              completedItem.id
+                ? completedItem
+                : item
+          )
+      )
+
+      // Turn Journey completion + reflection into
+      // Growth Intelligence evidence.
+
+      const childId =
+        getChildEvidenceId(
+          childProfile
+        )
+
+      const experience =
+        getGrowExperience(
+          completedItem
+            .experienceId
+        )
+
+      const domainId =
+        experience?.domainId ||
+        experience?.domain ||
+        null
+
+      const sessionId =
+        createSessionId()
+
+      const enjoymentMap = {
+        not_for_me: 0,
+        okay: 1,
+        liked_it: 2,
+        loved_it: 3,
+      }
+
+      const enjoymentValue =
+        enjoymentMap[
+          reflection?.enjoyment
+        ]
+
+      const evidenceEvents = []
+
+      if (
+        enjoymentValue !==
+        undefined
+      ) {
+        evidenceEvents.push(
+          createEvidenceEvent({
+            childId,
+
+            source: {
+              type:
+                evidenceSourceTypes
+                  .REFLECTION,
+
+              experienceId:
+                completedItem
+                  .experienceId,
+
+              questionId:
+                'journey_enjoyment',
+
+              responseId:
+                reflection
+                  .enjoyment,
+            },
+
+            evidence:
+              getEnjoymentEvidence(
+                enjoymentValue
+              ),
+
+            context: {
+              domainId,
+              sessionId,
+            },
+
+            metadata: {
+              questionText:
+                'How much did you enjoy it?',
+
+              responseText:
+                reflection
+                  .enjoyment,
+
+              enjoymentValue,
+
+              journeyId:
+                completedItem.id,
+
+              favoritePart:
+                reflection
+                  ?.favoritePart ||
+                '',
+
+              difficultPart:
+                reflection
+                  ?.difficultPart ||
+                '',
+
+              wouldDoAgain:
+                reflection
+                  ?.wouldDoAgain ??
+                null,
+
+              wantsNext:
+                reflection
+                  ?.wantsNext ||
+                '',
+            },
+          })
+        )
+      }
+
+      evidenceEvents.push(
+        createEvidenceEvent({
+          childId,
+
+          source: {
+            type:
+              evidenceSourceTypes
+                .COMPLETION,
+
+            experienceId:
+              completedItem
+                .experienceId,
+
+            questionId:
+              null,
+
+            responseId:
+              'completed',
+          },
+
+          evidence:
+            getCompletionEvidence(),
+
+          context: {
+            domainId,
+            sessionId,
+          },
+
+          metadata: {
+            experienceTitle:
+              completedItem.title,
+
+            journeyId:
+              completedItem.id,
+
+            origin:
+              completedItem.origin,
+          },
+        })
+      )
+
+      const updatedProfile =
+        persistGrowthEvidence(
+          evidenceEvents
+        )
+
+      setCompletedJourneyInsight({
+        journeyItem:
+          completedItem,
+
+        reflection,
+
+        updatedProfile,
+
+        completedAt:
+          completedItem
+            .completedAt,
+      })
+
+      // A student's "what I want next" response
+      // becomes a new Student Intent and therefore
+      // participates in the next recommendation cycle.
+
+      if (
+        reflection
+          ?.wantsNext
+          ?.trim()
+      ) {
+        handleSaveStudentIntent(
+          reflection.wantsNext
+        )
+      }
+
+      console.group(
+        '↻ Growth Loop v0.4'
+      )
+
+      console.log(
+        'Journey completed:',
+        completedItem
+      )
+
+      console.log(
+        'Growth evidence added:',
+        evidenceEvents
+      )
+
+      console.log(
+        'Next recommendations will recalculate from the updated profile and intent.'
+      )
+
+      console.groupEnd()
+
+      return completedItem
+    }
+
+
+  // ==========================================================
   // GROWTH INTELLIGENCE PERSISTENCE
   // ==========================================================
 
@@ -311,27 +1120,6 @@ function App() {
         allEvidence.length
       )
 
-      console.group(
-        '🌱 Growth Intelligence v0.3'
-      )
-
-      console.log(
-        'New evidence:',
-        validEvents
-      )
-
-      console.log(
-        'All evidence:',
-        allEvidence
-      )
-
-      console.log(
-        'Growth profile:',
-        profile
-      )
-
-      console.groupEnd()
-
       return profile
     }
 
@@ -343,36 +1131,29 @@ function App() {
   const resetTestData = () => {
     const confirmed =
       window.confirm(
-        'Reset all Career & Growth test data?\n\nThis will remove the current child, Discovery responses, Parent Perspective, Adventures, and all stored Growth Intelligence evidence.'
+        'Reset all Career & Growth test data?\n\nThis will remove the current child, Discovery responses, Parent Perspective, Adventures, Growth Intents, Journey items, and all stored Growth Intelligence evidence.'
       )
 
     if (!confirmed) {
       return
     }
 
-    // Clear persisted browser data for this site.
     localStorage.clear()
 
-    // Child Space
-    setChildProfile({
-      name: '',
-      age: '11',
-      grade: '6th Grade',
-    })
+    setChildProfile(
+      defaultChildProfile
+    )
 
-    // Discovery
     setCurrentQuestionIndex(0)
     setDiscoveryResponses([])
     setDiscoveryComplete(false)
     setDiscoverySessionId(null)
 
-    // Parent Perspective
     setParentPerspectiveComplete(false)
     setParentQuestionIndex(0)
     setParentResponses([])
     setParentSessionId(null)
 
-    // Adventures
     setActiveExploration(null)
     setExplorationStep('intro')
     setChallengeIndex(0)
@@ -381,16 +1162,15 @@ function App() {
     setCompletedExplorations([])
     setEvidenceSessionId(null)
 
-    // Growth Intelligence
     setGrowthIntelligenceProfile(null)
     setEvidenceEventCount(0)
 
-    // Return to fresh Child Space setup.
-    setScreen('parentSetup')
+    setStudentGrowthIntents([])
+    setParentGrowthIntents([])
+    setJourneyItems([])
+    setCompletedJourneyInsight(null)
 
-    console.log(
-      '🧹 Career & Growth test data reset.'
-    )
+    setScreen('parentSetup')
   }
 
 
@@ -424,16 +1204,12 @@ function App() {
         return
       }
 
-      setScreen(
-        'childSpace'
-      )
+      setScreen('childSpace')
     }
 
 
   const goToChildSpace = () => {
-    setScreen(
-      'childSpace'
-    )
+    setScreen('childSpace')
   }
 
 
@@ -443,16 +1219,11 @@ function App() {
 
   const startDiscovery = () => {
     setCurrentQuestionIndex(0)
-
     setDiscoveryResponses([])
-
     setDiscoverySessionId(
       createSessionId()
     )
-
-    setScreen(
-      'discovery'
-    )
+    setScreen('discovery')
   }
 
 
@@ -583,10 +1354,7 @@ function App() {
           updatedResponses
         )
 
-        setDiscoveryComplete(
-          true
-        )
-
+        setDiscoveryComplete(true)
         setScreen(
           'discoveryComplete'
         )
@@ -607,6 +1375,7 @@ function App() {
         currentQuestionIndex === 0
       ) {
         goToChildSpace()
+
         return
       }
 
@@ -624,13 +1393,10 @@ function App() {
   const startParentPerspective =
     () => {
       setParentQuestionIndex(0)
-
       setParentResponses([])
-
       setParentSessionId(
         createSessionId()
       )
-
       setScreen(
         'parentPerspectiveIntro'
       )
@@ -823,18 +1589,13 @@ function App() {
       )
 
       setChallengeIndex(0)
-
-      setEnjoymentResponse(
-        null
-      )
+      setEnjoymentResponse(null)
 
       setEvidenceSessionId(
         createSessionId()
       )
 
-      setScreen(
-        'exploration'
-      )
+      setScreen('exploration')
     }
 
 
@@ -1191,9 +1952,7 @@ function App() {
         }
       )
 
-      setScreen(
-        'profileGrew'
-      )
+      setScreen('profileGrew')
     }
 
 
@@ -1238,10 +1997,18 @@ function App() {
   // UI
   // ==========================================================
 
-  return (
-    <main className="page">
+  const useGrowthShell =
+    screen === 'childSpace' ||
+    screen === 'journey'
 
-      {/* LANDING */}
+  return (
+    <main
+      className={
+        useGrowthShell
+          ? 'page pageGrowthShell'
+          : 'page'
+      }
+    >
 
       {screen === 'landing' && (
         <section className="hero">
@@ -1285,8 +2052,6 @@ function App() {
       )}
 
 
-      {/* CREATE CHILD SPACE */}
-
       {screen ===
         'parentSetup' && (
         <section className="setup">
@@ -1301,7 +2066,6 @@ function App() {
           >
             ← Back
           </button>
-
 
           <div className="setupHeader">
 
@@ -1323,7 +2087,6 @@ function App() {
             </p>
 
           </div>
-
 
           <form
             className="profileForm"
@@ -1349,7 +2112,6 @@ function App() {
                 autoFocus
               />
             </label>
-
 
             <label>
               Age
@@ -1385,7 +2147,6 @@ function App() {
               </select>
             </label>
 
-
             <label>
               Grade
 
@@ -1414,7 +2175,6 @@ function App() {
               </select>
             </label>
 
-
             <button
               className="cta formCta"
               type="submit"
@@ -1426,13 +2186,15 @@ function App() {
 
         </section>
       )}
+      {(screen === 'childSpace' ||
+        screen === 'journey') && (
+        <GrowthHome
+          activeView={
+            screen === 'journey'
+              ? 'journey'
+              : 'home'
+          }
 
-
-      {/* CHILD SPACE */}
-
-      {screen ===
-        'childSpace' && (
-        <ChildSpaceHome
           childProfile={
             childProfile
           }
@@ -1441,46 +2203,94 @@ function App() {
             discoveryComplete
           }
 
-          evidenceEventCount={
-            evidenceEventCount
-          }
-
           completedExplorations={
             completedExplorations
           }
 
-          growthIntelligenceProfile={
+          evidenceEventCount={
+            evidenceEventCount
+          }
+
+          growthProfile={
             growthIntelligenceProfile
           }
 
-          parentPerspectiveComplete={
-            parentPerspectiveComplete
+          topTraits={
+            intelligenceTraits
           }
 
-          onStartDiscovery={
-            startDiscovery
+          topDomains={
+            intelligenceDomains
           }
 
-          onViewGrowthProfile={() =>
-            setScreen(
-              'growthProfile'
+          recommendations={
+            growthRecommendations
+          }
+
+          studentIntents={
+            studentGrowthIntents
+          }
+
+          journeyItems={
+            journeyItems
+          }
+
+          completedJourneyInsight={
+            completedJourneyInsight
+          }
+
+          onDismissJourneyInsight={() =>
+            setCompletedJourneyInsight(
+              null
             )
           }
 
-          onExploreAdventures={() =>
+          onSaveStudentIntent={
+            handleSaveStudentIntent
+          }
+
+          onStartGrow={
+            handleStartGrow
+          }
+
+          onHome={
+            goToChildSpace
+          }
+
+          onJourney={
+            goToJourney
+          }
+
+          onJourneyProgress={
+            handleJourneyProgress
+          }
+
+          onCompleteJourney={
+            handleCompleteJourney
+          }
+
+          onDiscover={
+            startDiscovery
+          }
+
+          onExplore={() =>
             setScreen(
               'adventures'
             )
           }
 
-          onStartParentPerspective={
+          onGrowthProfile={() =>
+            setScreen(
+              'growthProfile'
+            )
+          }
+
+          onParentPerspective={
             startParentPerspective
           }
         />
       )}
 
-
-      {/* DISCOVERY */}
 
       {screen ===
         'discovery' && (
@@ -1511,8 +2321,6 @@ function App() {
         />
       )}
 
-
-      {/* DISCOVERY COMPLETE */}
 
       {screen ===
         'discoveryComplete' && (
@@ -1563,8 +2371,6 @@ function App() {
       )}
 
 
-      {/* GROWTH PROFILE */}
-
       {screen ===
         'growthProfile' && (
         <GrowthProfileView
@@ -1612,21 +2418,31 @@ function App() {
                 profile={
                   growthIntelligenceProfile
                 }
+
                 evidenceEventCount={
                   evidenceEventCount
                 }
+
                 traits={
                   intelligenceTraits
                 }
+
                 domains={
                   intelligenceDomains
                 }
+
                 pathways={
                   intelligencePathways
                 }
+
                 careers={
                   intelligenceCareers
                 }
+
+                recommendations={
+                  growthRecommendations
+                }
+
                 onReset={
                   resetTestData
                 }
@@ -1637,35 +2453,49 @@ function App() {
       )}
 
 
-      {/* PARENT PERSPECTIVE */}
-
       {screen ===
         'parentPerspectiveIntro' && (
         <ParentPerspectiveFlow
           mode="intro"
+
           childName={
             childProfile.name.trim()
           }
+
           currentQuestion={
             currentParentQuestion
           }
+
           currentQuestionIndex={
             parentQuestionIndex
           }
+
           totalQuestions={
             parentPerspectiveQuestions.length
           }
+
+          parentIntents={
+            parentGrowthIntents
+          }
+
           onBackToChildSpace={
             goToChildSpace
           }
+
           onBegin={
             beginParentPerspective
           }
+
           onQuestionBack={
             handleParentPerspectiveBack
           }
+
           onAnswer={
             handleParentAnswer
+          }
+
+          onSaveParentIntent={
+            handleSaveParentIntent
           }
         />
       )}
@@ -1675,29 +2505,45 @@ function App() {
         'parentPerspective' && (
         <ParentPerspectiveFlow
           mode="questions"
+
           childName={
             childProfile.name.trim()
           }
+
           currentQuestion={
             currentParentQuestion
           }
+
           currentQuestionIndex={
             parentQuestionIndex
           }
+
           totalQuestions={
             parentPerspectiveQuestions.length
           }
+
+          parentIntents={
+            parentGrowthIntents
+          }
+
           onBackToChildSpace={
             goToChildSpace
           }
+
           onBegin={
             beginParentPerspective
           }
+
           onQuestionBack={
             handleParentPerspectiveBack
           }
+
           onAnswer={
             handleParentAnswer
+          }
+
+          onSaveParentIntent={
+            handleSaveParentIntent
           }
         />
       )}
@@ -1707,35 +2553,49 @@ function App() {
         'parentPerspectiveComplete' && (
         <ParentPerspectiveFlow
           mode="complete"
+
           childName={
             childProfile.name.trim()
           }
+
           currentQuestion={
             currentParentQuestion
           }
+
           currentQuestionIndex={
             parentQuestionIndex
           }
+
           totalQuestions={
             parentPerspectiveQuestions.length
           }
+
+          parentIntents={
+            parentGrowthIntents
+          }
+
           onBackToChildSpace={
             goToChildSpace
           }
+
           onBegin={
             beginParentPerspective
           }
+
           onQuestionBack={
             handleParentPerspectiveBack
           }
+
           onAnswer={
             handleParentAnswer
+          }
+
+          onSaveParentIntent={
+            handleSaveParentIntent
           }
         />
       )}
 
-
-      {/* ADVENTURES HUB */}
 
       {screen ===
         'adventures' && (
@@ -1743,12 +2603,23 @@ function App() {
           childName={
             childProfile.name.trim()
           }
+
           recommendations={
             recommendations
           }
+
+          catalog={
+            Object.values(explorations)
+          }
+
+          completedExplorations={
+            completedExplorations
+          }
+
           onBack={
             goToChildSpace
           }
+
           onStartAdventure={
             startExploration
           }
@@ -1756,42 +2627,45 @@ function App() {
       )}
 
 
-      {/* ADVENTURE EXPERIENCE */}
-
       {screen ===
         'exploration' && (
         <AdventureFlow
           exploration={
             currentExploration
           }
+
           step={
             explorationStep
           }
+
           challengeIndex={
             challengeIndex
           }
+
           onBack={() =>
             setScreen(
               'adventures'
             )
           }
+
           onBeginMission={
             beginMission
           }
+
           onChallengeAnswer={
             handleChallengeAnswer
           }
+
           onEnjoymentAnswer={
             handleEnjoyment
           }
+
           onFavoritePartAnswer={
             handleFavoritePart
           }
         />
       )}
 
-
-      {/* PROFILE GREW */}
 
       {screen ===
         'profileGrew' && (
@@ -1814,7 +2688,6 @@ function App() {
               !
             </h2>
 
-
             {enjoymentResponse?.value ===
             0 ? (
               <p className="profileGrewIntro">
@@ -1834,7 +2707,6 @@ function App() {
                 you enjoy doing.
               </p>
             )}
-
 
             {growthSignals.length >
               0 && (
@@ -1874,13 +2746,11 @@ function App() {
               </div>
             )}
 
-
             <p className="profileGrewNote">
               Every adventure adds
               new evidence to your
               Growth Profile.
             </p>
-
 
             <div className="profileGrewActions">
 
@@ -1906,27 +2776,36 @@ function App() {
 
             </div>
 
-
             {growthIntelligenceProfile && (
               <GrowthIntelligenceInspector
                 profile={
                   growthIntelligenceProfile
                 }
+
                 evidenceEventCount={
                   evidenceEventCount
                 }
+
                 traits={
                   intelligenceTraits
                 }
+
                 domains={
                   intelligenceDomains
                 }
+
                 pathways={
                   intelligencePathways
                 }
+
                 careers={
                   intelligenceCareers
                 }
+
+                recommendations={
+                  growthRecommendations
+                }
+
                 onReset={
                   resetTestData
                 }
@@ -1954,6 +2833,7 @@ function GrowthIntelligenceInspector({
   domains,
   pathways,
   careers,
+  recommendations = [],
   onReset,
 }) {
   if (!profile) {
@@ -2000,7 +2880,6 @@ function GrowthIntelligenceInspector({
         Intelligence Inspector
       </summary>
 
-
       <div
         style={{
           marginTop: '1rem',
@@ -2019,7 +2898,6 @@ function GrowthIntelligenceInspector({
           </span>
         </div>
 
-
         <div style={rowStyle}>
           <span>
             Evidence observations
@@ -2035,7 +2913,6 @@ function GrowthIntelligenceInspector({
           </span>
         </div>
 
-
         <div style={rowStyle}>
           <span>
             Experiences represented
@@ -2050,7 +2927,6 @@ function GrowthIntelligenceInspector({
             }
           </span>
         </div>
-
 
         <div style={rowStyle}>
           <span>
@@ -2076,7 +2952,6 @@ function GrowthIntelligenceInspector({
           }
         />
 
-
         <InspectorSection
           title="Level 3 — Domains"
           items={domains}
@@ -2084,7 +2959,6 @@ function GrowthIntelligenceInspector({
             `${item.score}/100 · ${item.confidence.label}`
           }
         />
-
 
         <InspectorSection
           title="Level 4 — Pathways"
@@ -2094,7 +2968,6 @@ function GrowthIntelligenceInspector({
           }
         />
 
-
         <InspectorSection
           title="Level 5 — Career Families"
           items={careers}
@@ -2102,6 +2975,193 @@ function GrowthIntelligenceInspector({
             `${item.relevance}/100 · ${item.status.label}`
           }
         />
+
+
+        <div
+          style={{
+            marginTop: '1.5rem',
+            paddingTop: '1rem',
+            borderTop:
+              '1px solid #d7dce6',
+          }}
+        >
+
+          <strong>
+            🎯 Recommendation Engine v1
+          </strong>
+
+          <p
+            style={{
+              margin:
+                '0.35rem 0 0.8rem',
+              color:
+                '#68748a',
+              fontSize:
+                '0.78rem',
+            }}
+          >
+            Experimental Grow
+            recommendations based on
+            Growth Profile, Student
+            Intent, and Parent Goals.
+          </p>
+
+          {recommendations.length ===
+          0 ? (
+            <p>
+              No recommendations yet.
+            </p>
+          ) : (
+            recommendations.map(
+              (
+                recommendation,
+                index
+              ) => (
+                <div
+                  key={
+                    recommendation
+                      .experienceId
+                  }
+                  style={{
+                    marginBottom:
+                      '0.75rem',
+                    padding:
+                      '0.8rem',
+                    border:
+                      '1px solid #e1e5eb',
+                    borderRadius:
+                      '10px',
+                    background:
+                      '#ffffff',
+                  }}
+                >
+
+                  <div
+                    style={{
+                      display:
+                        'flex',
+                      justifyContent:
+                        'space-between',
+                      gap: '1rem',
+                    }}
+                  >
+
+                    <strong>
+                      {index + 1}.{' '}
+                      {
+                        recommendation
+                          .emoji
+                      }{' '}
+                      {
+                        recommendation
+                          .title
+                      }
+                    </strong>
+
+                    <span
+                      style={{
+                        whiteSpace:
+                          'nowrap',
+                        fontWeight:
+                          800,
+                      }}
+                    >
+                      {
+                        recommendation
+                          .score
+                      }
+                      /100
+                    </span>
+
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop:
+                        '0.55rem',
+                    }}
+                  >
+                    {
+                      recommendation
+                        .reasons
+                        .map(
+                          (
+                            reason,
+                            reasonIndex
+                          ) => (
+                            <div
+                              key={
+                                reasonIndex
+                              }
+                              style={{
+                                marginTop:
+                                  '0.3rem',
+                                color:
+                                  '#68748a',
+                                fontSize:
+                                  '0.78rem',
+                                lineHeight:
+                                  1.45,
+                              }}
+                            >
+                              • {reason}
+                            </div>
+                          )
+                        )
+                    }
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop:
+                        '0.65rem',
+                      display:
+                        'flex',
+                      flexWrap:
+                        'wrap',
+                      gap:
+                        '0.4rem',
+                    }}
+                  >
+
+                    <InspectorMatchBadge
+                      label="Profile"
+                      count={
+                        recommendation
+                          .matches
+                          .profileSignals
+                          .length
+                      }
+                    />
+
+                    <InspectorMatchBadge
+                      label="Student"
+                      count={
+                        recommendation
+                          .matches
+                          .studentIntents
+                          .length
+                      }
+                    />
+
+                    <InspectorMatchBadge
+                      label="Parent"
+                      count={
+                        recommendation
+                          .matches
+                          .parentIntents
+                          .length
+                      }
+                    />
+
+                  </div>
+
+                </div>
+              )
+            )
+          )}
+
+        </div>
 
 
         <div
@@ -2127,12 +3187,12 @@ function GrowthIntelligenceInspector({
                 '0.78rem',
             }}
           >
-            Clear all test evidence
-            and start a new persona
-            from a completely clean
-            state.
+            Clear all test evidence,
+            intents, Journey items,
+            and profile data and start
+            a new persona from a
+            completely clean state.
           </p>
-
 
           <button
             type="button"
@@ -2140,25 +3200,18 @@ function GrowthIntelligenceInspector({
             style={{
               padding:
                 '0.55rem 0.8rem',
-
               border:
                 '1px solid #b7bfce',
-
               borderRadius:
                 '9px',
-
               background:
                 '#ffffff',
-
               color:
                 '#3f4c63',
-
               fontSize:
                 '0.78rem',
-
               fontWeight:
                 700,
-
               cursor:
                 'pointer',
             }}
@@ -2195,7 +3248,6 @@ function InspectorSection({
         {title}
       </strong>
 
-
       {items.length === 0 ? (
         <p>
           No evidence yet.
@@ -2224,7 +3276,6 @@ function InspectorSection({
                 {item.label}
               </span>
 
-
               <span
                 style={{
                   whiteSpace:
@@ -2243,6 +3294,49 @@ function InspectorSection({
       )}
 
     </div>
+  )
+}
+
+
+// ============================================================
+// RECOMMENDATION MATCH BADGE
+// ============================================================
+
+function InspectorMatchBadge({
+  label,
+  count,
+}) {
+  const matched =
+    count > 0
+
+  return (
+    <span
+      style={{
+        padding:
+          '0.25rem 0.5rem',
+        borderRadius:
+          '999px',
+        background:
+          matched
+            ? '#edf6ef'
+            : '#f2f3f5',
+        color:
+          matched
+            ? '#2d6845'
+            : '#8a929d',
+        fontSize:
+          '0.68rem',
+        fontWeight:
+          700,
+      }}
+    >
+      {matched ? '✓' : '—'}{' '}
+      {label}
+
+      {matched &&
+        count > 1 &&
+        ` (${count})`}
+    </span>
   )
 }
 
