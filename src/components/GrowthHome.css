@@ -1,1142 +1,1539 @@
 /* ============================================================
-   Career & Growth — MVP v0.5
-   Growth Space + Journey
-   Clean replacement stylesheet — no compact override required.
+   Career & Growth — MVP v0.6
+   Phase 0 — Growth Home + Journey UI foundation
+
+   Goals:
+   - readable typography
+   - tighter layout
+   - less scrolling
+   - preserve v0.5 behavior
    ============================================================ */
 
-.growthHomeV05 {
-  width: 100%;
-  min-height: 100vh;
-  background: #f6f8f5;
-  color: #253129;
+.growthHomeV06 {
   --green: #2f6846;
   --green-dark: #24563a;
   --green-soft: #edf5ef;
   --text: #253129;
-  --muted: #6e7b73;
-  --faint: #929c96;
+  --muted: #68756d;
+  --faint: #8c9790;
   --border: #dfe5df;
   --surface: #ffffff;
-  --surface-soft: #f8faf7;
+  --surface-soft: #f7f9f6;
+
+  width: 100%;
+  min-height: 100vh;
+  background: #f6f8f5;
+  color: var(--text);
 }
 
-.growthHomeV05 button,
-.growthHomeV05 input {
+.growthHomeV06 button,
+.growthHomeV06 input {
   font: inherit;
 }
 
-/* ---------- Global app header ---------- */
+/* ============================================================
+   HEADER
+   ============================================================ */
 
-.growthAppHeader {
+.growthAppHeaderV06 {
   position: sticky;
   top: 0;
   z-index: 20;
-  min-height: 68px;
+
+  min-height: 62px;
+
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 24px;
-  padding: 0 34px;
-  border-bottom: 1px solid rgba(218, 225, 219, .9);
-  background: rgba(255, 255, 255, .94);
-  backdrop-filter: blur(16px);
+  gap: 20px;
+
+  padding: 0 28px;
+
+  border-bottom: 1px solid rgba(218, 225, 219, .92);
+
+  background: rgba(255, 255, 255, .95);
+
+  backdrop-filter: blur(14px);
 }
 
-.growthBrandButton,
-.childMenuButton,
-.parentViewLink,
-.growthTopNav button,
-.panelTextAction {
+.growthBrandButtonV06,
+.childMenuButtonV06,
+.parentViewLinkV06,
+.growthTopNavV06 button,
+.textActionV06,
+.profileStatusV06 {
   border: 0;
   background: transparent;
   cursor: pointer;
 }
 
-.growthBrandButton {
+.growthBrandButtonV06 {
   justify-self: start;
+
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 5px 0;
+
+  padding: 4px 0;
+
   color: var(--text);
   text-align: left;
 }
 
-.growthBrandMarkV05 {
+.growthBrandMarkV06 {
   width: 34px;
   height: 34px;
+
   display: grid;
   place-items: center;
-  border-radius: 11px;
+
+  border-radius: 10px;
+
   background: var(--green-soft);
+
   font-size: 17px;
 }
 
-.growthBrandCopy strong,
-.growthBrandCopy small,
-.childMenuCopy strong,
-.childMenuCopy small {
+.growthBrandCopyV06 strong,
+.growthBrandCopyV06 small,
+.childMenuCopyV06 strong,
+.childMenuCopyV06 small {
   display: block;
 }
 
-.growthBrandCopy strong {
-  font-size: 13px;
-  letter-spacing: -.01em;
+.growthBrandCopyV06 strong {
+  font-size: 14px;
 }
 
-.growthBrandCopy small {
+.growthBrandCopyV06 small {
   margin-top: 1px;
+
   color: var(--faint);
-  font-size: 9px;
+
+  font-size: 11px;
 }
 
-.growthTopNav {
+.growthTopNavV06 {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
+
   padding: 4px;
-  border: 1px solid #e8ece8;
-  border-radius: 12px;
+
+  border: 1px solid #e6ebe6;
+  border-radius: 11px;
+
   background: #fafbfa;
 }
 
-.growthTopNav button {
+.growthTopNavV06 button {
   min-height: 34px;
+
   display: inline-flex;
   align-items: center;
   gap: 6px;
+
   padding: 0 13px;
-  border-radius: 9px;
-  color: #657168;
-  font-size: 11px;
+
+  border-radius: 8px;
+
+  color: #66736b;
+
+  font-size: 13px;
   font-weight: 700;
 }
 
-.growthTopNav button:hover,
-.growthTopNav button.active {
+.growthTopNavV06 button:hover,
+.growthTopNavV06 button.active {
   background: #ffffff;
   color: var(--green-dark);
-  box-shadow: 0 2px 7px rgba(35, 63, 43, .06);
+
+  box-shadow:
+    0 2px 7px
+    rgba(35, 63, 43, .06);
 }
 
-.navCount {
+.navCountV06 {
   min-width: 18px;
   height: 18px;
+
   display: inline-grid;
   place-items: center;
+
   padding: 0 5px;
+
   border-radius: 999px;
+
   background: var(--green-soft);
   color: var(--green);
-  font-size: 8px;
+
+  font-size: 10px;
 }
 
-.growthHeaderActions {
+.growthHeaderActionsV06 {
   justify-self: end;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 
-.parentViewLink {
-  padding: 8px 9px;
-  color: #6a756e;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.parentViewLink:hover {
-  color: var(--green);
-}
-
-.childMenuButton {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 8px 5px 5px;
-  border: 1px solid #e1e6e1;
-  border-radius: 12px;
-  color: var(--text);
-  text-align: left;
-}
-
-.childMenuButton:hover {
-  background: #fafbfa;
-}
-
-.childAvatarV05 {
-  width: 31px;
-  height: 31px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #def0e3;
-  color: var(--green-dark);
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.childMenuCopy strong {
-  font-size: 10px;
-}
-
-.childMenuCopy small {
-  margin-top: 1px;
-  color: var(--faint);
-  font-size: 8px;
-}
-
-.childMenuChevron {
-  color: #89938d;
-  font-size: 11px;
-}
-
-/* ---------- Workspace ---------- */
-
-.growthWorkspaceV05 {
-  width: min(1100px, calc(100% - 48px));
-  margin: 0 auto;
-  padding: 38px 0 70px;
-}
-
-.growthPageIntro {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 28px;
-  margin-bottom: 24px;
-}
-
-.growthKicker,
-.growthEyebrow {
-  margin: 0;
-  color: #7c8980;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-
-.growthPageIntro h1 {
-  margin: 6px 0 6px;
-  color: var(--text);
-  font-size: clamp(28px, 4vw, 40px);
-  line-height: 1.08;
-  letter-spacing: -.035em;
-  font-weight: 700;
-}
-
-.growthPageIntro > div > p:last-child {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.growthIntroStatus {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 11px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  color: #718078;
-  font-size: 9px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.statusDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #5c9a70;
-  box-shadow: 0 0 0 3px #e6f2e9;
-}
-
-/* ---------- First discovery ---------- */
-
-.discoveryStartBanner {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 18px;
-  padding: 22px;
-  border: 1px solid #dce6dd;
-  border-radius: 18px;
-  background: linear-gradient(120deg, #f1f7f2, #fffdf5);
-}
-
-.bannerIcon {
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  background: #ffffff;
-  font-size: 23px;
-}
-
-.bannerCopy h2 {
-  margin: 5px 0 4px;
-  font-size: 19px;
-  font-weight: 680;
-  letter-spacing: -.02em;
-}
-
-.bannerCopy p {
-  max-width: 660px;
-  margin: 0;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-/* ---------- Dashboard ---------- */
-
-.growthDashboardGrid,
-.growthBottomGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.dashboardPanel {
-  min-width: 0;
-  padding: 21px;
-  border: 1px solid var(--border);
-  border-radius: 17px;
-  background: var(--surface);
-  box-shadow: 0 8px 24px rgba(38, 59, 44, .025);
-}
-
-.panelHeaderRow,
-.sectionTitleRowV05 {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-}
-
-.panelHeaderRow h2,
-.sectionTitleRowV05 h2,
-.ideaInputPanel h2 {
-  margin: 5px 0 0;
-  color: var(--text);
-  font-size: 17px;
-  line-height: 1.22;
-  letter-spacing: -.02em;
-  font-weight: 680;
-}
-
-.panelTextAction {
-  flex: 0 0 auto;
-  padding: 3px 0;
-  color: var(--green);
-  font-size: 9px;
-  font-weight: 800;
-}
-
-.panelTextAction:hover {
-  text-decoration: underline;
-}
-
-.traitChipList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-top: 18px;
-}
-
-.traitChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 9px;
-  border: 1px solid #dde8df;
-  border-radius: 999px;
-  background: #f4f8f4;
-  color: #46554b;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.domainLine {
-  display: flex;
-  gap: 7px;
-  margin-top: 18px;
-  color: #7a867f;
-  font-size: 9px;
-}
-
-.domainLine strong {
-  color: #536158;
-}
-
-.panelFootnote,
-.panelEmptyCopy {
-  margin: 14px 0 0;
-  color: #8b958f;
-  font-size: 9px;
-  line-height: 1.45;
-}
-
-.currentJourneyCard {
-  display: flex;
-  gap: 13px;
-  margin-top: 16px;
-  padding: 14px;
-  border-radius: 13px;
-  background: #f7f9f6;
-}
-
-.currentJourneyIcon,
-.secondaryIdeaIcon {
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  background: #eaf3eb;
-  font-size: 19px;
-}
-
-.currentJourneyCopy {
-  min-width: 0;
-  flex: 1;
-}
-
-.currentJourneyCopy strong {
-  font-size: 12px;
-}
-
-.currentJourneyCopy p {
-  margin: 4px 0 10px;
-  color: var(--muted);
-  font-size: 9px;
-  line-height: 1.45;
-}
-
-.currentJourneyCopy small {
-  display: block;
-  margin-top: 5px;
-  color: #8b958e;
-  font-size: 8px;
-}
-
-.miniProgressTrack {
-  width: 100%;
-  height: 5px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #e4eae4;
-}
-
-.miniProgressBar {
-  height: 100%;
-  border-radius: inherit;
-  background: #5b936d;
-}
-
-.journeyEmptyState {
-  display: flex;
-  align-items: flex-start;
-  gap: 11px;
-  margin-top: 16px;
-  padding: 14px;
-  border-radius: 13px;
-  background: #f8faf8;
-}
-
-.journeyEmptyState > span {
-  font-size: 20px;
-}
-
-.journeyEmptyState strong {
-  font-size: 11px;
-}
-
-.journeyEmptyState p {
-  margin: 4px 0 0;
-  color: var(--muted);
-  font-size: 9px;
-  line-height: 1.45;
-}
-
-/* ---------- Ideas ---------- */
-
-.ideasSectionV05 {
-  margin-top: 30px;
-}
-
-.sectionTitleRowV05 {
-  align-items: flex-end;
-  margin-bottom: 12px;
-}
-
-.ideasGridV05 {
-  display: grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap: 14px;
-}
-
-.featuredIdeaCard {
-  padding: 22px;
-  border: 1px solid #dfe7df;
-  border-radius: 18px;
-  background: linear-gradient(145deg, #ffffff, #f6faf6);
-}
-
-.ideaCardTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.ideaIconV05 {
-  width: 47px;
-  height: 47px;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  background: #eaf4eb;
-  font-size: 23px;
-}
-
-.ideaBadge {
-  padding: 5px 8px;
-  border-radius: 999px;
-  background: var(--green-soft);
-  color: var(--green);
-  font-size: 7px;
-  font-weight: 850;
-  letter-spacing: .09em;
-}
-
-.featuredIdeaCard h3,
-.secondaryIdeaCard h3 {
-  color: var(--text);
-}
-
-.featuredIdeaCard h3 {
-  margin: 17px 0 6px;
-  font-size: 20px;
-  letter-spacing: -.02em;
-}
-
-.featuredIdeaCard > p {
-  max-width: 620px;
-  margin: 0 0 17px;
-  color: var(--muted);
-  font-size: 10px;
-  line-height: 1.55;
-}
-
-.secondaryIdeasColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.secondaryIdeaCard {
-  flex: 1;
-  display: flex;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 15px;
-  background: var(--surface);
-}
-
-.secondaryIdeaCard h3 {
-  margin: 1px 0 4px;
-  font-size: 13px;
-}
-
-.secondaryIdeaCard p {
-  margin: 0 0 6px;
-  color: var(--muted);
-  font-size: 9px;
-  line-height: 1.45;
-}
-
-.mutedIdeaCard {
-  background: #fafbfa;
-}
-
-/* ---------- Growth + voice ---------- */
-
-.growthBottomGrid {
-  margin-top: 30px;
-  grid-template-columns: 1.3fr .7fr;
-}
-
-.growthSignalRowV05 {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 16px;
-}
-
-.growthSignalMini {
   display: flex;
   align-items: center;
   gap: 9px;
-  padding: 10px;
-  border-radius: 11px;
-  background: #f7f9f7;
 }
 
-.growthSignalMini > span {
-  font-size: 17px;
+.parentViewLinkV06 {
+  padding: 8px 9px;
+
+  color: #637068;
+
+  font-size: 12px;
+  font-weight: 750;
 }
 
-.growthSignalMini strong,
-.growthSignalMini small {
-  display: block;
+.parentViewLinkV06:hover {
+  color: var(--green);
 }
 
-.growthSignalMini strong {
-  font-size: 10px;
-}
-
-.growthSignalMini small {
-  margin-top: 2px;
-  color: #76907d;
-  font-size: 8px;
-}
-
-.growthMetricStrip {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  margin-top: 16px;
-  overflow: hidden;
-  border: 1px solid #e7ebe7;
-  border-radius: 11px;
-  background: #e7ebe7;
-}
-
-.growthMetricStrip > div {
-  padding: 9px 10px;
-  background: #ffffff;
-}
-
-.growthMetricStrip strong,
-.growthMetricStrip span {
-  display: block;
-}
-
-.growthMetricStrip strong {
-  font-size: 13px;
-}
-
-.growthMetricStrip span {
-  margin-top: 2px;
-  color: var(--faint);
-  font-size: 8px;
-}
-
-.ideaInputPanel > p {
-  margin: 7px 0 14px;
-  color: var(--muted);
-  font-size: 9px;
-  line-height: 1.5;
-}
-
-.studentIdeaFormV05 {
+.childMenuButtonV06 {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 4px 4px 4px 11px;
-  border: 1px solid #dfe5df;
+  gap: 8px;
+
+  padding: 5px 8px 5px 5px;
+
+  border: 1px solid #e1e6e1;
   border-radius: 11px;
+
+  color: var(--text);
+
+  text-align: left;
+}
+
+.childMenuButtonV06:hover {
   background: #fafbfa;
 }
 
-.studentIdeaFormV05 input {
-  min-width: 0;
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--text);
+.childAvatarV06 {
+  width: 31px;
+  height: 31px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #def0e3;
+  color: var(--green-dark);
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.childMenuCopyV06 strong {
+  font-size: 12px;
+}
+
+.childMenuCopyV06 small {
+  margin-top: 1px;
+
+  color: var(--faint);
+
   font-size: 10px;
 }
 
-.studentIdeaFormV05 button {
-  width: 31px;
-  height: 31px;
-  border: 0;
-  border-radius: 9px;
-  background: var(--green);
-  color: #ffffff;
-  font-size: 13px;
-  cursor: pointer;
+/* ============================================================
+   WORKSPACE
+   ============================================================ */
+
+.growthWorkspaceV06 {
+  width: min(1120px, calc(100% - 44px));
+
+  margin: 0 auto;
+
+  padding: 22px 0 42px;
 }
 
-.studentIdeaFormV05 button:disabled {
-  opacity: .35;
-  cursor: default;
-}
-
-.latestIdeaNote {
-  margin-top: 11px;
-  padding: 10px;
-  border-radius: 10px;
-  background: #f7f9f6;
-}
-
-.latestIdeaNote span,
-.latestIdeaNote strong {
+.growthKickerV06 {
   display: block;
-}
 
-.latestIdeaNote span {
-  color: var(--faint);
-  font-size: 7px;
+  margin: 0;
+
+  color: #768279;
+
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: .1em;
+  letter-spacing: .11em;
+
   text-transform: uppercase;
 }
 
-.latestIdeaNote strong {
-  margin-top: 5px;
-  color: #526057;
-  font-size: 9px;
+.growthPageIntroV06 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+
+  margin-bottom: 18px;
+}
+
+.growthPageIntroV06 h1 {
+  margin: 4px 0 3px;
+
+  color: var(--text);
+
+  font-size: clamp(28px, 3.6vw, 36px);
+  line-height: 1.08;
+  letter-spacing: -.035em;
+
+  font-weight: 700;
+}
+
+.growthPageIntroV06 > div > p {
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 14px;
   line-height: 1.45;
 }
 
-/* ---------- Shared buttons ---------- */
+.profileStatusV06 {
+  min-width: 205px;
 
-.growthPrimaryButton {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1px 8px;
+  align-items: center;
+
+  padding: 10px 12px;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #67736c;
+
+  text-align: left;
+}
+
+.profileStatusV06 .statusDotV06 {
+  grid-row: 1 / span 2;
+}
+
+.profileStatusV06 > span:not(.statusDotV06) {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profileStatusV06 strong {
+  color: var(--green);
+
+  font-size: 11px;
+}
+
+.statusDotV06 {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #5c9a70;
+
+  box-shadow:
+    0 0 0 3px #e6f2e9;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.growthPrimaryButtonV06 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 36px;
-  padding: 8px 13px;
+
+  min-height: 38px;
+
+  padding: 9px 14px;
+
   border: 0;
-  border-radius: 10px;
+  border-radius: 9px;
+
   background: var(--green);
   color: #ffffff;
-  font-size: 10px;
+
+  font-size: 13px;
   font-weight: 750;
+
   cursor: pointer;
 }
 
-.growthPrimaryButton:hover:not(:disabled) {
+.growthPrimaryButtonV06:hover:not(:disabled) {
   background: var(--green-dark);
 }
 
-.growthPrimaryButton:disabled {
+.growthPrimaryButtonV06:disabled {
   opacity: .45;
+
   cursor: default;
 }
 
-.growthTextButton {
-  border: 0;
-  background: transparent;
+.textActionV06 {
+  flex: 0 0 auto;
+
+  padding: 3px 0;
+
   color: var(--green);
-  font: inherit;
-  font-size: 9px;
+
+  font-size: 12px;
   font-weight: 800;
-  cursor: pointer;
+}
+
+.textActionV06:hover {
+  text-decoration: underline;
 }
 
 /* ============================================================
-   JOURNEY VIEW
-   Existing behavior retained; v0.5 presentation below.
+   DISCOVERY START
    ============================================================ */
 
-.growthWorkspaceV05 .growthWelcome {
-  position: relative;
-  display: flex;
+.discoveryStartBannerV06 {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 30px;
-  padding: 25px 28px;
-  overflow: hidden;
-  border: 1px solid #dce7dd;
-  border-radius: 18px;
-  background: linear-gradient(125deg, #edf6ef, #fbf9ee);
+  gap: 16px;
+
+  padding: 18px;
+
+  border: 1px solid #dce6dd;
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      120deg,
+      #f1f7f2,
+      #fffdf5
+    );
 }
 
-.growthWorkspaceV05 .growthWelcomeContent {
-  max-width: 720px;
-}
+.bannerIconV06 {
+  width: 46px;
+  height: 46px;
 
-.growthWorkspaceV05 .growthHello {
-  margin: 0 0 5px;
-  color: var(--green);
-  font-size: 11px;
-  font-weight: 750;
-}
-
-.growthWorkspaceV05 .growthWelcome h1 {
-  max-width: 700px;
-  margin: 0;
-  font-size: clamp(25px, 4vw, 38px);
-  line-height: 1.08;
-  letter-spacing: -.035em;
-  font-weight: 700;
-}
-
-.growthWorkspaceV05 .growthWelcomeText {
-  max-width: 650px;
-  margin: 9px 0 0;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.55;
-}
-
-.growthWorkspaceV05 .growthWelcomeVisual {
-  position: relative;
-  width: 120px;
-  height: 90px;
-  flex: 0 0 120px;
-}
-
-.growthWorkspaceV05 .growthVisualMain {
-  position: absolute;
-  left: 33px;
-  top: 18px;
-  width: 56px;
-  height: 56px;
   display: grid;
   place-items: center;
-  border-radius: 17px;
-  background: rgba(255,255,255,.8);
-  font-size: 27px;
+
+  border-radius: 13px;
+
+  background: #ffffff;
+
+  font-size: 22px;
 }
 
-.growthWorkspaceV05 .growthVisualBubble {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(255,255,255,.8);
-  font-size: 13px;
-}
+.discoveryStartBannerV06 h2 {
+  margin: 4px 0 3px;
 
-.growthWorkspaceV05 .bubbleOne { left: 0; top: 0; }
-.growthWorkspaceV05 .bubbleTwo { right: 0; top: 0; }
-.growthWorkspaceV05 .bubbleThree { right: 4px; bottom: 0; }
-
-.growthWorkspaceV05 .growthToday,
-.growthWorkspaceV05 .growthSnapshot {
-  margin-top: 28px;
-}
-
-.growthWorkspaceV05 .growthSectionHeader {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 11px;
-}
-
-.growthWorkspaceV05 .growthSectionHeader h2 {
-  margin: 5px 0 0;
   font-size: 18px;
   letter-spacing: -.02em;
 }
 
-.growthWorkspaceV05 .growthTodayGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+.discoveryStartBannerV06 p {
+  max-width: 690px;
+
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 13px;
+  line-height: 1.45;
 }
 
-.growthWorkspaceV05 .nextGrowCard {
-  padding: 19px;
+/* ============================================================
+   HOME PRIMARY GRID
+   ============================================================ */
+
+.homePrimaryGridV06 {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.12fr)
+    minmax(0, .88fr);
+
+  gap: 14px;
+}
+
+.homeFocusCardV06,
+.homeRecommendationCardV06,
+.snapshotProfileV06,
+.studentVoiceV06 {
+  min-width: 0;
+
+  padding: 18px;
+
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 15px;
+
   background: #ffffff;
 }
 
-.growthWorkspaceV05 .nextGrowTop {
+.cardHeadingRowV06 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cardHeadingRowV06 h2,
+.studentVoiceV06 h2 {
+  margin: 4px 0 0;
+
+  font-size: 17px;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+
+.currentJourneyV06 {
+  display: flex;
+  gap: 13px;
+
+  margin-top: 14px;
+
+  padding: 14px;
+
+  border-radius: 12px;
+
+  background: var(--surface-soft);
+}
+
+.currentJourneyIconV06 {
+  width: 44px;
+  height: 44px;
+
+  flex: 0 0 44px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 12px;
+
+  background: #eaf3eb;
+
+  font-size: 21px;
+}
+
+.currentJourneyBodyV06 {
+  flex: 1;
+  min-width: 0;
+}
+
+.currentJourneyTitleRowV06 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.currentJourneyTitleRowV06 h3 {
+  margin: 0;
+
+  font-size: 16px;
+}
+
+.currentJourneyTitleRowV06 span {
+  color: var(--green);
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.currentJourneyBodyV06 p {
+  margin: 4px 0 10px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.currentJourneyBodyV06 .growthPrimaryButtonV06 {
+  margin-top: 11px;
+}
+
+.miniProgressTrackV06 {
+  width: 100%;
+  height: 6px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #e3e9e3;
+}
+
+.miniProgressTrackV06 div {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: #5b936d;
+}
+
+.focusEmptyV06 {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 13px;
+
+  margin-top: 14px;
+
+  padding: 14px;
+
+  border-radius: 12px;
+
+  background: var(--surface-soft);
+}
+
+.focusEmptyV06 > span {
+  font-size: 22px;
+}
+
+.focusEmptyV06 strong {
+  font-size: 14px;
+}
+
+.focusEmptyV06 p {
+  margin: 3px 0 0;
+
+  color: var(--muted);
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   RECOMMENDATION
+   ============================================================ */
+
+.recommendationMainV06 {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 13px;
+
+  margin-top: 14px;
+}
+
+.recommendationIconV06 {
+  width: 46px;
+  height: 46px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 13px;
+
+  background: #edf5ee;
+
+  font-size: 22px;
+}
+
+.recommendationMainV06 h3 {
+  margin: 0;
+
+  font-size: 17px;
+}
+
+.recommendationMainV06 p {
+  margin: 4px 0 11px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.secondaryRecommendationV06 {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 13px;
+  padding: 10px 11px;
+
+  border: 1px solid #e5e9e5;
+  border-radius: 11px;
+
+  background: #fafbfa;
+  color: var(--text);
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.secondaryRecommendationV06 > span:first-child {
+  font-size: 18px;
+}
+
+.secondaryRecommendationV06 strong,
+.secondaryRecommendationV06 small {
+  display: block;
+}
+
+.secondaryRecommendationV06 strong {
+  font-size: 13px;
+}
+
+.secondaryRecommendationV06 small {
+  margin-top: 2px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+/* ============================================================
+   SNAPSHOT
+   ============================================================ */
+
+.homeSnapshotV06 {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.35fr)
+    minmax(260px, .65fr);
+
+  gap: 14px;
+
+  margin-top: 14px;
+}
+
+.traitChipListV06 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+
+  margin-top: 14px;
+}
+
+.traitChipV06 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 7px 9px;
+
+  border: 1px solid #dde8df;
+  border-radius: 999px;
+
+  background: #f4f8f4;
+
+  color: #46554b;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.domainLineV06 {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+
+  margin-top: 12px;
+
+  color: #78847c;
+
+  font-size: 12px;
+}
+
+.domainLineV06 strong {
+  color: #536158;
+}
+
+.metricStripV06 {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+
+  gap: 1px;
+
+  margin-top: 14px;
+
+  overflow: hidden;
+
+  border: 1px solid #e7ebe7;
+  border-radius: 10px;
+
+  background: #e7ebe7;
+}
+
+.metricStripV06 > div {
+  padding: 9px 10px;
+
+  background: #ffffff;
+}
+
+.metricStripV06 strong,
+.metricStripV06 span {
+  display: block;
+}
+
+.metricStripV06 strong {
+  font-size: 15px;
+}
+
+.metricStripV06 span {
+  margin-top: 2px;
+
+  color: var(--faint);
+
+  font-size: 11px;
+}
+
+.studentVoiceV06 > p {
+  margin: 5px 0 12px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.studentIdeaFormV06 {
   display: flex;
   align-items: center;
+  gap: 7px;
+
+  padding: 4px 4px 4px 10px;
+
+  border: 1px solid #dfe5df;
+  border-radius: 10px;
+
+  background: #fafbfa;
+}
+
+.studentIdeaFormV06 input {
+  min-width: 0;
+  flex: 1;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+  color: var(--text);
+
+  font-size: 13px;
+}
+
+.studentIdeaFormV06 button {
+  width: 33px;
+  height: 33px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: var(--green);
+  color: #ffffff;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+.studentIdeaFormV06 button:disabled {
+  opacity: .35;
+
+  cursor: default;
+}
+
+.latestIdeaV06 {
+  margin-top: 10px;
+
+  padding: 9px 10px;
+
+  border-radius: 9px;
+
+  background: var(--surface-soft);
+}
+
+.latestIdeaV06 span,
+.latestIdeaV06 strong {
+  display: block;
+}
+
+.latestIdeaV06 span {
+  color: var(--faint);
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+
+  text-transform: uppercase;
+}
+
+.latestIdeaV06 strong {
+  margin-top: 3px;
+
+  color: #526057;
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.mutedCopyV06 {
+  color: var(--muted);
+
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* ============================================================
+   POST REFLECTION
+   ============================================================ */
+
+.postReflectionV06 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  margin-bottom: 14px;
+  padding: 15px 16px;
+
+  border: 1px solid #dfe8df;
+  border-radius: 13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f0f8f1,
+      #fbfaf1
+    );
+}
+
+.postReflectionCopyV06 h2 {
+  margin: 4px 0 0;
+
+  font-size: 17px;
+}
+
+.reflectionChipsV06 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  margin-top: 9px;
+}
+
+.reflectionChipsV06 span {
+  padding: 6px 8px;
+
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  color: #5b675f;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.postReflectionActionsV06 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  flex: 0 0 auto;
+}
+
+/* ============================================================
+   JOURNEY
+   ============================================================ */
+
+.journeyV06 {
+  padding-bottom: 10px;
+}
+
+.journeyHeaderV06 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+
+  padding: 8px 0 18px;
+
+  border-bottom: 1px solid #e4e9e4;
+}
+
+.journeyHeaderV06 > div:first-child {
+  max-width: 720px;
+}
+
+.journeyHeaderV06 h1 {
+  margin: 4px 0 5px;
+
+  font-size: clamp(28px, 4vw, 38px);
+  line-height: 1.07;
+  letter-spacing: -.035em;
+}
+
+.journeyHeaderV06 p {
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.journeyStatsV06 {
+  display: flex;
+  gap: 8px;
+}
+
+.journeyStatsV06 div {
+  min-width: 88px;
+
+  padding: 10px 12px;
+
+  border: 1px solid #e2e8e2;
+  border-radius: 11px;
+
+  background: #ffffff;
+}
+
+.journeyStatsV06 strong,
+.journeyStatsV06 span {
+  display: block;
+}
+
+.journeyStatsV06 strong {
+  color: var(--green);
+
+  font-size: 20px;
+}
+
+.journeyStatsV06 span {
+  margin-top: 1px;
+
+  color: var(--faint);
+
+  font-size: 11px;
+}
+
+.journeySectionV06 {
+  margin-top: 20px;
+}
+
+.journeySectionHeadingV06 {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-bottom: 10px;
+}
+
+.journeySectionHeadingV06 h2 {
+  margin: 4px 0 0;
+
+  font-size: 18px;
+}
+
+.journeyActiveListV06 {
+  display: grid;
+  gap: 10px;
+}
+
+.journeyCardV06 {
+  padding: 17px;
+
+  border: 1px solid #e1e7e1;
+  border-radius: 14px;
+
+  background: #ffffff;
+}
+
+.journeyCardTopV06 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.journeyCardIdentityV06 {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.journeyCardEmojiV06 {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+  place-items: center;
+
+  flex: 0 0 42px;
+
+  border-radius: 12px;
+
+  background: #edf5ee;
+
+  font-size: 20px;
+}
+
+.journeyCardIdentityV06 h3 {
+  margin: 3px 0 0;
+
+  font-size: 17px;
+}
+
+.journeyStatusV06 {
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  background: var(--green-soft);
+  color: var(--green);
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.journeyDescriptionV06 {
+  max-width: 800px;
+
+  margin: 10px 0 0;
+
+  color: var(--muted);
+
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.journeyProgressV06 {
+  margin-top: 12px;
+
+  padding: 12px 13px;
+
+  border-radius: 11px;
+
+  background: var(--surface-soft);
+}
+
+.journeyProgressTopV06 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.journeyProgressTopV06 div strong,
+.journeyProgressTopV06 div span {
+  display: block;
+}
+
+.journeyProgressTopV06 div strong {
+  font-size: 12px;
+}
+
+.journeyProgressTopV06 div span {
+  margin-top: 1px;
+
+  color: var(--faint);
+
+  font-size: 11px;
+}
+
+.journeyProgressTopV06 > strong {
+  color: var(--green);
+
+  font-size: 12px;
+}
+
+.journeyProgressTrackV06 {
+  height: 6px;
+
+  margin-top: 8px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #e2e8e2;
+}
+
+.journeyProgressTrackV06 div {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: #3e7954;
+
+  transition: width .2s ease;
+}
+
+.journeyProgressChoicesV06,
+.reflectionChoicesV06 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  margin-top: 9px;
+}
+
+.journeyProgressChoicesV06 button,
+.reflectionChoicesV06 button {
+  padding: 7px 10px;
+
+  border: 1px solid #dfe5df;
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: #5b675f;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.journeyProgressChoicesV06 button.active,
+.reflectionChoicesV06 button.active {
+  border-color: #9fc2aa;
+
+  background: #edf6ef;
+  color: var(--green);
+}
+
+.journeyCardFooterV06 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  margin-top: 12px;
+  padding-top: 12px;
+
+  border-top: 1px solid #edf0ed;
+}
+
+.journeyCardFooterV06 > span {
+  color: var(--faint);
+
+  font-size: 11px;
+}
+
+.journeyEmptyV06 {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+
+  padding: 15px;
+
+  border: 1px dashed #d9e1da;
+  border-radius: 13px;
+
+  background: #fbfcfa;
+}
+
+.journeyEmptyV06 > span {
+  font-size: 21px;
+}
+
+.journeyEmptyV06 strong {
+  font-size: 14px;
+}
+
+.journeyEmptyV06 p {
+  margin: 3px 0 0;
+
+  color: var(--muted);
+
+  font-size: 12px;
+}
+
+.journeyReflectionV06 {
+  margin-top: 13px;
+  padding: 14px;
+
+  border: 1px solid #dfe6df;
+  border-radius: 12px;
+
+  background: #fbfcfa;
+}
+
+.journeyReflectionV06 h4 {
+  margin: 4px 0 0;
+
+  font-size: 16px;
+}
+
+.reflectionFieldV06 {
+  display: block;
+
+  margin-top: 12px;
+}
+
+.reflectionFieldV06 > strong {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #4d5a51;
+
+  font-size: 12px;
+}
+
+.reflectionFieldV06 input {
+  width: 100%;
+
+  padding: 9px 10px;
+
+  border: 1px solid #dce3dd;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #455249;
+
+  font-size: 12px;
+
+  outline: none;
+}
+
+.reflectionTextGridV06 {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+.reflectionActionsV06 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+
+  margin-top: 14px;
+  padding-top: 12px;
+
+  border-top: 1px solid #e8ece8;
+}
+
+.journeyHistoryV06 {
+  margin-top: 15px;
+  padding: 11px 12px;
+
+  border: 1px solid #e4e9e4;
+  border-radius: 11px;
+
+  background: #fbfcfa;
+}
+
+.journeyHistoryV06 summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  cursor: pointer;
+
+  color: #56635b;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.journeyHistoryV06 summary span {
+  min-width: 24px;
+  height: 24px;
+
+  display: inline-grid;
+  place-items: center;
+
+  border-radius: 999px;
+
+  background: var(--green-soft);
+  color: var(--green);
+
+  font-size: 11px;
+}
+
+.journeyHistoryListV06 {
+  display: grid;
+  gap: 7px;
+
+  margin-top: 10px;
+}
+
+.journeyHistoryItemV06 {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 9px;
+
+  padding: 10px;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+}
+
+.journeyHistoryItemV06 > span {
+  font-size: 17px;
+}
+
+.historyTitleRowV06 {
+  display: flex;
+  align-items: baseline;
   justify-content: space-between;
   gap: 10px;
 }
 
-.growthWorkspaceV05 .nextGrowIcon {
-  width: 43px;
-  height: 43px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  background: #edf5ed;
-  font-size: 21px;
-}
-
-.growthWorkspaceV05 .recommendedBadge {
-  padding: 5px 8px;
-  border-radius: 999px;
-  background: #edf6ef;
-  color: var(--green);
-  font-size: 7px;
-  font-weight: 850;
-  letter-spacing: .08em;
-}
-
-.growthWorkspaceV05 .nextGrowContent {
-  margin-top: 14px;
-}
-
-.growthWorkspaceV05 .nextGrowContent h3 {
-  margin: 4px 0 5px;
-  font-size: 16px;
-}
-
-.growthWorkspaceV05 .nextGrowContent > p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 9px;
-  line-height: 1.5;
-}
-
-.growthWorkspaceV05 .whyRecommended {
-  display: flex;
-  gap: 9px;
-  margin: 13px 0;
-  padding: 10px;
-  border-radius: 10px;
-  background: #f7f9f6;
-}
-
-.growthWorkspaceV05 .whyIcon {
-  width: 26px;
-  height: 26px;
-  flex: 0 0 26px;
-  display: grid;
-  place-items: center;
-  border-radius: 8px;
-  background: #ffffff;
+.historyTitleRowV06 strong {
   font-size: 12px;
 }
 
-.growthWorkspaceV05 .whyRecommended strong {
-  font-size: 9px;
-}
+.historyTitleRowV06 small {
+  color: var(--faint);
 
-.growthWorkspaceV05 .whyRecommended p {
-  margin: 2px 0;
-  color: var(--muted);
-  font-size: 8px;
-  line-height: 1.4;
-}
-
-.growthWorkspaceV05 .snapshotGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.growthWorkspaceV05 .snapshotItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 13px;
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  background: #ffffff;
-}
-
-.growthWorkspaceV05 .snapshotIcon {
-  width: 35px;
-  height: 35px;
-  flex: 0 0 35px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: #f2f7f2;
-  font-size: 16px;
-}
-
-.growthWorkspaceV05 .snapshotItem strong,
-.growthWorkspaceV05 .snapshotItem span {
-  display: block;
-}
-
-.growthWorkspaceV05 .snapshotItem strong {
   font-size: 10px;
 }
 
-.growthWorkspaceV05 .snapshotItem span {
-  margin-top: 2px;
-  color: var(--faint);
-  font-size: 8px;
+.journeyHistoryItemV06 p {
+  margin: 3px 0 0;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  line-height: 1.4;
 }
 
-/* ---------- Responsive ---------- */
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 
 @media (max-width: 900px) {
-  .growthAppHeader {
-    grid-template-columns: 1fr auto;
-    padding: 0 20px;
+  .growthAppHeaderV06 {
+    grid-template-columns:
+      1fr auto;
+
+    padding: 0 18px;
   }
 
-  .growthTopNav {
+  .growthTopNavV06 {
     order: 3;
     grid-column: 1 / -1;
+
     justify-self: center;
-    margin: -6px 0 8px;
+
+    margin: -4px 0 7px;
   }
 
-  .growthHeaderActions {
+  .growthHeaderActionsV06 {
     grid-column: 2;
     grid-row: 1;
   }
 
-  .growthWorkspaceV05 {
-    width: min(100% - 30px, 760px);
+  .growthWorkspaceV06 {
+    width: min(
+      100% - 28px,
+      760px
+    );
   }
 
-  .growthDashboardGrid,
-  .ideasGridV05,
-  .growthBottomGrid,
-  .growthWorkspaceV05 .growthTodayGrid {
+  .homePrimaryGridV06,
+  .homeSnapshotV06 {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
-  .growthAppHeader {
-    min-height: 58px;
-    padding: 0 14px;
+  .growthAppHeaderV06 {
+    min-height: 56px;
+
+    padding: 0 12px;
   }
 
-  .growthBrandCopy small,
-  .parentViewLink,
-  .childMenuCopy,
-  .childMenuChevron {
+  .growthBrandCopyV06 small,
+  .parentViewLinkV06,
+  .childMenuCopyV06 {
     display: none;
   }
 
-  .growthTopNav {
+  .growthTopNavV06 {
     width: 100%;
+
     overflow-x: auto;
+
     justify-content: flex-start;
   }
 
-  .growthWorkspaceV05 {
-    width: min(100% - 22px, 600px);
-    padding-top: 26px;
+  .growthWorkspaceV06 {
+    width: min(
+      100% - 20px,
+      600px
+    );
+
+    padding-top: 18px;
   }
 
-  .growthPageIntro,
-  .sectionTitleRowV05,
-  .panelHeaderRow,
-  .growthWorkspaceV05 .growthSectionHeader {
+  .growthPageIntroV06,
+  .cardHeadingRowV06,
+  .journeyHeaderV06,
+  .journeySectionHeadingV06,
+  .postReflectionV06 {
     align-items: flex-start;
     flex-direction: column;
-    gap: 8px;
   }
 
-  .growthIntroStatus {
-    align-self: flex-start;
+  .profileStatusV06 {
+    min-width: 0;
+    width: 100%;
   }
 
-  .discoveryStartBanner {
+  .discoveryStartBannerV06,
+  .focusEmptyV06,
+  .journeyEmptyV06 {
     grid-template-columns: 1fr;
   }
 
-  .growthSignalRowV05,
-  .growthMetricStrip,
-  .growthWorkspaceV05 .snapshotGrid {
+  .metricStripV06,
+  .reflectionTextGridV06 {
     grid-template-columns: 1fr;
   }
 
-  .growthWorkspaceV05 .growthWelcomeVisual {
-    display: none;
+  .postReflectionActionsV06 {
+    width: 100%;
+  }
+
+  .journeyStatsV06 {
+    width: 100%;
+  }
+
+  .journeyStatsV06 div {
+    flex: 1;
   }
 }
-
-
 /* ============================================================
-   MVP v0.5 PHASE 4 — JOURNEY
-   ============================================================ */
-.journeyV05 { padding-bottom: 22px; }
-.journeyHero { display:flex; justify-content:space-between; align-items:flex-end; gap:36px; padding:36px 0 28px; border-bottom:1px solid #e5eae5; }
-.journeyHero > div:first-child { max-width:720px; }
-.journeyHero h1 { margin:7px 0 10px; max-width:680px; font-size:clamp(30px,4vw,46px); line-height:1.04; letter-spacing:-.04em; font-weight:680; }
-.journeyHero p { margin:0; max-width:650px; color:#6d7871; font-size:13px; line-height:1.65; }
-.journeyHeroStats { display:flex; gap:8px; }
-.journeyHeroStats div { min-width:92px; padding:14px 16px; border:1px solid #e2e8e2; border-radius:14px; background:#fff; }
-.journeyHeroStats strong { display:block; color:#2d6845; font-size:22px; }
-.journeyHeroStats span { display:block; margin-top:2px; color:#87918b; font-size:9px; }
-.journeySection { margin-top:34px; }
-.journeySectionHeading { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:15px; }
-.journeySectionHeading h2 { margin:5px 0 4px; font-size:22px; letter-spacing:-.025em; }
-.journeySectionHeading p { margin:0; max-width:660px; color:#7b867f; font-size:11px; line-height:1.55; }
-.journeyActiveList { display:grid; gap:12px; }
-.journeyActiveCard { padding:22px; border:1px solid #e1e7e1; border-radius:18px; background:#fff; }
-.journeyCardHeader { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; }
-.journeyCardIdentity { display:flex; gap:13px; align-items:center; }
-.journeyCardEmoji { width:48px; height:48px; display:grid; place-items:center; flex:0 0 48px; border-radius:14px; background:#edf5ee; font-size:23px; }
-.journeyCardIdentity h3 { margin:4px 0 0; font-size:19px; letter-spacing:-.02em; }
-.journeyStatusPill { padding:6px 9px; border-radius:999px; background:#edf6ef; color:#39714e; font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; }
-.journeyCardDescription { max-width:760px; margin:14px 0 0; color:#6f7a73; font-size:11px; line-height:1.6; }
-.journeyProgressBox { margin-top:18px; padding:15px 16px; border-radius:13px; background:#f7f9f6; }
-.journeyProgressTop { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; }
-.journeyProgressTop div strong { display:block; font-size:10px; }
-.journeyProgressTop div span { display:block; margin-top:2px; color:#8a948e; font-size:8px; }
-.journeyProgressTop > strong { color:#39714e; font-size:11px; }
-.journeyProgressTrack { height:6px; margin-top:10px; overflow:hidden; border-radius:999px; background:#e2e8e2; }
-.journeyProgressTrack div { height:100%; border-radius:999px; background:#3e7954; transition:width .2s ease; }
-.journeyProgressChoices { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
-.journeyProgressChoice, .journeyReflectionChoice { padding:7px 10px; border:1px solid #dfe5df; border-radius:999px; background:#fff; color:#5b675f; font:inherit; font-size:9px; font-weight:700; cursor:pointer; }
-.journeyProgressChoiceActive, .journeyReflectionChoiceActive { border-color:#9fc2aa; background:#edf6ef; color:#2d6845; }
-.journeyWhy { display:flex; gap:10px; margin-top:13px; padding:12px 13px; border-left:3px solid #cfe2d4; background:#fafbf9; }
-.journeyWhy > span { font-size:15px; }
-.journeyWhy strong { display:block; font-size:9px; }
-.journeyWhy p { margin:3px 0 0; color:#7b867f; font-size:9px; line-height:1.45; }
-.journeyCardFooter { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:16px; padding-top:15px; border-top:1px solid #edf0ed; }
-.journeyCardFooter > span { color:#8b958f; font-size:9px; }
-.journeyEmpty { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:18px; padding:20px; border:1px dashed #d9e1da; border-radius:16px; background:#fbfcfa; }
-.journeyEmptyIcon { width:46px; height:46px; display:grid; place-items:center; border-radius:13px; background:#edf6ef; font-size:21px; }
-.journeyEmpty h3 { margin:4px 0; font-size:17px; }
-.journeyEmpty p { margin:0; color:#7b867f; font-size:10px; }
-.journeyHistorySection { padding-top:30px; border-top:1px solid #e7ebe7; }
-.journeyHistoryList { display:grid; gap:8px; }
-.journeyHistoryItem { display:flex; gap:13px; padding:15px 16px; border:1px solid #e5e9e5; border-radius:14px; background:#fff; }
-.journeyHistoryEmoji { width:38px; height:38px; display:grid; place-items:center; flex:0 0 38px; border-radius:11px; background:#f3f7f2; font-size:18px; }
-.journeyHistoryBody { min-width:0; flex:1; }
-.journeyHistoryTitleRow { display:flex; justify-content:space-between; gap:16px; align-items:baseline; }
-.journeyHistoryTitleRow h3 { margin:0; font-size:14px; }
-.journeyHistoryTitleRow span { color:#909993; font-size:8px; }
-.journeyHistoryBody > p { margin:7px 0 0; color:#657168; font-size:10px; line-height:1.5; }
-.journeyLearningChips { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
-.journeyLearningChips span { padding:5px 8px; border-radius:999px; background:#f3f6f2; color:#718078; font-size:8px; }
-.journeyHistoryEmpty { padding:18px; border:1px dashed #dfe5df; border-radius:14px; color:#89938d; font-size:10px; }
-.journeyLearningNote { display:flex; gap:15px; margin-top:32px; padding:22px; border-radius:17px; background:#263a2d; color:#fff; }
-.journeyLearningIcon { width:42px; height:42px; display:grid; place-items:center; flex:0 0 42px; border-radius:12px; background:rgba(255,255,255,.09); font-size:20px; }
-.journeyLearningNote .growthEyebrow { color:#a8c4b0; }
-.journeyLearningNote h2 { margin:5px 0 6px; font-size:18px; }
-.journeyLearningNote p { margin:0; max-width:760px; color:#c4d0c7; font-size:10px; line-height:1.55; }
-.journeyReflection { margin-top:17px; padding:18px; border:1px solid #dfe6df; border-radius:15px; background:#fbfcfa; }
-.journeyReflectionHeader { padding-bottom:13px; border-bottom:1px solid #e8ece8; }
-.journeyReflectionHeader h4 { margin:5px 0 5px; font-size:17px; }
-.journeyReflectionHeader p { margin:0; color:#7d8881; font-size:9px; line-height:1.5; }
-.journeyReflectionField { display:block; margin-top:14px; }
-.journeyReflectionField > strong { display:block; margin-bottom:7px; color:#4d5a51; font-size:10px; }
-.journeyReflectionChoices { display:flex; flex-wrap:wrap; gap:6px; }
-.journeyReflectionField input { width:100%; box-sizing:border-box; padding:9px 11px; border:1px solid #dce3dd; border-radius:9px; background:#fff; color:#455249; font:inherit; font-size:10px; outline:none; }
-.journeyReflectionField input:focus { border-color:#9fbea9; box-shadow:0 0 0 3px rgba(73,125,89,.07); }
-.journeyReflectionActions { display:flex; flex-wrap:wrap; gap:9px; margin-top:17px; padding-top:14px; border-top:1px solid #e8ece8; }
+   MVP v0.6 Phase 0 — small Home CTA refinement
 
-@media (max-width: 760px) {
-  .journeyHero { align-items:flex-start; flex-direction:column; gap:18px; }
-  .journeyHeroStats { width:100%; }
-  .journeyHeroStats div { flex:1; }
-  .journeySectionHeading { align-items:flex-start; flex-direction:column; }
-  .journeyEmpty { grid-template-columns:1fr; }
-  .journeyCardHeader, .journeyHistoryTitleRow { align-items:flex-start; flex-direction:column; }
+   Add this to the END of GrowthHome.css.
+   It keeps the empty-state "Find an Experience" action compact.
+   ============================================================ */
+
+.focusEmptyV06 .growthPrimaryButtonV06,
+.journeyEmptyV06 .growthPrimaryButtonV06 {
+  width: auto;
+  min-width: 0;
+  min-height: 34px;
+
+  padding: 7px 11px;
+
+  font-size: 12px;
+
+  justify-self: end;
 }

@@ -5,11 +5,16 @@ import {
   domains,
   pathways,
   careerFamilies,
-  getConfidenceLevel
+  evidenceStreams,
+  getConfidenceLevel,
 } from "../data/growthTaxonomy";
 
+import {
+  getEvidenceStream,
+} from "./evidenceEngine";
+
 //
-// Career & Growth — MVP v0.3
+// Career & Growth — MVP v0.6 — Phase 1C-B
 // Growth Intelligence Engine
 //
 // Responsibilities:
@@ -101,6 +106,289 @@ function unique(values = []) {
   return [...new Set(values.filter(Boolean))];
 }
 
+
+//
+// -----------------------------------------------------------------------------
+// MVP v0.6 — EVIDENCE STREAM SUMMARIES
+// -----------------------------------------------------------------------------
+//
+// IMPORTANT:
+// Phase 1B is observational only.
+//
+// Evidence streams are NOT used to change trait/domain/pathway scores yet.
+// We are adding stream counts and convergence metadata first so we can
+// validate the model before changing confidence behavior.
+//
+
+function countByEvidenceStream(
+  observations = []
+) {
+  const counts = {
+    [evidenceStreams.KID_EXPERIENCE]: 0,
+    [evidenceStreams.PARENT_OBSERVATION]: 0,
+    [evidenceStreams.SYSTEM_EVIDENCE]: 0,
+  };
+
+  observations.forEach(
+    (observation) => {
+      const stream =
+        observation?.evidenceStream;
+
+      if (
+        Object.prototype.hasOwnProperty.call(
+          counts,
+          stream
+        )
+      ) {
+        counts[stream] += 1;
+      }
+    }
+  );
+
+  return counts;
+}
+
+function summarizeEvidenceStreams(
+  observations = []
+) {
+  const streamCounts =
+    countByEvidenceStream(
+      observations
+    );
+
+  const activeStreams =
+    Object.entries(
+      streamCounts
+    )
+      .filter(
+        ([, count]) => count > 0
+      )
+      .map(
+        ([stream]) => stream
+      );
+
+  return {
+    streamCounts,
+
+    streamCount:
+      activeStreams.length,
+
+    activeStreams,
+
+    hasKidExperience:
+      streamCounts[
+        evidenceStreams
+          .KID_EXPERIENCE
+      ] > 0,
+
+    hasParentObservation:
+      streamCounts[
+        evidenceStreams
+          .PARENT_OBSERVATION
+      ] > 0,
+
+    hasSystemEvidence:
+      streamCounts[
+        evidenceStreams
+          .SYSTEM_EVIDENCE
+      ] > 0,
+
+    hasCrossStreamEvidence:
+      activeStreams.length > 1,
+
+    hasFullConvergence:
+      activeStreams.length ===
+      Object.values(
+        evidenceStreams
+      ).length,
+  };
+}
+
+//
+// -----------------------------------------------------------------------------
+// MVP v0.6 — CROSS-STREAM CONVERGENCE
+// -----------------------------------------------------------------------------
+//
+// Convergence describes whether independent evidence streams point in the
+// same direction. Phase 1C-A is descriptive only: it does NOT change
+// strength, confidence, pathway, career, or recommendation scores.
+//
+
+function getStreamDirection(
+  observations = []
+) {
+  if (!observations.length) {
+    return {
+      averageWeight: 0,
+      direction: 'none',
+    };
+  }
+
+  const averageWeight =
+    observations.reduce(
+      (total, observation) =>
+        total + observation.weight,
+      0
+    ) / observations.length;
+
+  const DIRECTION_THRESHOLD = 0.05;
+
+  let direction = 'neutral';
+
+  if (
+    averageWeight >
+    DIRECTION_THRESHOLD
+  ) {
+    direction = 'positive';
+  } else if (
+    averageWeight <
+    -DIRECTION_THRESHOLD
+  ) {
+    direction = 'negative';
+  }
+
+  return {
+    averageWeight:
+      Number(
+        averageWeight.toFixed(3)
+      ),
+
+    direction,
+  };
+}
+
+function summarizeConvergence(
+  observations = []
+) {
+  const byStream = {};
+
+  Object.values(
+    evidenceStreams
+  ).forEach((stream) => {
+    const streamObservations =
+      observations.filter(
+        (observation) =>
+          observation.evidenceStream ===
+          stream
+      );
+
+    if (
+      streamObservations.length > 0
+    ) {
+      byStream[stream] = {
+        evidenceCount:
+          streamObservations.length,
+
+        ...getStreamDirection(
+          streamObservations
+        ),
+      };
+    }
+  });
+
+  const activeEntries =
+    Object.entries(byStream);
+
+  if (
+    activeEntries.length < 2
+  ) {
+    return {
+      convergenceStatus:
+        'single_stream',
+
+      converging: false,
+      conflicting: false,
+
+      convergingStreams: [],
+      conflictingStreams: [],
+
+      streamDirections:
+        byStream,
+    };
+  }
+
+  const directionalEntries =
+    activeEntries.filter(
+      ([, summary]) =>
+        summary.direction ===
+          'positive' ||
+        summary.direction ===
+          'negative'
+    );
+
+  const directions =
+    unique(
+      directionalEntries.map(
+        ([, summary]) =>
+          summary.direction
+      )
+    );
+
+  if (
+    directionalEntries.length >= 2 &&
+    directions.length === 1
+  ) {
+    return {
+      convergenceStatus:
+        'converging',
+
+      converging: true,
+      conflicting: false,
+
+      convergingStreams:
+        directionalEntries.map(
+          ([stream]) => stream
+        ),
+
+      conflictingStreams: [],
+
+      streamDirections:
+        byStream,
+    };
+  }
+
+  if (
+    directions.includes(
+      'positive'
+    ) &&
+    directions.includes(
+      'negative'
+    )
+  ) {
+    return {
+      convergenceStatus:
+        'mixed',
+
+      converging: false,
+      conflicting: true,
+
+      convergingStreams: [],
+
+      conflictingStreams:
+        directionalEntries.map(
+          ([stream]) => stream
+        ),
+
+      streamDirections:
+        byStream,
+    };
+  }
+
+  return {
+    convergenceStatus:
+      'inconclusive',
+
+    converging: false,
+    conflicting: false,
+
+    convergingStreams: [],
+    conflictingStreams: [],
+
+    streamDirections:
+      byStream,
+  };
+}
+
 //
 // -----------------------------------------------------------------------------
 // EVIDENCE NORMALIZATION
@@ -152,6 +440,9 @@ export function flattenEvidenceEvents(
 
         sourceType:
           event.source?.type || null,
+
+        evidenceStream:
+          getEvidenceStream(event),
 
         experienceId:
           event.source?.experienceId || null,
@@ -259,10 +550,73 @@ function calculateSourceDiversityScore(
   );
 }
 
+//
+// -----------------------------------------------------------------------------
+// MVP v0.6 — CONFIDENCE CONVERGENCE ADJUSTMENT
+// -----------------------------------------------------------------------------
+//
+// Convergence changes confidence, NOT strength.
+//
+// Conservative rules:
+// - 2-stream convergence: up to +6 confidence points
+// - 3-stream convergence: up to +10 confidence points
+// - mixed/conflicting streams: down to -8 confidence points
+// - single-stream/inconclusive: no adjustment
+//
+// The adjustment is scaled by evidence volume. With only 2 observations,
+// only half of the maximum adjustment is applied. Full adjustment requires
+// at least 4 relevant observations.
+//
+
+function calculateConvergenceAdjustment(
+  convergence = null,
+  observationCount = 0
+) {
+  if (!convergence) {
+    return 0;
+  }
+
+  const evidenceFactor =
+    clamp(
+      observationCount / 4,
+      0,
+      1
+    );
+
+  const activeStreamCount =
+    Object.keys(
+      convergence.streamDirections || {}
+    ).length;
+
+  let maximumAdjustment = 0;
+
+  if (
+    convergence.convergenceStatus ===
+    'converging'
+  ) {
+    maximumAdjustment =
+      activeStreamCount >= 3
+        ? 10
+        : 6;
+  } else if (
+    convergence.convergenceStatus ===
+    'mixed'
+  ) {
+    maximumAdjustment = -8;
+  }
+
+  return round(
+    maximumAdjustment *
+      evidenceFactor,
+    1
+  );
+}
+
 export function calculateConfidence({
   weights = [],
   experienceIds = [],
-  sourceTypes = []
+  sourceTypes = [],
+  convergence = null
 }) {
   const volume =
     calculateVolumeScore(
@@ -282,7 +636,7 @@ export function calculateConfidence({
       sourceTypes
     );
 
-  const score =
+  const baseScore =
     volume *
       CONFIDENCE_WEIGHTS.volume +
     consistency *
@@ -292,8 +646,19 @@ export function calculateConfidence({
     sourceDiversity *
       CONFIDENCE_WEIGHTS.sourceDiversity;
 
+  const convergenceAdjustment =
+    calculateConvergenceAdjustment(
+      convergence,
+      weights.length
+    );
+
   const normalizedScore =
-    round(clamp(score));
+    round(
+      clamp(
+        baseScore +
+          convergenceAdjustment
+      )
+    );
 
   return {
     score: normalizedScore,
@@ -321,7 +686,12 @@ export function calculateConfidence({
         ),
 
       sourceDiversity:
-        round(sourceDiversity)
+        round(sourceDiversity),
+
+      baseScore:
+        round(baseScore),
+
+      convergenceAdjustment
     }
   };
 }
@@ -413,6 +783,16 @@ export function calculateSignals(
             observation.sourceType
         );
 
+      const streamSummary =
+        summarizeEvidenceStreams(
+          signalObservations
+        );
+
+      const convergence =
+        summarizeConvergence(
+          signalObservations
+        );
+
       result[signalId] = {
         signalId,
 
@@ -444,11 +824,26 @@ export function calculateSignals(
             sourceTypes
           ).length,
 
+        evidenceStreamCount:
+          streamSummary.streamCount,
+
+        evidenceStreamCounts:
+          streamSummary.streamCounts,
+
+        evidenceStreams:
+          streamSummary.activeStreams,
+
+        hasCrossStreamEvidence:
+          streamSummary.hasCrossStreamEvidence,
+
+        convergence,
+
         confidence:
           calculateConfidence({
             weights,
             experienceIds,
-            sourceTypes
+            sourceTypes,
+            convergence
           })
       };
     }
@@ -609,7 +1004,23 @@ export function calculateTraits(
 
           evidenceCount: 0,
           experienceCount: 0,
-          sourceTypeCount: 0
+          sourceTypeCount: 0,
+          evidenceStreamCount: 0,
+          evidenceStreamCounts: {
+            [evidenceStreams.KID_EXPERIENCE]: 0,
+            [evidenceStreams.PARENT_OBSERVATION]: 0,
+            [evidenceStreams.SYSTEM_EVIDENCE]: 0,
+          },
+          evidenceStreams: [],
+          hasCrossStreamEvidence: false,
+          convergence: {
+            convergenceStatus: 'single_stream',
+            converging: false,
+            conflicting: false,
+            convergingStreams: [],
+            conflictingStreams: [],
+            streamDirections: {},
+          }
         };
 
         return;
@@ -643,6 +1054,16 @@ export function calculateTraits(
         relevant.map(
           (observation) =>
             observation.sourceType
+        );
+
+      const streamSummary =
+        summarizeEvidenceStreams(
+          relevant
+        );
+
+      const convergence =
+        summarizeConvergence(
+          relevant
         );
 
       result[traitId] = {
@@ -686,13 +1107,28 @@ export function calculateTraits(
             sourceTypes
           ).length,
 
+        evidenceStreamCount:
+          streamSummary.streamCount,
+
+        evidenceStreamCounts:
+          streamSummary.streamCounts,
+
+        evidenceStreams:
+          streamSummary.activeStreams,
+
+        hasCrossStreamEvidence:
+          streamSummary.hasCrossStreamEvidence,
+
+        convergence,
+
         confidence:
           calculateConfidence({
             weights:
               weightedValues,
 
             experienceIds,
-            sourceTypes
+            sourceTypes,
+            convergence
           })
       };
     }
@@ -774,6 +1210,22 @@ export function calculateDomains(
           evidenceCount: 0,
           experienceCount: 0,
           sourceTypeCount: 0,
+          evidenceStreamCount: 0,
+          evidenceStreamCounts: {
+            [evidenceStreams.KID_EXPERIENCE]: 0,
+            [evidenceStreams.PARENT_OBSERVATION]: 0,
+            [evidenceStreams.SYSTEM_EVIDENCE]: 0,
+          },
+          evidenceStreams: [],
+          hasCrossStreamEvidence: false,
+          convergence: {
+            convergenceStatus: 'single_stream',
+            converging: false,
+            conflicting: false,
+            convergingStreams: [],
+            conflictingStreams: [],
+            streamDirections: {},
+          },
 
           confidence: {
             score: 0,
@@ -837,6 +1289,16 @@ export function calculateDomains(
             observation.sourceType
         );
 
+      const streamSummary =
+        summarizeEvidenceStreams(
+          relevant
+        );
+
+      const convergence =
+        summarizeConvergence(
+          relevant
+        );
+
       result[domainId] = {
         id: domainId,
 
@@ -876,11 +1338,26 @@ export function calculateDomains(
             sourceTypes
           ).length,
 
+        evidenceStreamCount:
+          streamSummary.streamCount,
+
+        evidenceStreamCounts:
+          streamSummary.streamCounts,
+
+        evidenceStreams:
+          streamSummary.activeStreams,
+
+        hasCrossStreamEvidence:
+          streamSummary.hasCrossStreamEvidence,
+
+        convergence,
+
         confidence:
           calculateConfidence({
             weights,
             experienceIds,
-            sourceTypes
+            sourceTypes,
+            convergence
           })
       };
     }
@@ -1247,33 +1724,74 @@ export function buildGrowthProfile({
   return {
     childId,
 
-    evidenceSummary: {
-      eventCount:
-        filteredEvents.length,
-
-      observationCount:
+    evidenceSummary: (() => {
+      const observations =
         flattenEvidenceEvents(
           filteredEvents
-        ).length,
+        );
 
-      experienceCount:
-        unique(
-          filteredEvents.map(
-            (event) =>
-              event.source
-                ?.experienceId
-          )
-        ).length,
+      const streamSummary =
+        summarizeEvidenceStreams(
+          observations
+        );
 
-      sourceTypeCount:
-        unique(
-          filteredEvents.map(
-            (event) =>
-              event.source
-                ?.type
-          )
-        ).length
-    },
+      const convergence =
+        summarizeConvergence(
+          observations
+        );
+
+      return {
+        eventCount:
+          filteredEvents.length,
+
+        observationCount:
+          observations.length,
+
+        experienceCount:
+          unique(
+            filteredEvents.map(
+              (event) =>
+                event.source
+                  ?.experienceId
+            )
+          ).length,
+
+        sourceTypeCount:
+          unique(
+            filteredEvents.map(
+              (event) =>
+                event.source
+                  ?.type
+            )
+          ).length,
+
+        evidenceStreamCount:
+          streamSummary.streamCount,
+
+        evidenceStreamCounts:
+          streamSummary.streamCounts,
+
+        evidenceStreams:
+          streamSummary.activeStreams,
+
+        hasKidExperience:
+          streamSummary.hasKidExperience,
+
+        hasParentObservation:
+          streamSummary.hasParentObservation,
+
+        hasSystemEvidence:
+          streamSummary.hasSystemEvidence,
+
+        hasCrossStreamEvidence:
+          streamSummary.hasCrossStreamEvidence,
+
+        hasFullConvergence:
+          streamSummary.hasFullConvergence,
+
+        convergence
+      };
+    })(),
 
     signals:
       signalProfile,
@@ -1463,6 +1981,10 @@ export function explainTrait(
           sourceType:
             observation
               .sourceType,
+
+          evidenceStream:
+            observation
+              .evidenceStream,
 
           domainId:
             observation

@@ -2,37 +2,25 @@
 
 import {
   GROWTH_MODEL_VERSION,
+  evidenceStreams,
   evidenceSourceTypes,
+  getEvidenceStreamForSourceType,
   isValidDomainId,
-  isValidSignalId
+  isValidSignalId,
 } from "../data/growthTaxonomy";
-
-//
-// Career & Growth — MVP v0.3
-// Evidence Engine
-//
-// Responsibilities:
-//
-// 1. Turn child interactions into canonical evidence events.
-// 2. Validate signal IDs.
-// 3. Normalize evidence weights.
-// 4. Preserve source/context metadata.
-// 5. Keep evidence independent from derived traits/careers.
-//
-// This engine does NOT calculate:
-// - traits
-// - domains
-// - pathways
-// - career families
-//
-// That belongs in growthEngine.js.
-//
 
 const MIN_WEIGHT = -1;
 const MAX_WEIGHT = 1;
 
+export const EVIDENCE_SCHEMA_VERSION =
+  "0.6.0";
+
 const validSourceTypes = new Set(
   Object.values(evidenceSourceTypes)
+);
+
+const validEvidenceStreams = new Set(
+  Object.values(evidenceStreams)
 );
 
 function clampWeight(weight) {
@@ -61,11 +49,6 @@ function createId(prefix = "evt") {
     .slice(2, 10)}`;
 }
 
-//
-// -----------------------------------------------------------------------------
-// NORMALIZE EVIDENCE
-// -----------------------------------------------------------------------------
-
 export function normalizeEvidence(evidence = []) {
   if (!Array.isArray(evidence)) {
     return [];
@@ -81,15 +64,48 @@ export function normalizeEvidence(evidence = []) {
     })
     .map((item) => ({
       signalId: item.signalId,
-      weight: clampWeight(item.weight)
+      weight: clampWeight(item.weight),
     }))
     .filter((item) => item.weight !== 0);
 }
 
+// ============================================================
+// MVP v0.6 — EVIDENCE STREAM RESOLUTION
+// ============================================================
 //
-// -----------------------------------------------------------------------------
-// SOURCE VALIDATION
-// -----------------------------------------------------------------------------
+// New events persist source.stream explicitly.
+//
+// Older v0.3-v0.5 events remain compatible because the stream
+// can be derived from source.type when source.stream is absent.
+//
+
+export function resolveEvidenceStream(
+  source = {}
+) {
+  if (
+    validEvidenceStreams.has(
+      source.stream
+    )
+  ) {
+    return source.stream;
+  }
+
+  return getEvidenceStreamForSourceType(
+    source.type
+  );
+}
+
+export function getEvidenceStream(
+  eventOrSource = {}
+) {
+  const source =
+    eventOrSource?.source ||
+    eventOrSource;
+
+  return resolveEvidenceStream(
+    source
+  );
+}
 
 export function normalizeSource(source = {}) {
   const type = validSourceTypes.has(source.type)
@@ -99,6 +115,12 @@ export function normalizeSource(source = {}) {
   return {
     type,
 
+    stream:
+      resolveEvidenceStream({
+        ...source,
+        type,
+      }),
+
     experienceId:
       source.experienceId || null,
 
@@ -106,14 +128,9 @@ export function normalizeSource(source = {}) {
       source.questionId || null,
 
     responseId:
-      source.responseId || null
+      source.responseId || null,
   };
 }
-
-//
-// -----------------------------------------------------------------------------
-// CONTEXT VALIDATION
-// -----------------------------------------------------------------------------
 
 export function normalizeContext(context = {}) {
   let domainId = null;
@@ -127,14 +144,10 @@ export function normalizeContext(context = {}) {
 
   return {
     domainId,
-    sessionId: context.sessionId || null
+    sessionId:
+      context.sessionId || null,
   };
 }
-
-//
-// -----------------------------------------------------------------------------
-// CREATE EVIDENCE EVENT
-// -----------------------------------------------------------------------------
 
 export function createEvidenceEvent({
   childId,
@@ -142,7 +155,7 @@ export function createEvidenceEvent({
   evidence,
   context = {},
   createdAt = null,
-  metadata = {}
+  metadata = {},
 }) {
   if (!childId) {
     throw new Error(
@@ -162,58 +175,30 @@ export function createEvidenceEvent({
 
     childId,
 
-    source: normalizeSource(source),
+    source:
+      normalizeSource(source),
 
-    evidence: normalizedEvidence,
+    evidence:
+      normalizedEvidence,
 
-    context: normalizeContext(context),
+    context:
+      normalizeContext(context),
 
     metadata: {
-      ...metadata
+      ...metadata,
     },
 
     createdAt:
-      createdAt || new Date().toISOString(),
+      createdAt ||
+      new Date().toISOString(),
 
-    modelVersion: GROWTH_MODEL_VERSION
+    modelVersion:
+      GROWTH_MODEL_VERSION,
+
+    schemaVersion:
+      EVIDENCE_SCHEMA_VERSION,
   };
 }
-
-//
-// -----------------------------------------------------------------------------
-// CREATE EVENT FROM A QUESTION RESPONSE
-// -----------------------------------------------------------------------------
-//
-// This helper will become useful when we update explorations.js.
-//
-// Example question structure:
-//
-// {
-//   id: "robot_problem_03",
-//   question: "Your robot stops moving. What do you do?",
-//   choices: [
-//     {
-//       id: "take_it_apart",
-//       label: "Take it apart and investigate",
-//       evidence: [
-//         { signalId: "problem_solving", weight: 1 },
-//         { signalId: "hands_on", weight: 0.8 },
-//         { signalId: "curiosity", weight: 0.6 }
-//       ]
-//     }
-//   ]
-// }
-//
-// Calling:
-//
-// createQuestionEvidenceEvent({
-//   childId,
-//   experienceId: "robot_builder",
-//   domainId: "technology_robotics",
-//   question,
-//   choice
-// });
-//
 
 export function createQuestionEvidenceEvent({
   childId,
@@ -221,7 +206,7 @@ export function createQuestionEvidenceEvent({
   domainId,
   question,
   choice,
-  sessionId = null
+  sessionId = null,
 }) {
   if (!question || !choice) {
     return null;
@@ -231,17 +216,25 @@ export function createQuestionEvidenceEvent({
     childId,
 
     source: {
-      type: evidenceSourceTypes.ADVENTURE_QUESTION,
+      type:
+        evidenceSourceTypes
+          .ADVENTURE_QUESTION,
+
       experienceId,
-      questionId: question.id,
-      responseId: choice.id
+
+      questionId:
+        question.id,
+
+      responseId:
+        choice.id,
     },
 
-    evidence: choice.evidence || [],
+    evidence:
+      choice.evidence || [],
 
     context: {
       domainId,
-      sessionId
+      sessionId,
     },
 
     metadata: {
@@ -253,21 +246,16 @@ export function createQuestionEvidenceEvent({
       responseText:
         choice.label ||
         choice.text ||
-        ""
-    }
+        "",
+    },
   });
 }
-
-//
-// -----------------------------------------------------------------------------
-// DISCOVERY EVIDENCE
-// -----------------------------------------------------------------------------
 
 export function createDiscoveryEvidenceEvent({
   childId,
   question,
   choice,
-  sessionId = null
+  sessionId = null,
 }) {
   if (!question || !choice) {
     return null;
@@ -277,17 +265,28 @@ export function createDiscoveryEvidenceEvent({
     childId,
 
     source: {
-      type: evidenceSourceTypes.DISCOVERY,
-      experienceId: "discover_you",
-      questionId: question.id,
-      responseId: choice.id
+      type:
+        evidenceSourceTypes
+          .DISCOVERY,
+
+      experienceId:
+        "discover_you",
+
+      questionId:
+        question.id,
+
+      responseId:
+        choice.id,
     },
 
-    evidence: choice.evidence || [],
+    evidence:
+      choice.evidence || [],
 
     context: {
-      domainId: choice.domainId || null,
-      sessionId
+      domainId:
+        choice.domainId || null,
+
+      sessionId,
     },
 
     metadata: {
@@ -299,15 +298,10 @@ export function createDiscoveryEvidenceEvent({
       responseText:
         choice.label ||
         choice.text ||
-        ""
-    }
+        "",
+    },
   });
 }
-
-//
-// -----------------------------------------------------------------------------
-// REFLECTION EVIDENCE
-// -----------------------------------------------------------------------------
 
 export function createReflectionEvidenceEvent({
   childId,
@@ -317,44 +311,36 @@ export function createReflectionEvidenceEvent({
   responseId,
   evidence,
   responseText = "",
-  sessionId = null
+  sessionId = null,
 }) {
   return createEvidenceEvent({
     childId,
 
     source: {
-      type: evidenceSourceTypes.REFLECTION,
+      type:
+        evidenceSourceTypes
+          .REFLECTION,
+
       experienceId,
-      questionId: reflectionId,
-      responseId
+
+      questionId:
+        reflectionId,
+
+      responseId,
     },
 
     evidence,
 
     context: {
       domainId,
-      sessionId
+      sessionId,
     },
 
     metadata: {
-      responseText
-    }
+      responseText,
+    },
   });
 }
-
-//
-// -----------------------------------------------------------------------------
-// COMPLETION EVENT
-// -----------------------------------------------------------------------------
-//
-// Completion should usually contain weaker evidence.
-//
-// Merely finishing an experience is NOT proof that the child
-// strongly enjoys the domain.
-//
-// But completion can provide modest supporting evidence such
-// as persistence.
-//
 
 export function createCompletionEvidenceEvent({
   childId,
@@ -364,35 +350,36 @@ export function createCompletionEvidenceEvent({
   evidence = [
     {
       signalId: "persistence",
-      weight: 0.2
-    }
-  ]
+      weight: 0.2,
+    },
+  ],
 }) {
   return createEvidenceEvent({
     childId,
 
     source: {
-      type: evidenceSourceTypes.COMPLETION,
+      type:
+        evidenceSourceTypes
+          .COMPLETION,
+
       experienceId,
+
       questionId: null,
-      responseId: "completed"
+
+      responseId:
+        "completed",
     },
 
     evidence,
 
     context: {
       domainId,
-      sessionId
+      sessionId,
     },
 
-    metadata: {}
+    metadata: {},
   });
 }
-
-//
-// -----------------------------------------------------------------------------
-// EVENT VALIDATION
-// -----------------------------------------------------------------------------
 
 export function isValidEvidenceEvent(event) {
   if (!event) {
@@ -403,7 +390,23 @@ export function isValidEvidenceEvent(event) {
     return false;
   }
 
-  if (!event.source?.type) {
+  if (
+    !event.source?.type ||
+    !validSourceTypes.has(
+      event.source.type
+    )
+  ) {
+    return false;
+  }
+
+  // Backward compatibility:
+  // old evidence may not have source.stream.
+  if (
+    event.source.stream &&
+    !validEvidenceStreams.has(
+      event.source.stream
+    )
+  ) {
     return false;
   }
 
@@ -425,18 +428,17 @@ export function isValidEvidenceEvent(event) {
   });
 }
 
-//
-// -----------------------------------------------------------------------------
-// DEBUG HELPERS
-// -----------------------------------------------------------------------------
-
 export function describeEvidenceEvent(event) {
   if (!isValidEvidenceEvent(event)) {
     return null;
   }
 
   return {
-    id: event.id,
+    id:
+      event.id,
+
+    evidenceStream:
+      getEvidenceStream(event),
 
     sourceType:
       event.source.type,
@@ -445,20 +447,33 @@ export function describeEvidenceEvent(event) {
       event.source.experienceId,
 
     question:
-      event.metadata?.questionText || "",
+      event.metadata?.questionText ||
+      "",
 
     response:
-      event.metadata?.responseText || "",
+      event.metadata?.responseText ||
+      "",
 
-    signals: event.evidence.map((item) => ({
-      signalId: item.signalId,
-      weight: item.weight
-    })),
+    signals:
+      event.evidence.map(
+        (item) => ({
+          signalId:
+            item.signalId,
+
+          weight:
+            item.weight,
+        })
+      ),
 
     domain:
-      event.context?.domainId || null,
+      event.context?.domainId ||
+      null,
 
     createdAt:
-      event.createdAt
+      event.createdAt,
+
+    schemaVersion:
+      event.schemaVersion ||
+      "legacy",
   };
 }

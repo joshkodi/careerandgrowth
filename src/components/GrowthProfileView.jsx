@@ -59,7 +59,7 @@ function ConfidenceBadge({
 
   return (
     <span
-      className={`growthConfidenceBadge growthConfidence-${confidence.level}`}
+      className={`profileConfidenceV06 profileConfidence-${confidence.level}`}
     >
       {confidence.label}
     </span>
@@ -71,16 +71,15 @@ function TraitCard({
   trait,
 }) {
   return (
-    <article className="profileSignalCard">
+    <article className="profileTraitV06">
 
-      <div className="profileSignalIcon">
+      <div className="profileTraitIconV06">
         {trait.emoji}
       </div>
 
-      <div className="profileSignalBody">
+      <div className="profileTraitBodyV06">
 
-        <div className="profileSignalHeading">
-
+        <div className="profileTraitHeadingV06">
           <h3>
             {trait.label}
           </h3>
@@ -90,16 +89,15 @@ function TraitCard({
               trait.confidence
             }
           />
-
         </div>
 
-        <p className="profileSignalInterpretation">
+        <p className="profileTraitInterpretationV06">
           {confidenceCopy(
             trait.confidence?.level
           )}
         </p>
 
-        <p className="profileSignalEvidence">
+        <p className="profileTraitEvidenceV06">
           {getEvidenceCopy(trait)}
         </p>
 
@@ -114,16 +112,15 @@ function DomainCard({
   domain,
 }) {
   return (
-    <article className="profileDomainRow">
+    <article className="profileDomainV06">
 
-      <div className="profileDomainIcon">
+      <div className="profileDomainIconV06">
         {domain.emoji}
       </div>
 
-      <div className="profileDomainBody">
+      <div className="profileDomainBodyV06">
 
-        <div className="profileDomainHeading">
-
+        <div className="profileDomainHeadingV06">
           <h3>
             {domain.label}
           </h3>
@@ -133,7 +130,6 @@ function DomainCard({
               domain.confidence
             }
           />
-
         </div>
 
         <p>
@@ -151,16 +147,15 @@ function PathwayCard({
   pathway,
 }) {
   return (
-    <article className="profilePathwayCard">
+    <article className="profilePathwayV06">
 
-      <div className="profilePathwayIcon">
+      <div className="profilePathwayIconV06">
         {pathway.emoji}
       </div>
 
       <div>
-
-        <span className="profileSectionEyebrow">
-          Worth exploring
+        <span className="profileKickerV06">
+          WORTH EXPLORING
         </span>
 
         <h3>
@@ -168,12 +163,10 @@ function PathwayCard({
         </h3>
 
         <p>
-          This is an area that may be
-          worth trying through more
-          experiences. It is not a
-          prediction about your future.
+          A direction worth trying through
+          more experiences — not a prediction
+          about your future.
         </p>
-
       </div>
 
     </article>
@@ -206,62 +199,75 @@ function GrowthProfileView({
     topTraits.length > 0 ||
     topDomains.length > 0
 
+  const visibleTraits =
+    topTraits.slice(0, 4)
+
+  const visibleDomains =
+    topDomains.slice(0, 3)
+
+  const visiblePathways =
+    topPathways.slice(0, 2)
+
   return (
-    <section className="growthProfileV05">
+    <section className="growthProfileV06">
 
-      <button
-        className="backButton"
-        onClick={onBack}
-      >
-        ← Back to {childName}'s Space
-      </button>
+      <div className="profileTopbarV06">
+        <button
+          type="button"
+          className="profileBackV06"
+          onClick={onBack}
+        >
+          ← Back to {childName}'s Space
+        </button>
+
+        <span className="profileModePillV06">
+          Growth Profile
+        </span>
+      </div>
 
 
-      <header className="profileHero">
+      <header className="profileHeroV06">
 
         <div>
-
-          <p className="profileSectionEyebrow">
-            My Growth Profile
-          </p>
+          <span className="profileKickerV06">
+            MY GROWTH PROFILE
+          </span>
 
           <h1>
-            What we're learning
-            about you, {childName}.
+            What we're learning about
+            {` ${childName}`}.
           </h1>
 
-          <p className="profileHeroLead">
-            This isn't a test result or a
-            label. It's an evolving picture
-            built from what you tell us,
-            what you try, what you enjoy,
-            and what people who know you
+          <p>
+            This is an evolving picture —
+            not a test result or a label.
+            It grows from what you tell us,
+            what you try, and what others
             notice over time.
           </p>
-
         </div>
 
         <div
-          className="profileHeroIcon"
+          className="profileHeroMarkV06"
           aria-hidden="true"
         >
-          ✨
+          <span>✨</span>
+          <small>Evolving</small>
         </div>
 
       </header>
 
 
-      {!hasProfileSignals && (
-        <section className="profileStartingState">
+      {!hasProfileSignals ? (
+        <section className="profileStartingV06">
 
-          <div className="profileStartingIcon">
+          <div className="profileStartingIconV06">
             🌱
           </div>
 
           <div>
-
-            <span className="profileSectionEyebrow">
-              Just Getting Started
+            <span className="profileKickerV06">
+              JUST GETTING STARTED
             </span>
 
             <h2>
@@ -274,49 +280,43 @@ function GrowthProfileView({
               you notice, and keep telling
               us what interests you.
             </p>
-
           </div>
 
+          <button
+            type="button"
+            className="profilePrimaryV06"
+            onClick={onExploreAdventures}
+          >
+            Explore Something New
+            <span>→</span>
+          </button>
+
         </section>
-      )}
-
-
-      {hasProfileSignals && (
+      ) : (
         <>
+          <section className="profileOverviewGridV06">
 
-          <section className="profileSection">
+            <article className="profilePanelV06">
+              <div className="profilePanelHeadingV06">
+                <div>
+                  <span className="profileKickerV06">
+                    PATTERNS WE'RE NOTICING
+                  </span>
 
-            <div className="profileSectionHeading">
+                  <h2>
+                    How you tend to approach things
+                  </h2>
+                </div>
 
-              <div>
-
-                <p className="profileSectionEyebrow">
-                  Strengths We're Noticing
-                </p>
-
-                <h2>
-                  Ways you seem to
-                  approach the world
-                </h2>
-
+                <span className="profileQuietNoteV06">
+                  Patterns can strengthen, change,
+                  or fade as you grow.
+                </span>
               </div>
 
-              <p>
-                These are patterns we're
-                noticing right now. They can
-                strengthen, change, or fade
-                as you grow.
-              </p>
-
-            </div>
-
-
-            {topTraits.length > 0 ? (
-              <div className="profileSignalGrid">
-
-                {topTraits
-                  .slice(0, 4)
-                  .map(
+              {visibleTraits.length > 0 ? (
+                <div className="profileTraitGridV06">
+                  {visibleTraits.map(
                     (trait) => (
                       <TraitCard
                         key={trait.id}
@@ -324,51 +324,36 @@ function GrowthProfileView({
                       />
                     )
                   )}
-
-              </div>
-            ) : (
-              <div className="profileEmptyState">
-                Keep exploring to reveal
-                more patterns.
-              </div>
-            )}
-
-          </section>
+                </div>
+              ) : (
+                <div className="profileEmptyV06">
+                  Keep exploring to reveal
+                  more patterns.
+                </div>
+              )}
+            </article>
 
 
-          <section className="profileSection">
+            <article className="profilePanelV06">
+              <div className="profilePanelHeadingV06">
+                <div>
+                  <span className="profileKickerV06">
+                    CURIOSITY RIGHT NOW
+                  </span>
 
-            <div className="profileSectionHeading">
+                  <h2>
+                    Areas catching your attention
+                  </h2>
+                </div>
 
-              <div>
-
-                <p className="profileSectionEyebrow">
-                  Things That Spark Curiosity
-                </p>
-
-                <h2>
-                  Areas that seem to
-                  catch your attention
-                </h2>
-
+                <span className="profileQuietNoteV06">
+                  Curiosity can move around.
+                </span>
               </div>
 
-              <p>
-                Curiosity can move around.
-                Exploring new areas helps us
-                see what keeps pulling you
-                back.
-              </p>
-
-            </div>
-
-
-            {topDomains.length > 0 ? (
-              <div className="profileDomainList">
-
-                {topDomains
-                  .slice(0, 4)
-                  .map(
+              {visibleDomains.length > 0 ? (
+                <div className="profileDomainListV06">
+                  {visibleDomains.map(
                     (domain) => (
                       <DomainCard
                         key={domain.id}
@@ -376,246 +361,178 @@ function GrowthProfileView({
                       />
                     )
                   )}
+                </div>
+              ) : (
+                <div className="profileEmptyV06">
+                  More exploration will help
+                  us see where curiosity shows up.
+                </div>
+              )}
+            </article>
 
+          </section>
+
+
+          <section className="profileEvidenceStripV06">
+
+            <div className="profileEvidenceIntroV06">
+              <span className="profileKickerV06">
+                WHERE THE CLUES COME FROM
+              </span>
+
+              <h2>
+                Different perspectives,
+                one evolving picture
+              </h2>
+            </div>
+
+
+            <div className="profileEvidenceSourcesV06">
+
+              <div
+                className={
+                  profile
+                    ? 'profileEvidenceSourceV06 active'
+                    : 'profileEvidenceSourceV06'
+                }
+              >
+                <span className="profileEvidenceSourceIconV06">
+                  🧒
+                </span>
+
+                <div>
+                  <strong>
+                    Kid Experience
+                  </strong>
+
+                  <p>
+                    Discovery answers,
+                    preferences, and reflections.
+                  </p>
+                </div>
               </div>
-            ) : (
-              <div className="profileEmptyState">
-                More exploration will help
-                us understand where your
-                curiosity shows up.
+
+
+              <div
+                className={
+                  parentPerspectiveComplete
+                    ? 'profileEvidenceSourceV06 active'
+                    : 'profileEvidenceSourceV06'
+                }
+              >
+                <span className="profileEvidenceSourceIconV06">
+                  👨‍👩‍👦
+                </span>
+
+                <div>
+                  <strong>
+                    Parent Observation
+                  </strong>
+
+                  <p>
+                    Patterns noticed in
+                    everyday life.
+                  </p>
+                </div>
+              </div>
+
+
+              <div
+                className={
+                  completedExplorations.length > 0
+                    ? 'profileEvidenceSourceV06 active'
+                    : 'profileEvidenceSourceV06'
+                }
+              >
+                <span className="profileEvidenceSourceIconV06">
+                  🚀
+                </span>
+
+                <div>
+                  <strong>
+                    Experience Evidence
+                  </strong>
+
+                  <p>
+                    What happens when you
+                    actually try something.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+
+            {!profileHasMultipleSources && (
+              <div className="profileEvidenceNoticeV06">
+                <span aria-hidden="true">
+                  🌱
+                </span>
+
+                <p>
+                  We're still building the picture.
+                  Confidence grows when different
+                  experiences and perspectives begin
+                  reinforcing similar patterns.
+                </p>
               </div>
             )}
 
           </section>
 
+
+          {visiblePathways.length > 0 && (
+            <section className="profileNextGridV06">
+
+              <div className="profileNextCopyV06">
+                <span className="profileKickerV06">
+                  IDEAS WORTH TRYING
+                </span>
+
+                <h2>
+                  Where might you explore next?
+                </h2>
+
+                <p>
+                  These are directions for exploration,
+                  not career predictions.
+                </p>
+              </div>
+
+              <div className="profilePathwayGridV06">
+                {visiblePathways.map(
+                  (pathway) => (
+                    <PathwayCard
+                      key={pathway.id}
+                      pathway={pathway}
+                    />
+                  )
+                )}
+              </div>
+
+            </section>
+          )}
         </>
       )}
 
 
-      <section className="profileSection profileEvidenceSection">
-
-        <div className="profileSectionHeading">
-
-          <div>
-
-            <p className="profileSectionEyebrow">
-              How We Learn About You
-            </p>
-
-            <h2>
-              Different perspectives,
-              one evolving picture
-            </h2>
-
-          </div>
-
-          <p>
-            We trust patterns more when
-            different kinds of experiences
-            begin pointing in similar
-            directions.
-          </p>
-
-        </div>
-
-
-        <div className="profileEvidenceGrid">
-
-          <div
-            className={
-              profile
-                ? 'profileEvidenceItem profileEvidenceItemActive'
-                : 'profileEvidenceItem'
-            }
-          >
-
-            <div className="profileEvidenceIcon">
-              🧭
-            </div>
-
-            <div>
-
-              <strong>
-                What you tell us
-              </strong>
-
-              <p>
-                Your interests, preferences,
-                and Discovery answers.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div
-            className={
-              parentPerspectiveComplete
-                ? 'profileEvidenceItem profileEvidenceItemActive'
-                : 'profileEvidenceItem'
-            }
-          >
-
-            <div className="profileEvidenceIcon">
-              👨‍👩‍👦
-            </div>
-
-            <div>
-
-              <strong>
-                What parents notice
-              </strong>
-
-              <p>
-                Patterns seen in everyday
-                life from another
-                perspective.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div
-            className={
-              completedExplorations.length >
-              0
-                ? 'profileEvidenceItem profileEvidenceItemActive'
-                : 'profileEvidenceItem'
-            }
-          >
-
-            <div className="profileEvidenceIcon">
-              🚀
-            </div>
-
-            <div>
-
-              <strong>
-                What you actually try
-              </strong>
-
-              <p>
-                Choices, enjoyment,
-                challenges, and reflection
-                from real experiences.
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {!profileHasMultipleSources && (
-          <div className="profileEvidenceNotice">
-
-            <span>
-              🌱
-            </span>
-
-            <div>
-
-              <strong>
-                We're still building the
-                picture.
-              </strong>
-
-              <p>
-                Confidence grows when
-                different experiences and
-                perspectives begin to
-                reinforce similar patterns.
-              </p>
-
-            </div>
-
-          </div>
-        )}
-
-      </section>
-
-
-      {topPathways.length > 0 && (
-        <section className="profileSection">
-
-          <div className="profileSectionHeading">
-
-            <div>
-
-              <p className="profileSectionEyebrow">
-                Ideas Worth Trying
-              </p>
-
-              <h2>
-                Areas you may want to
-                explore next
-              </h2>
-
-            </div>
-
-            <p>
-              These are directions for
-              exploration, not career
-              predictions.
-            </p>
-
-          </div>
-
-
-          <div className="profilePathwayGrid">
-
-            {topPathways
-              .slice(0, 2)
-              .map(
-                (pathway) => (
-                  <PathwayCard
-                    key={pathway.id}
-                    pathway={pathway}
-                  />
-                )
-              )}
-
-          </div>
-
-        </section>
-      )}
-
-
-      <section className="profileKeepGrowing">
+      <section className="profileBottomBarV06">
 
         <div>
-
-          <p className="profileSectionEyebrow">
-            Keep Growing
-          </p>
+          <span className="profileKickerV06">
+            KEEP GROWING
+          </span>
 
           <h2>
             The best way to understand
-            yourself is to keep trying
-            things.
+            yourself is to keep trying things.
           </h2>
-
-          <p>
-            New experiences can confirm
-            what we're seeing, reveal
-            something completely new, or
-            show that an earlier pattern
-            wasn't as important as it first
-            seemed.
-          </p>
-
         </div>
 
-
         <button
-          className="growthPrimaryButton"
-          onClick={
-            onExploreAdventures
-          }
+          type="button"
+          className="profilePrimaryV06"
+          onClick={onExploreAdventures}
         >
           Explore Something New
           <span>→</span>
@@ -624,20 +541,16 @@ function GrowthProfileView({
       </section>
 
 
-      <details className="profileEvidenceDetails">
-
+      <details className="profileDetailsV06">
         <summary>
           Profile details
         </summary>
 
-        <div className="profileEvidenceStats">
+        <div className="profileStatsV06">
 
           <div>
             <strong>
-              {
-                evidenceSummary
-                  .eventCount || 0
-              }
+              {evidenceSummary.eventCount || 0}
             </strong>
 
             <span>
@@ -645,13 +558,9 @@ function GrowthProfileView({
             </span>
           </div>
 
-
           <div>
             <strong>
-              {
-                evidenceSummary
-                  .experienceCount || 0
-              }
+              {evidenceSummary.experienceCount || 0}
             </strong>
 
             <span>
@@ -659,13 +568,9 @@ function GrowthProfileView({
             </span>
           </div>
 
-
           <div>
             <strong>
-              {
-                evidenceSummary
-                  .sourceTypeCount || 0
-              }
+              {evidenceSummary.sourceTypeCount || 0}
             </strong>
 
             <span>
@@ -674,7 +579,6 @@ function GrowthProfileView({
           </div>
 
         </div>
-
       </details>
 
 

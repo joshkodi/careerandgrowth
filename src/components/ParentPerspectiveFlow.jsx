@@ -5,18 +5,17 @@ import {
 
 // ============================================================
 // Career & Growth
-// MVP v0.5
+// MVP v0.6 — Phase 0 — Parent Perspective
 //
-// Parent Perspective + Parent Intent
+// Parent Observation:
+// - Adds a parent's observations as evidence.
 //
-// Parent Perspective:
-// - Observations become Growth Intelligence evidence
+// Parent Goals:
+// - Shape future recommendations.
+// - Do NOT directly become child traits or strengths.
 //
-// Parent Intent:
-// - Parent goals influence future Grow recommendations
-// - Parent goals do NOT directly change the Growth Profile
+// This component remains presentation/local-form-state only.
 // ============================================================
-
 
 function ParentPerspectiveFlow({
   mode,
@@ -24,20 +23,17 @@ function ParentPerspectiveFlow({
   currentQuestion,
   currentQuestionIndex,
   totalQuestions,
-
   parentIntents = [],
-
+  experienceObservations = [],
   onBackToChildSpace,
   onBegin,
   onQuestionBack,
   onAnswer,
   onSaveParentIntent,
+  onAddExperienceObservation,
 }) {
-  const [
-    parentGoal,
-    setParentGoal,
-  ] = useState('')
-
+  const [parentGoal, setParentGoal] =
+    useState('')
 
   const activeParentIntents =
     [...parentIntents]
@@ -50,7 +46,6 @@ function ParentPerspectiveFlow({
           new Date(b.createdAt) -
           new Date(a.createdAt)
       )
-
 
   const handleParentGoalSubmit =
     (event) => {
@@ -70,59 +65,49 @@ function ParentPerspectiveFlow({
       setParentGoal('')
     }
 
-
   const chooseGoalStarter =
     (goal) => {
       setParentGoal(goal)
     }
 
-
   const renderParentGoalCard =
     () => (
-      <section className="parentGoalPanel">
+      <section className="parentGoalV06">
 
-        <div className="parentPanelHeading">
-
-          <div className="parentPanelIcon">
+        <div className="parentPanelHeadingV06">
+          <div className="parentPanelIconV06">
             🎯
           </div>
 
           <div>
-            <p className="eyebrow">
-              Parent Goals
-            </p>
+            <span className="parentKickerV06">
+              PARENT GOALS
+            </span>
 
-            <h3>
-              What would you like to
-              help {childName} develop?
-            </h3>
+            <h2>
+              What would you like to help
+              {` ${childName} `}develop?
+            </h2>
 
             <p>
-              Goals help shape future
-              recommendations. They are
-              different from observations
+              Goals guide future recommendations.
+              They are different from observations
               about who {childName} is today.
             </p>
           </div>
-
         </div>
 
-
         <form
-          className="parentGoalForm"
-          onSubmit={
-            handleParentGoalSubmit
-          }
+          className="parentGoalFormV06"
+          onSubmit={handleParentGoalSubmit}
         >
-
           <input
             type="text"
             value={parentGoal}
-            onChange={
-              (event) =>
-                setParentGoal(
-                  event.target.value
-                )
+            onChange={(event) =>
+              setParentGoal(
+                event.target.value
+              )
             }
             placeholder={
               `I'd like ${childName} to...`
@@ -131,22 +116,15 @@ function ParentPerspectiveFlow({
 
           <button
             type="submit"
-            className="parentPrimaryButton"
-            disabled={
-              !parentGoal.trim()
-            }
+            className="parentPrimaryV06"
+            disabled={!parentGoal.trim()}
           >
             Add Goal
           </button>
-
         </form>
 
-
-        <div className="parentGoalStarters">
-
-          <span>
-            Try a starting point:
-          </span>
+        <div className="parentGoalStartersV06">
+          <span>Starting points</span>
 
           <button
             type="button"
@@ -191,57 +169,166 @@ function ParentPerspectiveFlow({
           >
             Independence
           </button>
-
         </div>
 
-
-        {activeParentIntents.length >
-          0 && (
-
-          <div className="parentGoalList">
-
-            <p className="eyebrow">
-              Active Goals
-            </p>
+        {activeParentIntents.length > 0 && (
+          <div className="parentGoalListV06">
+            <span className="parentKickerV06">
+              ACTIVE GOALS
+            </span>
 
             {activeParentIntents.map(
               (intent) => (
-
                 <div
-                  className="parentGoalItem"
+                  className="parentGoalItemV06"
                   key={intent.id}
                 >
-                  <span>
+                  <span aria-hidden="true">
                     🎯
                   </span>
 
-                  <p>
-                    {intent.text}
-                  </p>
+                  <p>{intent.text}</p>
                 </div>
-
               )
             )}
-
           </div>
-
         )}
 
-
-        <div className="parentGoalNote">
-
-          <span>
-            💡
+        <div className="parentGoalNoteV06">
+          <span aria-hidden="true">
+            i
           </span>
 
           <p>
-            Parent goals influence what
-            Career & Growth may recommend.
+            Goals influence recommendations.
             They do not automatically become
-            strengths, traits, or abilities
-            in {childName}'s Growth Profile.
+            strengths, traits, or abilities in
+            {` ${childName}'s `}Growth Profile.
           </p>
+        </div>
 
+      </section>
+    )
+
+  const renderExperienceObservations =
+    () => (
+      <section className="parentExperienceV06">
+
+        <div className="parentPanelHeadingV06">
+          <div className="parentPanelIconV06">
+            🧭
+          </div>
+
+          <div>
+            <span className="parentKickerV06">
+              EXPERIENCE OBSERVATIONS
+            </span>
+
+            <h2>
+              Add what you noticed during
+              {` ${childName}'s `}experiences
+            </h2>
+
+            <p>
+              These observations are tied to a
+              specific Adventure and can be added
+              whenever it is convenient for you.
+            </p>
+          </div>
+        </div>
+
+        {experienceObservations.length === 0 ? (
+          <div className="parentExperienceEmptyV06">
+            <span aria-hidden="true">
+              🌱
+            </span>
+
+            <div>
+              <strong>
+                No completed experiences yet
+              </strong>
+
+              <p>
+                When {childName} completes a Guided
+                Adventure, it will appear here for
+                optional parent observation.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="parentExperienceListV06">
+            {experienceObservations.map(
+              (experience) => (
+                <article
+                  className="parentExperienceItemV06"
+                  key={experience.id}
+                >
+                  <div className="parentExperienceIdentityV06">
+                    <span className="parentExperienceEmojiV06">
+                      {experience.emoji || '✨'}
+                    </span>
+
+                    <div>
+                      <strong>
+                        {experience.title}
+                      </strong>
+
+                      <span>
+                        Completed experience
+                      </span>
+
+                      {experience.description && (
+                        <p className="parentExperienceDescriptionV06">
+                          {experience.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="parentExperienceStatusV06">
+                    <span
+                      className={
+                        experience.observationAdded
+                          ? 'parentExperienceBadgeV06 complete'
+                          : 'parentExperienceBadgeV06'
+                      }
+                    >
+                      {experience.observationAdded
+                        ? '✓ Observation added'
+                        : 'Observation not added'}
+                    </span>
+
+                    <button
+                      type="button"
+                      className="parentExperienceActionV06"
+                      onClick={() =>
+                        onAddExperienceObservation?.(
+                          experience.id
+                        )
+                      }
+                    >
+                      {experience.observationAdded
+                        ? 'Update Observation'
+                        : 'Add Observation'}
+                      <span>→</span>
+                    </button>
+                  </div>
+                </article>
+              )
+            )}
+          </div>
+        )}
+
+        <div className="parentGoalNoteV06">
+          <span aria-hidden="true">
+            i
+          </span>
+
+          <p>
+            Only add an observation if you actually
+            saw enough of the experience to comment.
+            Skipping an experience is completely fine.
+          </p>
         </div>
 
       </section>
@@ -250,131 +337,106 @@ function ParentPerspectiveFlow({
 
   if (mode === 'intro') {
     return (
-      <section className="parentPerspective parentPerspectiveV05">
+      <section className="parentV06">
 
-        <button
-          className="backButton"
-          onClick={
-            onBackToChildSpace
-          }
-        >
-          ← Back to {childName}'s Space
-        </button>
+        <div className="parentTopbarV06">
+          <button
+            type="button"
+            className="parentBackV06"
+            onClick={onBackToChildSpace}
+          >
+            ← Back to {childName}'s Space
+          </button>
 
+          <span className="parentModePillV06">
+            Parent view
+          </span>
+        </div>
 
-        <div className="parentPerspectiveShell">
+        <header className="parentHeroV06">
+          <div>
+            <span className="parentKickerV06">
+              PARENT PERSPECTIVE
+            </span>
 
-          <section className="parentPerspectiveHero">
+            <h1>
+              Add what you've noticed
+              about {childName}.
+            </h1>
 
-            <div>
+            <p>
+              You see everyday patterns,
+              interests, and challenges that
+              a questionnaire may never capture.
+            </p>
+          </div>
 
-              <p className="eyebrow">
-                Parent Perspective
-              </p>
+          <div
+            className="parentHeroMarkV06"
+            aria-hidden="true"
+          >
+            <span>👀</span>
+            <small>Observe patterns</small>
+          </div>
+        </header>
 
-              <h1>
-                Add what you've noticed
-                about {childName}.
-              </h1>
+        <div className="parentIntroGridV06 parentIntroGridV06Expanded">
 
-              <p className="parentPerspectiveLead">
-                You see moments, patterns,
-                interests, and challenges
-                that a questionnaire may
-                never capture.
-              </p>
-
-            </div>
-
-            <div
-              className="parentPerspectiveHeroIcon"
-              aria-hidden="true"
-            >
-              👨‍👩‍👦
-            </div>
-
-          </section>
-
-
-          <div className="parentPerspectiveColumns">
-
-            <section className="parentObservationPanel">
-
-              <div className="parentPanelHeading">
-
-                <div className="parentPanelIcon">
-                  👀
-                </div>
-
-                <div>
-
-                  <p className="eyebrow">
-                    Observations
-                  </p>
-
-                  <h2>
-                    Share your perspective
-                  </h2>
-
-                  <p>
-                    We'll ask six short
-                    questions about what
-                    you've observed in
-                    everyday life.
-                  </p>
-
-                </div>
-
+          <section className="parentObservationV06">
+            <div className="parentPanelHeadingV06">
+              <div className="parentPanelIconV06">
+                ◌
               </div>
 
-
-              <div className="parentEvidencePrinciple">
-
-                <span>
-                  🌱
+              <div>
+                <span className="parentKickerV06">
+                  OBSERVATIONS
                 </span>
 
-                <div>
+                <h2>
+                  Share your perspective
+                </h2>
 
-                  <strong>
-                    One perspective, not the
-                    whole story
-                  </strong>
-
-                  <p>
-                    Your observations become
-                    one source of evidence.
-                    They do not replace what
-                    {` ${childName} `}
-                    tells us about themselves.
-                  </p>
-
-                </div>
-
+                <p>
+                  Six short questions about
+                  patterns you've noticed in
+                  everyday life.
+                </p>
               </div>
+            </div>
 
+            <div className="parentPrincipleV06">
+              <strong>
+                One perspective, not the whole story.
+              </strong>
 
-              <button
-                className="parentPrimaryButton"
-                onClick={onBegin}
-              >
-                Add My Perspective
-                <span>→</span>
-              </button>
+              <p>
+                Your observations add another source
+                of evidence. They do not replace what
+                {` ${childName} `}tells us through
+                Discovery and experiences.
+              </p>
+            </div>
 
-            </section>
+            <button
+              type="button"
+              className="parentPrimaryV06"
+              onClick={onBegin}
+            >
+              Add My Perspective
+              <span>→</span>
+            </button>
+          </section>
 
+          {renderExperienceObservations()}
 
-            {renderParentGoalCard()}
-
-          </div>
+          {renderParentGoalCard()}
 
         </div>
 
       </section>
     )
   }
-
 
   if (
     mode === 'questions' &&
@@ -386,114 +448,116 @@ function ParentPerspectiveFlow({
       100
 
     return (
-      <section className="parentPerspective parentPerspectiveV05">
+      <section className="parentV06">
 
-        <div className="parentQuestionShell">
+        <div className="parentTopbarV06">
+          <button
+            type="button"
+            className="parentBackV06"
+            onClick={onQuestionBack}
+          >
+            ← Back
+          </button>
 
-          <aside className="parentQuestionContext">
+          <span className="parentModePillV06">
+            Parent observation
+          </span>
+        </div>
 
-            <button
-              className="backButton"
-              onClick={onQuestionBack}
-            >
-              ← Back
-            </button>
+        <div className="parentQuestionLayoutV06">
 
-            <div className="parentQuestionContextCard">
+          <aside className="parentQuestionContextV06">
+            <span className="parentKickerV06">
+              PARENT PERSPECTIVE
+            </span>
 
-              <div className="parentPanelIcon">
-                👨‍👩‍👦
-              </div>
+            <h2>
+              What have you noticed?
+            </h2>
 
-              <p className="eyebrow">
-                Parent Perspective
-              </p>
+            <p>
+              Think about patterns you've
+              actually seen over time rather
+              than what you hope the answer
+              should be.
+            </p>
 
-              <h2>
-                What have you noticed?
-              </h2>
+            <div className="parentContextRuleV06">
+              <span>Observation</span>
+              <strong>What you notice</strong>
 
-              <p>
-                Think about patterns you've
-                seen over time, not what you
-                hope the answer should be.
-              </p>
-
-              <div className="parentQuestionPrinciple">
-                <span>🌱</span>
-                <p>
-                  Your answers add context.
-                  They don't define
-                  {` ${childName}`}.
-                </p>
-              </div>
-
+              <span>Goal</span>
+              <strong>What you hope to develop</strong>
             </div>
 
+            <div className="parentContextNoteV06">
+              Your answers add context.
+              They don't define {childName}.
+            </div>
           </aside>
 
+          <main className="parentQuestionMainV06">
 
-          <div className="parentQuestionMain">
+            <div className="parentProgressRowV06">
+              <div>
+                <span className="parentKickerV06">
+                  YOUR OBSERVATION
+                </span>
 
-            <div className="parentQuestionTop">
+                <strong>
+                  Question {currentQuestionIndex + 1}
+                  {' '}of{' '}
+                  {totalQuestions}
+                </strong>
+              </div>
 
-              <span className="questionCounter">
-                Question{' '}
-                {currentQuestionIndex + 1}
-                {' '}of{' '}
-                {totalQuestions}
+              <span>
+                {Math.round(progressPercentage)}%
               </span>
-
-              <span className="parentQuestionHint">
-                Choose what feels most true.
-              </span>
-
             </div>
 
-
-            <div className="progressTrack">
-
+            <div className="parentProgressTrackV06">
               <div
-                className="progressBar"
                 style={{
                   width:
                     `${progressPercentage}%`,
                 }}
               />
-
             </div>
 
+            <article className="parentQuestionCardV06">
+              <h1>
+                {currentQuestion.question}
+              </h1>
 
-            <div className="parentQuestionCard parentQuestionCardV05">
-
-              <p className="eyebrow">
-                Your Observation
+              <p>
+                Choose the answer that best
+                matches what you've observed.
               </p>
 
-              <h2 className="parentQuestionTitle">
-                {
-                  currentQuestion.question
-                }
-              </h2>
-
-
-              <div className="answerGrid parentAnswerGrid">
-
+              <div className="parentAnswersV06">
                 {currentQuestion.answers.map(
-                  (answer) => (
+                  (answer, index) => (
                     <button
+                      type="button"
                       key={answer.id}
-                      className="answerCard parentAnswerCard"
+                      className="parentAnswerV06"
                       onClick={() =>
                         onAnswer(answer)
                       }
                     >
-                      <span>
+                      <span className="parentAnswerLetterV06">
+                        {String.fromCharCode(
+                          65 + index
+                        )}
+                      </span>
+
+                      <span className="parentAnswerTextV06">
                         {answer.label}
                       </span>
 
                       <span
-                        className="parentAnswerArrow"
+                        className="parentAnswerArrowV06"
                         aria-hidden="true"
                       >
                         →
@@ -501,12 +565,10 @@ function ParentPerspectiveFlow({
                     </button>
                   )
                 )}
-
               </div>
+            </article>
 
-            </div>
-
-          </div>
+          </main>
 
         </div>
 
@@ -514,22 +576,27 @@ function ParentPerspectiveFlow({
     )
   }
 
-
   if (mode === 'complete') {
     return (
-      <section className="parentPerspective parentPerspectiveV05">
+      <section className="parentV06">
 
-        <div className="parentPerspectiveShell">
+        <div className="parentTopbarV06">
+          <span />
 
-          <section className="parentCompletionHero">
+          <span className="parentModePillV06">
+            Parent view
+          </span>
+        </div>
 
-            <div className="parentCompletionIcon">
-              ✓
-            </div>
+        <header className="parentCompleteV06">
+          <div className="parentCompleteIconV06">
+            ✓
+          </div>
 
-            <p className="eyebrow">
-              Perspective Added
-            </p>
+          <div>
+            <span className="parentKickerV06">
+              PERSPECTIVE ADDED
+            </span>
 
             <h1>
               Thanks for sharing what
@@ -541,59 +608,43 @@ function ParentPerspectiveFlow({
               part of {childName}'s evolving
               Growth Intelligence.
             </p>
+          </div>
+        </header>
 
-          </section>
+        <div className="parentCompleteGridV06">
 
-
-          <div className="parentCompletionPrinciple">
-
-            <span>
-              ✨
-            </span>
-
-            <div>
-
+          <div>
+            <div className="parentCompletePrincipleV06">
               <strong>
-                Patterns become more useful
-                when perspectives overlap.
+                Better patterns emerge when
+                perspectives overlap.
               </strong>
 
               <p>
                 Child Discovery, parent
                 observations, experiences,
                 and reflections can reinforce
-                or challenge one another over
-                time.
+                or challenge one another over time.
               </p>
-
             </div>
 
-          </div>
-
-
-          {renderParentGoalCard()}
-
-
-          <div className="parentCompletionActions">
-
             <button
-              className="parentPrimaryButton"
-              onClick={
-                onBackToChildSpace
-              }
+              type="button"
+              className="parentPrimaryV06"
+              onClick={onBackToChildSpace}
             >
               Back to {childName}'s Space
               <span>→</span>
             </button>
-
           </div>
+
+          {renderParentGoalCard()}
 
         </div>
 
       </section>
     )
   }
-
 
   return null
 }
