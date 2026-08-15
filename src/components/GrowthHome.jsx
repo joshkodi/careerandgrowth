@@ -3,6 +3,10 @@ import {
 } from 'react'
 
 import './GrowthHome.css'
+import './ExperienceResearchPanel.css'
+import './JourneyPolish.css'
+
+import ExperienceResearchPanel from './ExperienceResearchPanel'
 
 
 function GrowthHome({
@@ -15,6 +19,8 @@ function GrowthHome({
   topTraits = [],
   topDomains = [],
   recommendations = [],
+  researchedExperienceCandidates = [],
+  onAddResearchedExperienceToJourney,
   studentIntents = [],
   journeyItems = [],
   completedJourneyInsight = null,
@@ -101,13 +107,8 @@ function GrowthHome({
           </span>
 
           <span className="growthBrandCopyV06">
-            <strong>
-              Career & Growth
-            </strong>
-
-            <small>
-              Grow into you.
-            </small>
+            <strong>Career & Growth</strong>
+            <small>Grow into you.</small>
           </span>
         </button>
 
@@ -126,15 +127,11 @@ function GrowthHome({
             Home
           </button>
 
-          <button
-            onClick={onDiscover}
-          >
+          <button onClick={onDiscover}>
             Discover
           </button>
 
-          <button
-            onClick={onExplore}
-          >
+          <button onClick={onExplore}>
             Explore
           </button>
 
@@ -176,18 +173,12 @@ function GrowthHome({
             </span>
 
             <span className="childMenuCopyV06">
-              <strong>
-                {childName}
-              </strong>
-
-              <small>
-                Age {childProfile?.age}
-              </small>
+              <strong>{childName}</strong>
+              <small>Age {childProfile?.age}</small>
             </span>
           </button>
         </div>
       </header>
-
 
       <main className="growthWorkspaceV06">
 
@@ -227,71 +218,50 @@ function GrowthHome({
                 onClick={onGrowthProfile}
               >
                 <span className="statusDotV06" />
-
                 <span>
                   {growthProfile
                     ? 'Profile is evolving'
                     : 'Profile is getting started'}
                 </span>
-
-                <strong>
-                  View profile →
-                </strong>
+                <strong>View profile →</strong>
               </button>
             </section>
-
 
             {!discoveryComplete && (
               <section className="discoveryStartBannerV06">
                 <div className="bannerIconV06">
                   🧭
                 </div>
-
                 <div>
                   <span className="growthKickerV06">
                     START HERE
                   </span>
-
                   <h2>
-                    Let's discover what
-                    feels like you.
+                    Let's discover what feels like you.
                   </h2>
-
                   <p>
-                    A few simple questions
-                    give us our first clues
-                    about what you enjoy,
-                    how you think, and what
+                    A few simple questions give us our first clues
+                    about what you enjoy, how you think, and what
                     makes you curious.
                   </p>
                 </div>
-
                 <button
                   className="growthPrimaryButtonV06"
                   onClick={onDiscover}
                 >
-                  Discover Me
-                  <span>→</span>
+                  Discover Me <span>→</span>
                 </button>
               </section>
             )}
 
-
             {completedJourneyInsight && (
               <PostReflectionInsight
-                insight={
-                  completedJourneyInsight
-                }
-                nextRecommendation={
-                  topRecommendation
-                }
+                insight={completedJourneyInsight}
+                nextRecommendation={topRecommendation}
                 onAddNext={onStartGrow}
-                onDismiss={
-                  onDismissJourneyInsight
-                }
+                onDismiss={onDismissJourneyInsight}
               />
             )}
-
 
             {discoveryComplete && (
               <>
@@ -303,12 +273,10 @@ function GrowthHome({
                         <span className="growthKickerV06">
                           CONTINUE
                         </span>
-
                         <h2>
                           What you're doing now
                         </h2>
                       </div>
-
                       <button
                         className="textActionV06"
                         onClick={onJourney}
@@ -325,15 +293,9 @@ function GrowthHome({
 
                         <div className="currentJourneyBodyV06">
                           <div className="currentJourneyTitleRowV06">
-                            <h3>
-                              {currentJourney.title}
-                            </h3>
-
+                            <h3>{currentJourney.title}</h3>
                             <span>
-                              {currentJourney
-                                .progress
-                                ?.percent || 0}
-                              %
+                              {currentJourney.progress?.percent || 0}%
                             </span>
                           </div>
 
@@ -355,39 +317,31 @@ function GrowthHome({
                             className="growthPrimaryButtonV06"
                             onClick={onJourney}
                           >
-                            Continue
-                            <span>→</span>
+                            Continue <span>→</span>
                           </button>
                         </div>
                       </div>
                     ) : (
                       <div className="focusEmptyV06">
-                        <span>
-                          🛤️
-                        </span>
-
+                        <span>🛤️</span>
                         <div>
                           <strong>
                             Nothing in progress yet.
                           </strong>
-
                           <p>
-                            Pick an experience and it
-                            will become part of your Journey.
+                            Pick an experience and it will become
+                            part of your Journey.
                           </p>
                         </div>
-
                         <button
                           className="growthPrimaryButtonV06"
                           onClick={onExplore}
                         >
-                          Find an Experience
-                          <span>→</span>
+                          Find an Experience <span>→</span>
                         </button>
                       </div>
                     )}
                   </article>
-
 
                   <article className="homeRecommendationCardV06">
                     <div className="cardHeadingRowV06">
@@ -395,12 +349,10 @@ function GrowthHome({
                         <span className="growthKickerV06">
                           PICKED FOR YOU
                         </span>
-
                         <h2>
                           Try something next
                         </h2>
                       </div>
-
                       <button
                         className="textActionV06"
                         onClick={onExplore}
@@ -414,18 +366,12 @@ function GrowthHome({
                         <div className="recommendationIconV06">
                           {topRecommendation.emoji || '✨'}
                         </div>
-
                         <div>
-                          <h3>
-                            {topRecommendation.title}
-                          </h3>
-
+                          <h3>{topRecommendation.title}</h3>
                           <p>
-                            {topRecommendation
-                              .reasons?.[0] ||
+                            {topRecommendation.reasons?.[0] ||
                               'This fits patterns we are starting to notice about you.'}
                           </p>
-
                           <button
                             className="growthPrimaryButtonV06"
                             onClick={() =>
@@ -434,16 +380,14 @@ function GrowthHome({
                               )
                             }
                           >
-                            Explore This
-                            <span>→</span>
+                            Explore This <span>→</span>
                           </button>
                         </div>
                       </div>
                     ) : (
                       <p className="mutedCopyV06">
-                        Recommendations will
-                        appear as we learn more
-                        about you.
+                        Recommendations will appear as we learn
+                        more about you.
                       </p>
                     )}
 
@@ -457,29 +401,35 @@ function GrowthHome({
                         }
                       >
                         <span>
-                          {secondaryRecommendation.emoji ||
-                            '🌱'}
+                          {secondaryRecommendation.emoji || '🌱'}
                         </span>
-
                         <span>
                           <strong>
                             {secondaryRecommendation.title}
                           </strong>
-
                           <small>
                             Another idea worth trying
                           </small>
                         </span>
-
-                        <span>
-                          →
-                        </span>
+                        <span>→</span>
                       </button>
                     )}
                   </article>
 
                 </section>
 
+                <ExperienceResearchPanel
+                  childName={childName}
+                  candidates={
+                    researchedExperienceCandidates
+                  }
+                  journeyItems={
+                    journeyItems
+                  }
+                  onAddToJourney={
+                    onAddResearchedExperienceToJourney
+                  }
+                />
 
                 <section className="homeSnapshotV06">
 
@@ -489,12 +439,10 @@ function GrowthHome({
                         <span className="growthKickerV06">
                           WHAT WE'RE NOTICING
                         </span>
-
                         <h2>
                           Your Growth Profile
                         </h2>
                       </div>
-
                       <button
                         className="textActionV06"
                         onClick={onGrowthProfile}
@@ -514,25 +462,20 @@ function GrowthHome({
                               <span>
                                 {trait.emoji || '🌱'}
                               </span>
-
                               {trait.label}
                             </span>
                           )
                         )
                       ) : (
                         <span className="mutedCopyV06">
-                          Keep exploring to reveal
-                          more patterns.
+                          Keep exploring to reveal more patterns.
                         </span>
                       )}
                     </div>
 
                     {strongestDomains.length > 0 && (
                       <div className="domainLineV06">
-                        <span>
-                          Curiosity:
-                        </span>
-
+                        <span>Curiosity:</span>
                         <strong>
                           {strongestDomains
                             .map(
@@ -546,77 +489,50 @@ function GrowthHome({
 
                     <div className="metricStripV06">
                       <div>
-                        <strong>
-                          {journeyItems.length}
-                        </strong>
-
-                        <span>
-                          Journey items
-                        </span>
+                        <strong>{journeyItems.length}</strong>
+                        <span>Journey items</span>
                       </div>
-
                       <div>
                         <strong>
                           {completedJourneyItems.length +
                             completedExplorations.length}
                         </strong>
-
-                        <span>
-                          Experiences tried
-                        </span>
+                        <span>Experiences tried</span>
                       </div>
-
                       <div>
-                        <strong>
-                          {evidenceEventCount}
-                        </strong>
-
-                        <span>
-                          Clues learned
-                        </span>
+                        <strong>{evidenceEventCount}</strong>
+                        <span>Clues learned</span>
                       </div>
                     </div>
                   </article>
-
 
                   <article className="studentVoiceV06">
                     <span className="growthKickerV06">
                       YOUR VOICE
                     </span>
-
                     <h2>
-                      What sounds interesting
-                      to you?
+                      What sounds interesting to you?
                     </h2>
-
                     <p>
-                      You don't have to wait
-                      for a recommendation.
+                      You don't have to wait for a recommendation.
                     </p>
 
                     <form
                       className="studentIdeaFormV06"
-                      onSubmit={
-                        handleStudentIdeaSubmit
-                      }
+                      onSubmit={handleStudentIdeaSubmit}
                     >
                       <input
                         type="text"
                         value={studentIdea}
                         onChange={(event) =>
-                          setStudentIdea(
-                            event.target.value
-                          )
+                          setStudentIdea(event.target.value)
                         }
                         placeholder="I want to..."
                         aria-label="What do you want to try?"
                       />
-
                       <button
                         type="submit"
-                        disabled={
-                          !studentIdea.trim()
-                        }
+                        disabled={!studentIdea.trim()}
                       >
                         →
                       </button>
@@ -624,10 +540,7 @@ function GrowthHome({
 
                     {latestStudentIntent && (
                       <div className="latestIdeaV06">
-                        <span>
-                          You told us
-                        </span>
-
+                        <span>You told us</span>
                         <strong>
                           “{latestStudentIntent.text}”
                         </strong>
@@ -642,7 +555,6 @@ function GrowthHome({
         )}
 
       </main>
-
     </div>
   )
 }
@@ -658,11 +570,8 @@ function PostReflectionInsight({
   onAddNext,
   onDismiss,
 }) {
-  const reflection =
-    insight?.reflection || {}
-
-  const item =
-    insight?.journeyItem
+  const reflection = insight?.reflection || {}
+  const item = insight?.journeyItem
 
   const enjoymentLabels = {
     not_for_me:
@@ -679,39 +588,26 @@ function PostReflectionInsight({
 
   if (
     reflection.enjoyment &&
-    enjoymentLabels[
-      reflection.enjoyment
-    ]
+    enjoymentLabels[reflection.enjoyment]
   ) {
     learningPoints.push(
-      enjoymentLabels[
-        reflection.enjoyment
-      ]
+      enjoymentLabels[reflection.enjoyment]
     )
   }
 
-  if (
-    reflection.favoritePart
-      ?.trim()
-  ) {
+  if (reflection.favoritePart?.trim()) {
     learningPoints.push(
       `Favorite: “${reflection.favoritePart.trim()}”`
     )
   }
 
-  if (
-    reflection.wouldDoAgain ===
-    true
-  ) {
+  if (reflection.wouldDoAgain === true) {
     learningPoints.push(
       'You would try something like this again.'
     )
   }
 
-  if (
-    reflection.wouldDoAgain ===
-    false
-  ) {
+  if (reflection.wouldDoAgain === false) {
     learningPoints.push(
       'You would rather try something different.'
     )
@@ -719,17 +615,14 @@ function PostReflectionInsight({
 
   return (
     <section className="postReflectionV06">
-
       <div className="postReflectionCopyV06">
         <span className="growthKickerV06">
           YOUR PROFILE GREW
         </span>
-
         <h2>
-          We learned something new
-          from {item?.title || 'this experience'}.
+          We learned something new from{' '}
+          {item?.title || 'this experience'}.
         </h2>
-
         <div className="reflectionChipsV06">
           {learningPoints.map(
             (point, index) => (
@@ -746,16 +639,12 @@ function PostReflectionInsight({
           <button
             className="growthPrimaryButtonV06"
             onClick={() =>
-              onAddNext?.(
-                nextRecommendation
-              )
+              onAddNext?.(nextRecommendation)
             }
           >
-            Try Next Idea
-            <span>→</span>
+            Try Next Idea <span>→</span>
           </button>
         )}
-
         <button
           className="textActionV06"
           onClick={onDismiss}
@@ -763,7 +652,6 @@ function PostReflectionInsight({
           Dismiss
         </button>
       </div>
-
     </section>
   )
 }
@@ -792,6 +680,7 @@ function JourneyPanel({
     enjoyment: null,
     favoritePart: '',
     difficultPart: '',
+    challengeResponse: null,
     wouldDoAgain: null,
     wantsNext: '',
   })
@@ -822,37 +711,27 @@ function JourneyPanel({
 
   const beginReflection =
     (journeyId) => {
-      setReflectingJourneyId(
-        journeyId
-      )
-
+      setReflectingJourneyId(journeyId)
       setReflectionDraft({
         enjoyment: null,
         favoritePart: '',
         difficultPart: '',
+        challengeResponse: null,
         wouldDoAgain: null,
         wantsNext: '',
       })
     }
 
   const cancelReflection =
-    () =>
-      setReflectingJourneyId(
-        null
-      )
+    () => setReflectingJourneyId(null)
 
   const submitReflection =
-    (
-      event,
-      journeyId
-    ) => {
+    (event, journeyId) => {
       event.preventDefault()
 
       if (
-        reflectionDraft.enjoyment ===
-          null ||
-        reflectionDraft.wouldDoAgain ===
-          null
+        reflectionDraft.enjoyment === null ||
+        reflectionDraft.wouldDoAgain === null
       ) {
         return
       }
@@ -862,9 +741,7 @@ function JourneyPanel({
         reflectionDraft
       )
 
-      setReflectingJourneyId(
-        null
-      )
+      setReflectingJourneyId(null)
     }
 
   return (
@@ -875,12 +752,10 @@ function JourneyPanel({
           <span className="growthKickerV06">
             MY JOURNEY
           </span>
-
           <h1>
             What you're working on,
             {` ${childName}`}.
           </h1>
-
           <p>
             Continue what you're trying,
             reflect when you're done,
@@ -891,27 +766,15 @@ function JourneyPanel({
 
         <div className="journeyStatsV06">
           <div>
-            <strong>
-              {activeItems.length}
-            </strong>
-
-            <span>
-              In progress
-            </span>
+            <strong>{activeItems.length}</strong>
+            <span>In progress</span>
           </div>
-
           <div>
-            <strong>
-              {completedItems.length}
-            </strong>
-
-            <span>
-              Completed
-            </span>
+            <strong>{completedItems.length}</strong>
+            <span>Completed</span>
           </div>
         </div>
       </section>
-
 
       <section className="journeySectionV06">
         <div className="journeySectionHeadingV06">
@@ -919,542 +782,701 @@ function JourneyPanel({
             <span className="growthKickerV06">
               IN PROGRESS
             </span>
-
             <h2>
-              What I'm doing now
+              Keep going
             </h2>
           </div>
-
-          <button
-            className="textActionV06"
-            onClick={onHome}
-          >
-            Back to Home →
-          </button>
         </div>
 
-        {activeItems.length === 0 ? (
-          <div className="journeyEmptyV06">
-            <span>
-              🌱
-            </span>
-
-            <div>
-              <strong>
-                Your Journey is ready.
-              </strong>
-
-              <p>
-                Choose an idea from Home
-                or Explore and it will
-                show up here.
-              </p>
-            </div>
-
-            <button
-              className="growthPrimaryButtonV06"
-              onClick={onHome}
-            >
-              Find an Experience
-              <span>→</span>
-            </button>
-          </div>
-        ) : (
-          <div className="journeyActiveListV06">
-
+        {activeItems.length > 0 ? (
+          <div className="journeyListV06">
             {activeItems.map(
-              (item) => {
-                const progress =
-                  item.progress?.percent ||
-                  0
+              (item) => (
+                <article
+                  className="journeyCardV06"
+                  key={item.id}
+                >
+                  <div className="journeyCardIconV06">
+                    {item.emoji || '🌱'}
+                  </div>
 
-                const isReflecting =
-                  reflectingJourneyId ===
-                  item.id
-
-                return (
-                  <article
-                    className="journeyCardV06"
-                    key={item.id}
-                  >
-
-                    <div className="journeyCardTopV06">
-                      <div className="journeyCardIdentityV06">
-                        <div className="journeyCardEmojiV06">
-                          {item.emoji}
-                        </div>
-
-                        <div>
-                          <span className="growthKickerV06">
-                            IN MY JOURNEY
-                          </span>
-
-                          <h3>
-                            {item.title}
-                          </h3>
-                        </div>
+                  <div className="journeyCardBodyV06">
+                    <div className="journeyCardTitleRowV06">
+                      <div>
+                        <span className="growthKickerV06">
+                          {item.origin || 'GROW'}
+                        </span>
+                        <h3>{item.title}</h3>
                       </div>
-
-                      <span className="journeyStatusV06">
-                        {progress > 0
-                          ? `${progress}% complete`
-                          : 'Just started'}
-                      </span>
+                      <strong>
+                        {item.progress?.percent || 0}%
+                      </strong>
                     </div>
 
-                    <p className="journeyDescriptionV06">
+                    <p>
                       {item.description ||
-                        'You chose this experience. Your Journey will keep track of what happens next.'}
+                        'Keep this experience moving forward.'}
                     </p>
 
-                    <JourneyProgress
-                      progress={progress}
-                      onChange={(percent) =>
-                        onJourneyProgress?.(
-                          item.id,
-                          percent
+                    {item.researchedExperience && (
+                      <ResearchedJourneyDetails
+                        researchedExperience={
+                          item.researchedExperience
+                        }
+                      />
+                    )}
+
+                    <div className="journeyProgressV06">
+                      <div
+                        style={{
+                          width:
+                            `${item.progress?.percent || 0}%`,
+                        }}
+                      />
+                    </div>
+
+                    <div className="journeyProgressActionsV06">
+                      {[25, 50, 75, 100].map(
+                        (percent) => (
+                          <button
+                            type="button"
+                            key={percent}
+                            className={
+                              (item.progress?.percent || 0) === percent
+                                ? 'active'
+                                : ''
+                            }
+                            onClick={() =>
+                              onJourneyProgress?.(
+                                item.id,
+                                percent
+                              )
+                            }
+                          >
+                            {percent}%
+                          </button>
                         )
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="growthPrimaryButtonV06"
+                      onClick={() =>
+                        beginReflection(item.id)
                       }
-                    />
+                    >
+                      Finish & Reflect
+                      <span>→</span>
+                    </button>
 
-                    {!isReflecting ? (
-                      <div className="journeyCardFooterV06">
-                        <button
-                          className="growthPrimaryButtonV06"
-                          onClick={() =>
-                            beginReflection(
-                              item.id
-                            )
-                          }
-                        >
-                          Complete & Reflect
-                          <span>→</span>
-                        </button>
-
-                        <span>
-                          Started{' '}
-                          {formatJourneyDate(
-                            item.startedAt
-                          )}
-                        </span>
-                      </div>
-                    ) : (
-                      <JourneyReflectionForm
-                        childName={childName}
-                        draft={
-                          reflectionDraft
-                        }
-                        setDraft={
-                          setReflectionDraft
-                        }
-                        onCancel={
-                          cancelReflection
-                        }
+                    {reflectingJourneyId === item.id && (
+                      <form
+                        className="journeyReflectionV06"
                         onSubmit={(event) =>
                           submitReflection(
                             event,
                             item.id
                           )
                         }
-                      />
-                    )}
+                      >
+                        <div className="journeyReflectionHeaderV07">
+                          <div className="journeyReflectionIconV07">
+                            ✨
+                          </div>
 
-                  </article>
-                )
-              }
-            )}
+                          <div>
+                            <span className="journeyReflectionEyebrowV07">
+                              FINISH & REFLECT
+                            </span>
 
-          </div>
-        )}
-      </section>
+                            <h4>
+                              What was this experience like?
+                            </h4>
 
+                            <p>
+                              A quick reflection helps your Growth Profile
+                              learn from what actually happened.
+                            </p>
+                          </div>
+                        </div>
 
-      <details className="journeyHistoryV06">
-        <summary>
-          Things I've Tried
-          <span>
-            {completedItems.length}
-          </span>
-        </summary>
+                        <div className="journeyReflectionSectionV07">
+                          <span className="journeyReflectionLabelV07">
+                            HOW DID IT FEEL?
+                          </span>
 
-        {completedItems.length === 0 ? (
-          <p className="mutedCopyV06">
-            Completed experiences will
-            collect here over time.
-          </p>
-        ) : (
-          <div className="journeyHistoryListV06">
+                          <div className="reflectionChoiceRowV06">
+                          {[
+                            ['not_for_me', 'Not for me'],
+                            ['okay', 'Okay'],
+                            ['liked_it', 'Liked it'],
+                            ['loved_it', 'Loved it'],
+                          ].map(
+                            ([value, label]) => (
+                              <button
+                                type="button"
+                                key={value}
+                                className={
+                                  reflectionDraft.enjoyment === value
+                                    ? 'active'
+                                    : ''
+                                }
+                                onClick={() =>
+                                  setReflectionDraft(
+                                    (current) => ({
+                                      ...current,
+                                      enjoyment: value,
+                                    })
+                                  )
+                                }
+                              >
+                                {label}
+                              </button>
+                            )
+                          )}
+                          </div>
+                        </div>
 
-            {completedItems.map(
-              (item) => (
-                <article
-                  className="journeyHistoryItemV06"
-                  key={item.id}
-                >
-                  <span>
-                    {item.emoji}
-                  </span>
+                        <div className="journeyReflectionSectionV07">
+                          <label>
+                            Favorite part
+                          <textarea
+                            value={reflectionDraft.favoritePart}
+                            onChange={(event) =>
+                              setReflectionDraft(
+                                (current) => ({
+                                  ...current,
+                                  favoritePart: event.target.value,
+                                })
+                              )
+                            }
+                          />
+                          </label>
 
-                  <div>
-                    <div className="historyTitleRowV06">
-                      <strong>
-                        {item.title}
-                      </strong>
+                          <label>
+                            What was difficult?
+                          <textarea
+                            value={reflectionDraft.difficultPart}
+                            onChange={(event) =>
+                              setReflectionDraft(
+                                (current) => ({
+                                  ...current,
+                                  difficultPart: event.target.value,
+                                })
+                              )
+                            }
+                          />
+                          </label>
+                        </div>
 
-                      <small>
-                        {formatJourneyDate(
-                          item.completedAt
+                        {item.researchedExperience && (
+                          <div className="researchedReflectionQuestionV07">
+                            <span>
+                              When something was difficult,
+                              what did you usually do?
+                            </span>
+
+                            <p>
+                              This helps your Growth Profile learn
+                              from what actually happened during
+                              the experience.
+                            </p>
+
+                            <div className="researchedReflectionChoicesV07">
+                              {[
+                                [
+                                  'kept_trying',
+                                  'Kept trying',
+                                ],
+                                [
+                                  'changed_approach',
+                                  'Tried a different idea',
+                                ],
+                                [
+                                  'asked_for_help',
+                                  'Asked for help',
+                                ],
+                                [
+                                  'mostly_easy',
+                                  'It was mostly easy',
+                                ],
+                              ].map(
+                                ([
+                                  value,
+                                  label,
+                                ]) => (
+                                  <button
+                                    type="button"
+                                    key={value}
+                                    className={
+                                      reflectionDraft.challengeResponse === value
+                                        ? 'active'
+                                        : ''
+                                    }
+                                    onClick={() =>
+                                      setReflectionDraft(
+                                        (current) => ({
+                                          ...current,
+                                          challengeResponse:
+                                            value,
+                                        })
+                                      )
+                                    }
+                                  >
+                                    {label}
+                                  </button>
+                                )
+                              )}
+                            </div>
+                          </div>
                         )}
-                      </small>
-                    </div>
 
-                    {item.reflection
-                      ?.favoritePart && (
-                      <p>
-                        “{item.reflection.favoritePart}”
-                      </p>
+                        <div className="journeyReflectionSectionV07">
+                          <div className="reflectionQuestionV06">
+                            <span className="journeyReflectionLabelV07">
+                              WOULD YOU TRY SOMETHING LIKE THIS AGAIN?
+                            </span>
+                          <div className="reflectionChoiceRowV06">
+                            <button
+                              type="button"
+                              className={
+                                reflectionDraft.wouldDoAgain === true
+                                  ? 'active'
+                                  : ''
+                              }
+                              onClick={() =>
+                                setReflectionDraft(
+                                  (current) => ({
+                                    ...current,
+                                    wouldDoAgain: true,
+                                  })
+                                )
+                              }
+                            >
+                              Yes
+                            </button>
+                            <button
+                              type="button"
+                              className={
+                                reflectionDraft.wouldDoAgain === false
+                                  ? 'active'
+                                  : ''
+                              }
+                              onClick={() =>
+                                setReflectionDraft(
+                                  (current) => ({
+                                    ...current,
+                                    wouldDoAgain: false,
+                                  })
+                                )
+                              }
+                            >
+                              No
+                            </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="journeyReflectionSectionV07">
+                          <label>
+                            What would you want to try next?
+                          <textarea
+                            value={reflectionDraft.wantsNext}
+                            onChange={(event) =>
+                              setReflectionDraft(
+                                (current) => ({
+                                  ...current,
+                                  wantsNext: event.target.value,
+                                })
+                              )
+                            }
+                          />
+                          </label>
+                        </div>
+
+                        <div className="journeyReflectionActionsV06">
+                          <button
+                            type="button"
+                            className="textActionV06"
+                            onClick={cancelReflection}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="growthPrimaryButtonV06"
+                            disabled={
+                              reflectionDraft.enjoyment === null ||
+                              reflectionDraft.wouldDoAgain === null ||
+                              (
+                                item.researchedExperience &&
+                                reflectionDraft.challengeResponse === null
+                              )
+                            }
+                          >
+                            Complete Reflection
+                          </button>
+                        </div>
+                      </form>
                     )}
                   </div>
                 </article>
               )
             )}
-
+          </div>
+        ) : (
+          <div className="journeyEmptyV06">
+            <span>🌱</span>
+            <h3>
+              Nothing in progress right now.
+            </h3>
+            <p>
+              Pick a new experience from Home or Explore
+              when you're ready.
+            </p>
+            <button
+              className="growthPrimaryButtonV06"
+              onClick={onHome}
+            >
+              Back Home
+            </button>
           </div>
         )}
-      </details>
+      </section>
+
+      {completedItems.length > 0 && (
+        <section className="journeySectionV06 journeyCompletedSectionV07">
+          <div className="journeyCompletedHeaderV07">
+            <div>
+              <span className="growthKickerV06">
+                COMPLETED
+              </span>
+
+              <h2>
+                What you've tried
+              </h2>
+
+              <p>
+                A growing history of experiences,
+                reflections, and things you've learned
+                about yourself.
+              </p>
+            </div>
+
+            <div className="journeyCompletedCountV07">
+              <strong>
+                {completedItems.length}
+              </strong>
+
+              <span>
+                completed
+              </span>
+            </div>
+          </div>
+
+          <div className="journeyCompletedGridV06">
+            {completedItems.map(
+              (item) => (
+                <article
+                  className="journeyCompletedCardV06"
+                  key={item.id}
+                >
+                  <div className="journeyCompletedIconV07">
+                    {item.emoji || '✨'}
+                  </div>
+
+                  <div className="journeyCompletedBodyV07">
+                    <div className="journeyCompletedTitleRowV07">
+                      <div>
+                        <span className="journeyCompletedBadgeV07">
+                          ✓ Completed
+                        </span>
+
+                        <h3>
+                          {item.title}
+                        </h3>
+                      </div>
+
+                      {item.researchedExperience && (
+                        <span className="journeyCompletedResearchBadgeV07">
+                          Researched
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="journeyCompletedReflectionV07">
+                      <span>
+                        YOUR REFLECTION
+                      </span>
+
+                      <p>
+                        {item.reflection?.favoritePart
+                          ? `“${item.reflection.favoritePart}”`
+                          : 'Reflection saved.'}
+                      </p>
+                    </div>
+
+                    <div className="journeyCompletedMetaV07">
+                      {item.reflection?.enjoyment && (
+                        <span>
+                          {item.reflection.enjoyment
+                            .replaceAll('_', ' ')}
+                        </span>
+                      )}
+
+                      {item.reflection?.wouldDoAgain === true && (
+                        <span>
+                          Would try again
+                        </span>
+                      )}
+
+                      {item.reflection?.wouldDoAgain === false && (
+                        <span>
+                          Ready for something different
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              )
+            )}
+          </div>
+        </section>
+      )}
 
     </div>
   )
 }
 
 
-function JourneyProgress({
-  progress = 0,
-  onChange,
+// ============================================================
+// RESEARCHED JOURNEY DETAILS
+// ============================================================
+
+function ResearchedJourneyDetails({
+  researchedExperience,
 }) {
-  const steps = [
-    {
-      value: 25,
-      label: 'Just started',
-    },
-    {
-      value: 50,
-      label: 'Making progress',
-    },
-    {
-      value: 75,
-      label: 'Almost there',
-    },
-  ]
+  const {
+    strategy,
+    mission,
+    whyItFits,
+    buildsOn = [],
+    practices = [],
+    estimatedTime,
+    activitySteps = [],
+    parentRole,
+    sourceResource,
+  } = researchedExperience
+
+  const [showDetails, setShowDetails] =
+    useState(false)
+
+  const humanize =
+    (value = '') =>
+      String(value)
+        .replaceAll('_', ' ')
+        .replace(
+          /\b\w/g,
+          (char) =>
+            char.toUpperCase()
+        )
 
   return (
-    <div className="journeyProgressV06">
+    <div className="researchedJourneyV07">
 
-      <div className="journeyProgressTopV06">
+      <div className="researchedJourneySummaryV07">
+
         <div>
-          <strong>
-            How's it going?
-          </strong>
-
-          <span>
-            Choose the step that feels closest.
+          <span className="researchedJourneyLabelV07">
+            RESEARCHED EXPERIENCE
           </span>
+
+          <div className="researchedJourneyMetaV07">
+            {strategy && (
+              <span>
+                {humanize(strategy)}
+              </span>
+            )}
+
+            {estimatedTime && (
+              <span>
+                {estimatedTime}
+              </span>
+            )}
+
+            {sourceResource?.provider && (
+              <span>
+                {sourceResource.provider}
+              </span>
+            )}
+          </div>
         </div>
-
-        <strong>
-          {progress}%
-        </strong>
-      </div>
-
-      <div className="journeyProgressTrackV06">
-        <div
-          style={{
-            width:
-              `${progress}%`,
-          }}
-        />
-      </div>
-
-      <div className="journeyProgressChoicesV06">
-        {steps.map(
-          (step) => (
-            <button
-              type="button"
-              key={step.value}
-              className={
-                progress === step.value
-                  ? 'active'
-                  : ''
-              }
-              onClick={() =>
-                onChange?.(
-                  step.value
-                )
-              }
-            >
-              {step.label}
-            </button>
-          )
-        )}
-      </div>
-
-    </div>
-  )
-}
-
-
-function JourneyReflectionForm({
-  childName,
-  draft,
-  setDraft,
-  onCancel,
-  onSubmit,
-}) {
-  const updateDraft =
-    (
-      key,
-      value
-    ) =>
-      setDraft(
-        (current) => ({
-          ...current,
-          [key]: value,
-        })
-      )
-
-  const ready =
-    draft.enjoyment !== null &&
-    draft.wouldDoAgain !== null
-
-  return (
-    <form
-      className="journeyReflectionV06"
-      onSubmit={onSubmit}
-    >
-
-      <div>
-        <span className="growthKickerV06">
-          QUICK REFLECTION
-        </span>
-
-        <h4>
-          What did you notice,
-          {` ${childName}`}?
-        </h4>
-      </div>
-
-      <ReflectionChoice
-        label="How much did you enjoy it?"
-        options={[
-          [
-            'not_for_me',
-            '😕 Not for me',
-          ],
-          [
-            'okay',
-            '🙂 It was okay',
-          ],
-          [
-            'liked_it',
-            '😄 I liked it',
-          ],
-          [
-            'loved_it',
-            '🤩 I loved it',
-          ],
-        ]}
-        value={
-          draft.enjoyment
-        }
-        onChange={(value) =>
-          updateDraft(
-            'enjoyment',
-            value
-          )
-        }
-      />
-
-      <div className="reflectionTextGridV06">
-        <ReflectionText
-          label="Favorite part"
-          value={
-            draft.favoritePart
-          }
-          placeholder="I liked..."
-          onChange={(value) =>
-            updateDraft(
-              'favoritePart',
-              value
-            )
-          }
-        />
-
-        <ReflectionText
-          label="Hard part"
-          value={
-            draft.difficultPart
-          }
-          placeholder="The hard part was..."
-          onChange={(value) =>
-            updateDraft(
-              'difficultPart',
-              value
-            )
-          }
-        />
-      </div>
-
-      <ReflectionChoice
-        label="Would you do something like this again?"
-        options={[
-          [
-            true,
-            '👍 Yes',
-          ],
-          [
-            false,
-            '👎 Probably not',
-          ],
-        ]}
-        value={
-          draft.wouldDoAgain
-        }
-        onChange={(value) =>
-          updateDraft(
-            'wouldDoAgain',
-            value
-          )
-        }
-      />
-
-      <ReflectionText
-        label="Anything you want to try next?"
-        value={
-          draft.wantsNext
-        }
-        placeholder="Next I want to..."
-        onChange={(value) =>
-          updateDraft(
-            'wantsNext',
-            value
-          )
-        }
-      />
-
-      <div className="reflectionActionsV06">
-        <button
-          type="submit"
-          className="growthPrimaryButtonV06"
-          disabled={!ready}
-        >
-          Complete Reflection
-          <span>→</span>
-        </button>
 
         <button
           type="button"
-          className="textActionV06"
-          onClick={onCancel}
+          className="researchedJourneyToggleV07"
+          onClick={() =>
+            setShowDetails(
+              (current) => !current
+            )
+          }
         >
-          Keep working on it
+          {showDetails
+            ? 'Hide details'
+            : 'View experience'}
         </button>
+
       </div>
 
-    </form>
-  )
-}
+
+      {mission && (
+        <div className="researchedJourneyMissionV07">
+          <span>
+            YOUR MISSION
+          </span>
+
+          <p>
+            {mission}
+          </p>
+        </div>
+      )}
 
 
-function ReflectionChoice({
-  label,
-  options,
-  value,
-  onChange,
-}) {
-  return (
-    <div className="reflectionFieldV06">
-      <strong>
-        {label}
-      </strong>
+      {showDetails && (
+        <div className="researchedJourneyExpandedV07">
 
-      <div className="reflectionChoicesV06">
-        {options.map(
-          (
-            [
-              optionValue,
-              optionLabel,
-            ]
-          ) => (
-            <button
-              type="button"
-              key={
-                String(
-                  optionValue
-                )
-              }
-              className={
-                value === optionValue
-                  ? 'active'
-                  : ''
-              }
-              onClick={() =>
-                onChange(
-                  optionValue
-                )
-              }
-            >
-              {optionLabel}
-            </button>
-          )
-        )}
-      </div>
+          {whyItFits && (
+            <div className="researchedJourneySectionV07">
+              <span>
+                WHY THIS FITS YOU
+              </span>
+
+              <p>
+                {whyItFits}
+              </p>
+            </div>
+          )}
+
+
+          {(buildsOn.length > 0 ||
+            practices.length > 0) && (
+            <div className="researchedJourneySkillGridV07">
+
+              {buildsOn.length > 0 && (
+                <div>
+                  <span>
+                    BUILDS ON
+                  </span>
+
+                  <div className="researchedJourneyChipsV07">
+                    {buildsOn
+                      .slice(0, 5)
+                      .map(
+                        (item) => (
+                          <span key={item}>
+                            {humanize(item)}
+                          </span>
+                        )
+                      )}
+                  </div>
+                </div>
+              )}
+
+              {practices.length > 0 && (
+                <div>
+                  <span>
+                    YOU'LL PRACTICE
+                  </span>
+
+                  <div className="researchedJourneyChipsV07">
+                    {practices
+                      .slice(0, 5)
+                      .map(
+                        (item) => (
+                          <span key={item}>
+                            {humanize(item)}
+                          </span>
+                        )
+                      )}
+                  </div>
+                </div>
+              )}
+
+            </div>
+          )}
+
+
+          {activitySteps.length > 0 && (
+            <div className="researchedJourneySectionV07">
+              <span>
+                EXPERIENCE STEPS
+              </span>
+
+              <ol className="researchedJourneyStepsV07">
+                {activitySteps.map(
+                  (
+                    step,
+                    index
+                  ) => (
+                    <li key={step.id || index}>
+                      <strong>
+                        {step.title}
+                      </strong>
+
+                      <p>
+                        {step.instruction}
+                      </p>
+                    </li>
+                  )
+                )}
+              </ol>
+            </div>
+          )}
+
+
+          {parentRole?.guidance && (
+            <div className="researchedJourneyParentV07">
+              <span>
+                PARENT ROLE
+              </span>
+
+              <p>
+                {parentRole.guidance}
+              </p>
+            </div>
+          )}
+
+
+          {sourceResource?.url && (
+            <div className="researchedJourneySourceV07">
+
+              <div>
+                <span>
+                  ORIGINAL RESOURCE
+                </span>
+
+                <strong>
+                  {sourceResource.provider ||
+                    sourceResource.title}
+                </strong>
+              </div>
+
+              <a
+                href={sourceResource.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open source ↗
+              </a>
+
+            </div>
+          )}
+
+        </div>
+      )}
+
     </div>
-  )
-}
-
-
-function ReflectionText({
-  label,
-  value,
-  placeholder,
-  onChange,
-}) {
-  return (
-    <label className="reflectionFieldV06">
-      <strong>
-        {label}
-      </strong>
-
-      <input
-        type="text"
-        value={value}
-        placeholder={placeholder}
-        onChange={(event) =>
-          onChange(
-            event.target.value
-          )
-        }
-      />
-    </label>
-  )
-}
-
-
-function formatJourneyDate(
-  value
-) {
-  if (!value) {
-    return 'recently'
-  }
-
-  return new Intl.DateTimeFormat(
-    'en-US',
-    {
-      month: 'short',
-      day: 'numeric',
-    }
-  ).format(
-    new Date(value)
   )
 }
 

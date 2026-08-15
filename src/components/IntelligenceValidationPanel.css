@@ -1,0 +1,361 @@
+/* ============================================================
+   Career & Growth — MVP v0.7
+   Temporary Intelligence Validation Panel
+   ============================================================ */
+
+
+.validationPanelV07 {
+  max-width: 1120px;
+  margin: 30px auto 60px;
+  padding: 22px;
+
+  border: 1px dashed #b7c9bc;
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f7faf8,
+      #fffdf8
+    );
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.validationHeaderV07 {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-bottom: 15px;
+}
+
+
+.validationHeaderV07 > div > span,
+.validationLabelV07,
+.validationStrategyTitleV07 small {
+  color: #718077;
+
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+
+.validationHeaderV07 h2 {
+  margin: 5px 0;
+
+  color: #2a3b30;
+
+  font-size: 21px;
+}
+
+
+.validationHeaderV07 p {
+  margin: 0;
+
+  color: #6d7b72;
+
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+
+.validationHeaderV07 > b {
+  height: max-content;
+
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  background: #f4ead3;
+  color: #806b42;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+
+/* ============================================================
+   SCENARIO LIST
+   ============================================================ */
+
+.validationListV07 {
+  display: grid;
+  gap: 9px;
+}
+
+
+.validationScenarioV07 {
+  overflow: hidden;
+
+  border: 1px solid #dce5de;
+  border-radius: 13px;
+
+  background: #ffffff;
+}
+
+
+.validationRowV07 {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+
+  padding: 14px;
+
+  border: 0;
+
+  background: transparent;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+
+.validationRowV07:hover {
+  background: #f8faf8;
+}
+
+
+.validationRowV07 strong,
+.validationRowV07 small {
+  display: block;
+}
+
+
+.validationRowV07 strong {
+  color: #35463b;
+
+  font-size: 11px;
+}
+
+
+.validationRowV07 small {
+  margin-top: 3px;
+
+  color: #879188;
+
+  font-size: 8px;
+}
+
+
+/* ============================================================
+   SCENARIO METRICS
+   ============================================================ */
+
+.validationMetricsV07 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  color: #748178;
+
+  font-size: 8px;
+}
+
+
+.validationMetricsV07 em {
+  color: #2f6846;
+
+  font-style: normal;
+  font-weight: 800;
+}
+
+
+/* ============================================================
+   EXPANDED DETAILS
+   ============================================================ */
+
+.validationDetailsV07 {
+  padding: 0 14px 14px;
+
+  border-top: 1px solid #edf1ee;
+}
+
+
+.validationStrategyV07 {
+  margin-top: 12px;
+  padding: 13px;
+
+  border: 1px solid #e1e8e3;
+  border-radius: 11px;
+
+  background: #fafcfa;
+}
+
+
+.validationStrategyTitleV07 {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+
+.validationStrategyTitleV07 strong {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #405348;
+
+  font-size: 10px;
+}
+
+
+.validationStrategyTitleV07 > span {
+  color: #718077;
+
+  font-size: 8px;
+}
+
+
+/* ============================================================
+   SEARCH DIRECTIONS
+   ============================================================ */
+
+.validationStrategyV07 ul {
+  margin: 6px 0 12px;
+  padding-left: 18px;
+
+  color: #66746b;
+
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+
+/* ============================================================
+   EXPERIENCE CANDIDATES
+   ============================================================ */
+
+.validationCandidatesV07 {
+  display: grid;
+  gap: 6px;
+
+  margin-top: 7px;
+}
+
+
+.validationCandidatesV07 > div {
+  padding: 9px;
+
+  border: 1px solid #e4e9e5;
+  border-radius: 9px;
+
+  background: #ffffff;
+}
+
+
+.validationCandidatesV07 strong,
+.validationCandidatesV07 small {
+  display: block;
+}
+
+
+.validationCandidatesV07 strong {
+  color: #3b4c41;
+
+  font-size: 9px;
+}
+
+
+.validationCandidatesV07 small {
+  margin-top: 3px;
+
+  color: #7a867e;
+
+  font-size: 7px;
+}
+
+
+.validationCandidatesV07 p {
+  margin: 6px 0 0;
+
+  color: #89938c;
+
+  font-size: 8px;
+}
+
+
+/* ============================================================
+   PASS / REVIEW / REJECT STATUS
+   ============================================================ */
+
+.validationStatusesV07 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+
+  margin-top: 11px;
+}
+
+
+.validationStatusesV07 span {
+  padding: 4px 6px;
+
+  border-radius: 999px;
+
+  font-size: 7px;
+  font-weight: 800;
+
+  text-transform: uppercase;
+}
+
+
+.validationStatusesV07 .pass {
+  background: #e3f0e6;
+  color: #356347;
+}
+
+
+.validationStatusesV07 .review {
+  background: #f5edd9;
+  color: #806b42;
+}
+
+
+.validationStatusesV07 .reject {
+  background: #f5e4e1;
+  color: #8a5149;
+}
+
+
+/* ============================================================
+   FOOTER NOTE
+   ============================================================ */
+
+.validationFooterV07 {
+  margin: 13px 0 0;
+
+  color: #89938c;
+
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+  .validationHeaderV07,
+  .validationRowV07 {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+
+  .validationMetricsV07 {
+    flex-wrap: wrap;
+  }
+
+}

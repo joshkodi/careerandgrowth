@@ -1,0 +1,1273 @@
+/* ============================================================
+   Career & Growth — MVP v0.7
+   Journey UI Polish
+
+   Intent:
+   - stronger hierarchy
+   - less pale / washed-out presentation
+   - clearer progress and active-state emphasis
+   - preserve existing Journey behavior
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   JOURNEY CANVAS
+   ------------------------------------------------------------ */
+
+.journeyV06 {
+  position: relative;
+  padding: 4px 0 22px;
+}
+
+
+/* ------------------------------------------------------------
+   HERO / HEADER
+   ------------------------------------------------------------ */
+
+.journeyHeaderV06 {
+  position: relative;
+  overflow: hidden;
+
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+  align-items: center;
+  gap: 28px;
+
+  padding: 26px 28px;
+
+  border: 1px solid #d8e3da;
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #edf6ef 0%,
+      #f8fbf8 58%,
+      #fffaf0 100%
+    );
+
+  box-shadow:
+    0 12px 34px
+    rgba(42, 70, 49, .06);
+}
+
+.journeyHeaderV06::after {
+  content: '';
+
+  position: absolute;
+  right: -50px;
+  top: -85px;
+
+  width: 210px;
+  height: 210px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(79, 138, 96, .07);
+
+  pointer-events: none;
+}
+
+.journeyHeaderV06 > div:first-child {
+  position: relative;
+  z-index: 1;
+
+  max-width: 700px;
+}
+
+.journeyHeaderV06 .growthKickerV06 {
+  color: #54745f;
+}
+
+.journeyHeaderV06 h1 {
+  margin: 7px 0 8px;
+
+  color: #203026;
+
+  font-size:
+    clamp(
+      30px,
+      4vw,
+      42px
+    );
+
+  line-height: 1.05;
+  letter-spacing: -.04em;
+  font-weight: 760;
+}
+
+.journeyHeaderV06 p {
+  max-width: 620px;
+
+  margin: 0;
+
+  color: #596b60;
+
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+
+/* ------------------------------------------------------------
+   HEADER STATS
+   ------------------------------------------------------------ */
+
+.journeyStatsV06 {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(105px, 1fr)
+    );
+
+  gap: 9px;
+}
+
+.journeyStatsV06 div {
+  min-width: 105px;
+
+  padding: 14px 15px;
+
+  border: 1px solid
+    rgba(47, 104, 70, .13);
+  border-radius: 14px;
+
+  background:
+    rgba(255, 255, 255, .88);
+
+  box-shadow:
+    0 5px 16px
+    rgba(42, 70, 49, .035);
+}
+
+.journeyStatsV06 strong {
+  color: #2f6846;
+
+  font-size: 24px;
+  line-height: 1;
+}
+
+.journeyStatsV06 span {
+  margin-top: 5px;
+
+  color: #65756b;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+/* ------------------------------------------------------------
+   SECTIONS
+   ------------------------------------------------------------ */
+
+.journeySectionV06 {
+  margin-top: 28px;
+}
+
+.journeySectionHeadingV06 {
+  margin-bottom: 13px;
+}
+
+.journeySectionHeadingV06 h2 {
+  margin: 5px 0 0;
+
+  color: #26362c;
+
+  font-size: 20px;
+  font-weight: 740;
+}
+
+.journeySectionHeadingV06 .growthKickerV06 {
+  color: #718077;
+}
+
+
+/* ------------------------------------------------------------
+   ACTIVE JOURNEY LIST
+   ------------------------------------------------------------ */
+
+.journeyListV06,
+.journeyActiveListV06 {
+  display: grid;
+  gap: 13px;
+}
+
+.journeyCardV06 {
+  position: relative;
+  overflow: hidden;
+
+  padding: 20px;
+
+  border: 1px solid #d7e1d9;
+  border-radius: 17px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 8px 26px
+    rgba(43, 67, 50, .045);
+}
+
+.journeyCardV06::before {
+  content: '';
+
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  width: 4px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #4f8a60,
+      #83b18f
+    );
+}
+
+.journeyCardV06:hover {
+  border-color: #c8d8cc;
+
+  box-shadow:
+    0 12px 30px
+    rgba(43, 67, 50, .065);
+}
+
+.journeyCardIconV06 {
+  width: 48px;
+  height: 48px;
+
+  flex: 0 0 48px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #e6f1e8,
+      #f5faf6
+    );
+
+  border: 1px solid #d7e5da;
+
+  font-size: 23px;
+}
+
+.journeyCardBodyV06 {
+  min-width: 0;
+}
+
+.journeyCardTitleRowV06 {
+  align-items: flex-start;
+}
+
+.journeyCardTitleRowV06 h3 {
+  color: #24342a;
+
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.journeyCardTitleRowV06 strong,
+.journeyCardTitleRowV06 > span {
+  padding: 4px 8px;
+
+  border-radius: 999px;
+
+  background: #edf5ef;
+  color: #2f6846;
+
+  font-size: 11px;
+  font-weight: 820;
+}
+
+.journeyCardBodyV06 > p {
+  margin: 7px 0 13px;
+
+  color: #5d6c63;
+
+  font-size: 13px;
+  line-height: 1.52;
+}
+
+
+/* ------------------------------------------------------------
+   PROGRESS
+   ------------------------------------------------------------ */
+
+.journeyProgressV06 {
+  height: 8px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #e5ebe6;
+}
+
+.journeyProgressV06 > div {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #3f7952,
+      #73a781
+    );
+}
+
+.journeyProgressActionsV06 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+
+  margin: 10px 0 14px;
+}
+
+.journeyProgressActionsV06 button {
+  min-width: 48px;
+
+  padding: 7px 10px;
+
+  border: 1px solid #d7e1d9;
+  border-radius: 9px;
+
+  background: #f7faf7;
+  color: #637168;
+
+  font-size: 11px;
+  font-weight: 760;
+
+  cursor: pointer;
+}
+
+.journeyProgressActionsV06 button:hover {
+  border-color: #bcd0c1;
+
+  background: #edf5ef;
+
+  color: #2f6846;
+}
+
+.journeyProgressActionsV06 button.active {
+  border-color: #9fbea8;
+
+  background: #e3f0e6;
+  color: #285f3d;
+}
+
+
+/* ------------------------------------------------------------
+   PRIMARY JOURNEY ACTION
+   ------------------------------------------------------------ */
+
+.journeyCardV06 .growthPrimaryButtonV06 {
+  min-height: 40px;
+
+  padding-inline: 16px;
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 4px 11px
+    rgba(47, 104, 70, .12);
+}
+
+
+/* ------------------------------------------------------------
+   REFLECTION
+   ------------------------------------------------------------ */
+
+.journeyReflectionV06 {
+  margin-top: 17px;
+
+  padding: 18px;
+
+  border: 1px solid #dce5de;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #f8fbf8,
+      #fffdf8
+    );
+}
+
+.journeyReflectionV06 h4 {
+  margin: 0 0 13px;
+
+  color: #29382e;
+
+  font-size: 15px;
+}
+
+.journeyReflectionV06 label,
+.reflectionQuestionV06 > span {
+  color: #44564a;
+
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.journeyReflectionV06 textarea {
+  border-color: #d7e1d9;
+
+  background: #ffffff;
+
+  color: #2b382f;
+}
+
+.reflectionChoiceRowV06 button {
+  border-color: #d7e1d9;
+
+  background: #ffffff;
+
+  color: #5a685f;
+}
+
+.reflectionChoiceRowV06 button.active {
+  border-color: #9bb9a4;
+
+  background: #e6f1e8;
+
+  color: #285f3d;
+}
+
+
+/* ------------------------------------------------------------
+   COMPLETED JOURNEY
+   ------------------------------------------------------------ */
+
+.journeyCompletedGridV06 {
+  gap: 11px;
+}
+
+.journeyCompletedCardV06 {
+  border: 1px solid #dfe6e0;
+  border-radius: 14px;
+
+  background: #fbfcfb;
+
+  box-shadow:
+    0 5px 17px
+    rgba(43, 67, 50, .025);
+}
+
+.journeyCompletedCardV06 h3 {
+  color: #36463b;
+}
+
+.journeyCompletedCardV06 p {
+  color: #6b786f;
+}
+
+
+/* ------------------------------------------------------------
+   EMPTY JOURNEY
+   ------------------------------------------------------------ */
+
+.journeyEmptyV06 {
+  padding: 22px;
+
+  border: 1px dashed #cbd8ce;
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f4f8f5,
+      #fffdf8
+    );
+}
+
+.journeyEmptyV06 > span {
+  width: 44px;
+  height: 44px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 13px;
+
+  background: #e5f0e7;
+
+  font-size: 21px;
+}
+
+
+/* ------------------------------------------------------------
+   RESEARCHED EXPERIENCE VISUAL CUE
+   ------------------------------------------------------------ */
+
+.journeyCardV06:has(
+  .journeyCardBodyV06
+) {
+  transition:
+    border-color .16s ease,
+    box-shadow .16s ease,
+    transform .16s ease;
+}
+
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+
+@media (max-width: 760px) {
+  .journeyHeaderV06 {
+    grid-template-columns: 1fr;
+
+    padding: 21px;
+  }
+
+  .journeyStatsV06 {
+    width: 100%;
+  }
+
+  .journeyStatsV06 div {
+    min-width: 0;
+  }
+
+  .journeyCardV06 {
+    padding: 17px;
+  }
+}
+
+
+/* ============================================================
+   MVP v0.7 — RESEARCHED EXPERIENCE JOURNEY DETAILS
+   ============================================================ */
+
+.researchedJourneyV07 {
+  margin: 13px 0 16px;
+  padding: 14px 15px;
+  border: 1px solid #d6e2d8;
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      135deg,
+      #f5faf6,
+      #fffdf8
+    );
+}
+
+.researchedJourneySummaryV07 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.researchedJourneyLabelV07,
+.researchedJourneySectionV07 > span,
+.researchedJourneyMissionV07 > span,
+.researchedJourneySkillGridV07 > div > span,
+.researchedJourneyParentV07 > span,
+.researchedJourneySourceV07 > div > span {
+  color: #6c8172;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .1em;
+}
+
+.researchedJourneyMetaV07 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 5px;
+}
+
+.researchedJourneyMetaV07 span {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: #e7f1e9;
+  color: #426951;
+  font-size: 8px;
+  font-weight: 760;
+}
+
+.researchedJourneyToggleV07 {
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  color: #2f6846;
+  font-size: 9px;
+  font-weight: 820;
+  cursor: pointer;
+}
+
+.researchedJourneyMissionV07 {
+  margin-top: 12px;
+  padding: 11px 12px;
+  border-left: 3px solid #7fa28a;
+  border-radius: 0 10px 10px 0;
+  background: rgba(255, 255, 255, .72);
+}
+
+.researchedJourneyMissionV07 p,
+.researchedJourneySectionV07 p,
+.researchedJourneyParentV07 p {
+  margin: 5px 0 0;
+  color: #526158;
+  font-size: 11px;
+  line-height: 1.52;
+}
+
+.researchedJourneyExpandedV07 {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #dce6de;
+}
+
+.researchedJourneySectionV07 {
+  margin-top: 14px;
+}
+
+.researchedJourneySectionV07:first-child {
+  margin-top: 0;
+}
+
+.researchedJourneySkillGridV07 {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.researchedJourneySkillGridV07 > div {
+  padding: 11px;
+  border: 1px solid #e0e7e1;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .72);
+}
+
+.researchedJourneyChipsV07 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.researchedJourneyChipsV07 span {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: #eef5ef;
+  color: #53695a;
+  font-size: 8px;
+  font-weight: 720;
+}
+
+.researchedJourneyStepsV07 {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: researched-step;
+}
+
+.researchedJourneyStepsV07 li {
+  position: relative;
+  padding: 10px 11px 10px 38px;
+  border: 1px solid #e1e7e2;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .76);
+  counter-increment: researched-step;
+}
+
+.researchedJourneyStepsV07 li::before {
+  content: counter(researched-step);
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  background: #dfece2;
+  color: #336246;
+  font-size: 8px;
+  font-weight: 850;
+}
+
+.researchedJourneyStepsV07 strong {
+  color: #34473a;
+  font-size: 10px;
+}
+
+.researchedJourneyStepsV07 p {
+  margin: 3px 0 0;
+  color: #657269;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.researchedJourneyParentV07 {
+  margin-top: 14px;
+  padding: 11px 12px;
+  border-radius: 11px;
+  background: #fff8e9;
+  border: 1px solid #eee0bb;
+}
+
+.researchedJourneySourceV07 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #dce6de;
+}
+
+.researchedJourneySourceV07 strong {
+  display: block;
+  margin-top: 3px;
+  color: #46564b;
+  font-size: 10px;
+}
+
+.researchedJourneySourceV07 a {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid #cfddd2;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #2f6846;
+  font-size: 9px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.researchedJourneySourceV07 a:hover {
+  background: #f0f6f1;
+}
+
+@media (max-width: 650px) {
+  .researchedJourneySummaryV07,
+  .researchedJourneySourceV07 {
+    display: block;
+  }
+
+  .researchedJourneyToggleV07,
+  .researchedJourneySourceV07 a {
+    display: inline-flex;
+    margin-top: 9px;
+  }
+
+  .researchedJourneySkillGridV07 {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ============================================================
+   MVP v0.7 — RESEARCHED EXPERIENCE REFLECTION EVIDENCE
+   ============================================================ */
+
+.researchedReflectionQuestionV07 {
+  margin: 14px 0;
+  padding: 13px;
+  border: 1px solid #d7e3da;
+  border-radius: 12px;
+  background: #f5faf6;
+}
+
+.researchedReflectionQuestionV07 > span {
+  display: block;
+  color: #35493c;
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.researchedReflectionQuestionV07 > p {
+  margin: 4px 0 9px;
+  color: #718077;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.researchedReflectionChoicesV07 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.researchedReflectionChoicesV07 button {
+  padding: 7px 10px;
+  border: 1px solid #d3ddd5;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #58675e;
+  font-size: 10px;
+  font-weight: 730;
+  cursor: pointer;
+}
+
+.researchedReflectionChoicesV07 button:hover {
+  border-color: #aac1b0;
+  background: #eef5ef;
+  color: #315f42;
+}
+
+.researchedReflectionChoicesV07 button.active {
+  border-color: #90b09a;
+  background: #dfeee2;
+  color: #285f3d;
+}
+
+
+/* ============================================================
+   MVP v0.7 — JOURNEY REFLECTION UI POLISH
+   ============================================================ */
+
+.journeyReflectionV06 {
+  margin-top: 18px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #d6e1d8;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow:
+    0 10px 28px
+    rgba(39, 63, 46, .055);
+}
+
+.journeyReflectionHeaderV07 {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 17px 18px;
+  border-bottom: 1px solid #dfe7e1;
+  background:
+    linear-gradient(
+      135deg,
+      #eef6f0,
+      #fbfdfb
+    );
+}
+
+.journeyReflectionIconV07 {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #dfeee2;
+  font-size: 19px;
+}
+
+.journeyReflectionEyebrowV07 {
+  color: #5c7864;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .11em;
+}
+
+.journeyReflectionHeaderV07 h4 {
+  margin: 4px 0 4px;
+  color: #26372c;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.journeyReflectionHeaderV07 p {
+  margin: 0;
+  color: #69776e;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.journeyReflectionSectionV07 {
+  padding: 15px 18px;
+  border-top: 1px solid #edf1ee;
+}
+
+.journeyReflectionSectionV07:first-of-type {
+  border-top: 0;
+}
+
+.journeyReflectionLabelV07 {
+  display: block;
+  margin-bottom: 8px;
+  color: #708078;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .1em;
+}
+
+.journeyReflectionSectionV07 label {
+  display: block;
+  margin-top: 13px;
+  color: #3f5045;
+  font-size: 11px;
+  font-weight: 760;
+}
+
+.journeyReflectionSectionV07 label:first-child {
+  margin-top: 0;
+}
+
+.journeyReflectionSectionV07 textarea {
+  width: 100%;
+  min-height: 72px;
+  margin-top: 7px;
+  padding: 10px 11px;
+  border: 1px solid #d7e0d9;
+  border-radius: 10px;
+  background: #fbfcfb;
+  color: #2f3d34;
+  font: inherit;
+  font-size: 10px;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.journeyReflectionSectionV07 textarea:focus {
+  outline: none;
+  border-color: #9fbea8;
+  box-shadow:
+    0 0 0 3px
+    rgba(95, 145, 108, .08);
+  background: #ffffff;
+}
+
+.reflectionChoiceRowV06 {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.reflectionChoiceRowV06 button {
+  min-height: 38px;
+  padding: 8px 9px;
+  border: 1px solid #d6e0d8;
+  border-radius: 10px;
+  background: #fafcfa;
+  color: #57665c;
+  font-size: 9px;
+  font-weight: 760;
+  cursor: pointer;
+}
+
+.reflectionChoiceRowV06 button:hover {
+  border-color: #afc7b5;
+  background: #f1f7f2;
+  color: #315f42;
+}
+
+.reflectionChoiceRowV06 button.active {
+  border-color: #92b29c;
+  background: #dfeee2;
+  color: #285f3d;
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(47, 104, 70, .05);
+}
+
+.researchedReflectionQuestionV07 {
+  margin: 0;
+  padding: 15px 18px;
+  border: 0;
+  border-top: 1px solid #edf1ee;
+  border-radius: 0;
+  background: #f7faf7;
+}
+
+.researchedReflectionQuestionV07 > span {
+  color: #3d5043;
+  font-size: 11px;
+  font-weight: 770;
+}
+
+.researchedReflectionQuestionV07 > p {
+  max-width: 620px;
+  margin: 4px 0 9px;
+  color: #718077;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.researchedReflectionChoicesV07 {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.researchedReflectionChoicesV07 button {
+  min-height: 38px;
+  padding: 8px 9px;
+  border-radius: 10px;
+}
+
+.journeyReflectionActionsV06 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 18px 16px;
+  border-top: 1px solid #dfe7e1;
+  background: #fafcfa;
+}
+
+.journeyReflectionActionsV06 .growthPrimaryButtonV06 {
+  min-width: 150px;
+}
+
+.journeyReflectionActionsV06 .growthPrimaryButtonV06:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (max-width: 720px) {
+  .reflectionChoiceRowV06,
+  .researchedReflectionChoicesV07 {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .journeyReflectionHeaderV07,
+  .journeyReflectionSectionV07,
+  .researchedReflectionQuestionV07,
+  .journeyReflectionActionsV06 {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .journeyReflectionActionsV06 {
+    flex-direction: column-reverse;
+  }
+
+  .journeyReflectionActionsV06 button {
+    width: 100%;
+  }
+}
+
+
+/* ============================================================
+   MVP v0.7 — COMPLETED JOURNEY / WHAT YOU'VE TRIED POLISH
+   ============================================================ */
+
+.journeyCompletedSectionV07 {
+  margin-top: 34px;
+  padding-top: 26px;
+  border-top: 1px solid #dfe7e1;
+}
+
+.journeyCompletedHeaderV07 {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.journeyCompletedHeaderV07 h2 {
+  margin: 5px 0 4px;
+  color: #28382e;
+  font-size: 21px;
+  font-weight: 760;
+}
+
+.journeyCompletedHeaderV07 p {
+  max-width: 560px;
+  margin: 0;
+  color: #6f7d74;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.journeyCompletedCountV07 {
+  flex: 0 0 auto;
+  min-width: 82px;
+  padding: 10px 12px;
+  border: 1px solid #d9e3db;
+  border-radius: 12px;
+  background: #f4f8f5;
+  text-align: center;
+}
+
+.journeyCompletedCountV07 strong,
+.journeyCompletedCountV07 span {
+  display: block;
+}
+
+.journeyCompletedCountV07 strong {
+  color: #3b6d4b;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.journeyCompletedCountV07 span {
+  margin-top: 4px;
+  color: #7d8a81;
+  font-size: 8px;
+  font-weight: 760;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.journeyCompletedGridV06 {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+  gap: 12px;
+}
+
+.journeyCompletedCardV06 {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 132px;
+  padding: 15px;
+  border: 1px solid #dce5de;
+  border-radius: 15px;
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #f7faf8
+    );
+  box-shadow:
+    0 6px 20px
+    rgba(43, 67, 50, .035);
+}
+
+.journeyCompletedCardV06:hover {
+  border-color: #c9d8cd;
+  box-shadow:
+    0 9px 24px
+    rgba(43, 67, 50, .05);
+}
+
+.journeyCompletedIconV07 {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #e8f2ea;
+  border: 1px solid #d8e6db;
+  font-size: 18px;
+}
+
+.journeyCompletedBodyV07 {
+  min-width: 0;
+  flex: 1;
+}
+
+.journeyCompletedTitleRowV07 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.journeyCompletedTitleRowV07 h3 {
+  margin: 5px 0 0;
+  color: #35463b;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.journeyCompletedBadgeV07,
+.journeyCompletedResearchBadgeV07 {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 6px;
+  border-radius: 999px;
+  font-size: 7px;
+  font-weight: 820;
+}
+
+.journeyCompletedBadgeV07 {
+  background: #e8f2ea;
+  color: #3c6b4c;
+}
+
+.journeyCompletedResearchBadgeV07 {
+  flex: 0 0 auto;
+  background: #f4efe3;
+  color: #7c6742;
+}
+
+.journeyCompletedReflectionV07 {
+  margin-top: 10px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: #f5f8f6;
+}
+
+.journeyCompletedReflectionV07 span {
+  display: block;
+  color: #87928a;
+  font-size: 7px;
+  font-weight: 820;
+  letter-spacing: .08em;
+}
+
+.journeyCompletedReflectionV07 p {
+  margin: 4px 0 0;
+  color: #5e6b63;
+  font-size: 9px;
+  line-height: 1.42;
+}
+
+.journeyCompletedMetaV07 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 9px;
+}
+
+.journeyCompletedMetaV07 span {
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: #eef3ef;
+  color: #657269;
+  font-size: 7px;
+  font-weight: 720;
+  text-transform: capitalize;
+}
+
+@media (max-width: 760px) {
+  .journeyCompletedGridV06 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .journeyCompletedHeaderV07 {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .journeyCompletedCountV07 {
+    min-width: 0;
+  }
+}

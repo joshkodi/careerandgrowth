@@ -75,6 +75,47 @@ import {
 } from './intelligence/growthRecommendationEngine'
 
 
+
+
+import {
+  buildExperienceCandidates,
+} from './intelligence/experienceCandidateBuilder'
+
+
+import {
+  generateResearchStrategies,
+} from './intelligence/researchStrategyGenerator'
+
+import {
+  buildResourceDiscoveryRequests,
+} from './intelligence/resourceDiscoveryEngine'
+
+import {
+  evaluateDiscoveredResources,
+} from './intelligence/resourceEvaluationEngine'
+
+import {
+  realResourceValidationFixtures,
+} from './intelligence/resourceValidationFixtures'
+
+
+import {
+  createJourneyItem,
+  journeyOrigins,
+} from './intelligence/journeyModels'
+
+import {
+  findJourneyByExperience,
+  saveJourneyItem,
+} from './storage/journeyStorage'
+
+
+import {
+  buildResearchedJourneyEvidence,
+} from './intelligence/researchedJourneyEvidenceAdapter'
+
+
+
 // ============================================================
 // V0.4 APP STATE PERSISTENCE
 // ============================================================
@@ -128,6 +169,7 @@ const storedAppState =
 // ============================================================
 
 function App() {
+
   const [screen, setScreen] =
     useState(
       storedAppState
@@ -438,12 +480,91 @@ function App() {
 
     handleJourneyProgress,
 
-    handleCompleteJourney,
+    handleCompleteJourney:
+      handleCompleteJourneyBase,
 
     dismissCompletedJourneyInsight,
 
     resetJourney,
   } = journey
+
+
+  // ==========================================================
+  // MVP v0.7 — RESEARCHED EXPERIENCE EVIDENCE LOOP
+  // ==========================================================
+  //
+  // useJourney continues to own Journey completion and the
+  // existing generic reflection/completion evidence.
+  //
+  // For researched experiences, we add supplemental evidence
+  // ONLY from explicit child reflection about what happened
+  // when the activity became difficult.
+  //
+  // The recommendation, resource match, or candidate profile
+  // never becomes evidence by itself.
+  // ==========================================================
+
+  const handleCompleteJourney =
+    (
+      journeyId,
+      reflection
+    ) => {
+      const completedItem =
+        handleCompleteJourneyBase(
+          journeyId,
+          reflection
+        )
+
+      if (
+        !completedItem
+          ?.researchedExperience
+      ) {
+        return completedItem
+      }
+
+      const researchedEvidence =
+        buildResearchedJourneyEvidence({
+          childId:
+            getChildEvidenceId(
+              childProfile
+            ),
+
+          journeyItem:
+            completedItem,
+
+          reflection,
+        })
+
+      if (
+        researchedEvidence.length > 0
+      ) {
+        persistGrowthEvidence(
+          researchedEvidence
+        )
+      }
+
+      console.group(
+        '↻ MVP v0.7 — Researched Experience Learning Loop'
+      )
+
+      console.log(
+        'Completed researched experience:',
+        completedItem
+      )
+
+      console.log(
+        'Supplemental reflection evidence:',
+        researchedEvidence
+      )
+
+      console.log(
+        'Growth Intelligence rebuilt from the expanded evidence store.'
+      )
+
+      console.groupEnd()
+
+      return completedItem
+    }
 
 
   // ==========================================================
@@ -530,6 +651,233 @@ function App() {
 
       limit: 5,
     })
+
+
+  // ==========================================================
+  // MVP v0.7 — RESEARCHED EXPERIENCE CANDIDATES
+  // ==========================================================
+  //
+  // For this first child-facing UI, we use the validated
+  // controlled-resource pipeline. Live provider research comes
+  // later behind the same contracts.
+  // ==========================================================
+
+  const researchBriefsV07 =
+    generateResearchStrategies({
+      childProfile,
+      growthProfile:
+        growthIntelligenceProfile,
+      studentIntents:
+        studentGrowthIntents,
+      parentIntents:
+        parentGrowthIntents,
+      journeyItems,
+    })
+
+  const discoveryRequestsV07 =
+    buildResourceDiscoveryRequests(
+      researchBriefsV07
+    )
+
+  const strengthenRequestV07 =
+    discoveryRequestsV07.find(
+      (request) =>
+        request.strategy ===
+        'strengthen'
+    ) || null
+
+  const evaluatedResourcesV07 =
+    strengthenRequestV07
+      ? evaluateDiscoveredResources(
+          realResourceValidationFixtures,
+          strengthenRequestV07
+        )
+      : []
+
+  const researchedExperienceCandidates =
+    strengthenRequestV07
+      ? buildExperienceCandidates(
+          evaluatedResourcesV07,
+          strengthenRequestV07
+        )
+      : []
+
+
+  // ==========================================================
+  // MVP v0.7 — RESEARCHED EXPERIENCE -> JOURNEY
+  // ==========================================================
+
+  const handleAddResearchedExperienceToJourney =
+    (candidate) => {
+      if (
+        !candidate?.id
+      ) {
+        return null
+      }
+
+      const childId =
+        getChildEvidenceId(
+          childProfile
+        )
+
+      const existingJourney =
+        findJourneyByExperience({
+          childId,
+
+          experienceId:
+            candidate.id,
+        })
+
+      if (existingJourney) {
+        setScreen(
+          'journey'
+        )
+
+        return existingJourney
+      }
+
+      const baseJourneyItem =
+        createJourneyItem({
+          childId,
+
+          experienceId:
+            candidate.id,
+
+          title:
+            candidate.title,
+
+          emoji:
+            candidate.emoji ||
+            '🧭',
+
+          description:
+            candidate.mission ||
+            '',
+
+          origin:
+            journeyOrigins
+              .RECOMMENDATION,
+
+          recommendation: {
+            score:
+              candidate
+                .personalizationSnapshot
+                ?.evaluation
+                ?.score ??
+              null,
+
+            reasons: [
+              candidate.whyItFits,
+            ].filter(Boolean),
+
+            matches: {
+              buildsOn:
+                candidate
+                  .buildsOn ||
+                [],
+
+              practices:
+                candidate
+                  .practices ||
+                [],
+
+              strategy:
+                candidate
+                  .strategy ||
+                null,
+            },
+          },
+        })
+
+      const journeyItem = {
+        ...baseJourneyItem,
+
+        researchedExperience: {
+          candidateId:
+            candidate.id,
+
+          version:
+            candidate.version,
+
+          strategy:
+            candidate.strategy,
+
+          mission:
+            candidate.mission,
+
+          whyItFits:
+            candidate.whyItFits,
+
+          buildsOn:
+            candidate.buildsOn ||
+            [],
+
+          practices:
+            candidate.practices ||
+            [],
+
+          estimatedTime:
+            candidate.estimatedTime ||
+            null,
+
+          materials:
+            candidate.materials ||
+            [],
+
+          prerequisites:
+            candidate.prerequisites ||
+            [],
+
+          activitySteps:
+            candidate.activitySteps ||
+            [],
+
+          parentRole:
+            candidate.parentRole ||
+            null,
+
+          reflectionPrompts:
+            candidate.reflectionPrompts ||
+            [],
+
+          evidencePlan:
+            candidate.evidencePlan ||
+            null,
+
+          sourceResource:
+            candidate.sourceResource ||
+            null,
+
+          personalizationSnapshot:
+            candidate.personalizationSnapshot ||
+            null,
+        },
+      }
+
+      saveJourneyItem(
+        journeyItem
+      )
+
+      restoreJourney()
+
+      console.group(
+        '🧭 Researched Experience -> Journey'
+      )
+
+      console.log(
+        'Added Journey Item:',
+        journeyItem
+      )
+
+      console.groupEnd()
+
+      setScreen(
+        'journey'
+      )
+
+      return journeyItem
+    }
+
 
 
   // ==========================================================
@@ -1041,6 +1389,14 @@ function App() {
 
           recommendations={
             growthRecommendations
+          }
+
+          researchedExperienceCandidates={
+            researchedExperienceCandidates
+          }
+
+          onAddResearchedExperienceToJourney={
+            handleAddResearchedExperienceToJourney
           }
 
           studentIntents={
