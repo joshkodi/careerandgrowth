@@ -1,0 +1,1388 @@
+/* src/components/UnifiedJourney.css */
+
+/* ============================================================
+   Career & Growth — MVP v0.8
+   Unified Journey path navigation
+   ============================================================ */
+
+.unifiedJourneyPathsV08 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 18px 0 24px;
+}
+
+.unifiedJourneyPathCardV08 {
+  width: 100%;
+  min-height: 126px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid rgba(70, 83, 97, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.unifiedJourneyPathCardV08:hover {
+  transform: translateY(-1px);
+  border-color: rgba(70, 83, 97, 0.28);
+  box-shadow: 0 8px 24px rgba(28, 39, 49, 0.07);
+}
+
+.unifiedJourneyPathCardV08.active {
+  border-color: rgba(53, 112, 84, 0.34);
+  background: rgba(247, 251, 248, 0.98);
+  box-shadow: 0 8px 24px rgba(35, 77, 57, 0.08);
+}
+
+.unifiedJourneyPathIconV08 {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: rgba(244, 246, 247, 0.95);
+  font-size: 22px;
+}
+
+.unifiedJourneyPathCardV08.active
+.unifiedJourneyPathIconV08 {
+  background: rgba(231, 242, 235, 0.95);
+}
+
+.unifiedJourneyPathBodyV08 {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.unifiedJourneyPathTitleRowV08 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.unifiedJourneyPathTitleRowV08 strong {
+  color: #24322b;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.unifiedJourneyPathTitleRowV08 span {
+  min-width: 26px;
+  height: 26px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: rgba(235, 239, 237, 0.95);
+  color: #536159;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.unifiedJourneyPathBodyV08 small {
+  color: #68756e;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.unifiedJourneyEmptyV08 {
+  min-height: 260px;
+}
+
+.unifiedJourneyEmptyV08 > span {
+  display: inline-grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 8px;
+  border-radius: 18px;
+  background: rgba(244, 247, 245, 0.95);
+}
+
+@media (max-width: 900px) {
+  .unifiedJourneyPathsV08 {
+    grid-template-columns: 1fr;
+  }
+
+  .unifiedJourneyPathCardV08 {
+    min-height: auto;
+  }
+}
+
+
+/* ============================================================
+   MVP v0.8 Phase 8.3 — School & Learning tracker
+   ============================================================ */
+
+.learningWorkspaceV08 {
+  margin: 0 0 24px;
+  padding: 22px;
+  border: 1px solid rgba(70, 83, 97, 0.12);
+  border-radius: 20px;
+  background: rgba(249, 251, 250, 0.96);
+}
+
+.learningWorkspaceHeaderV08 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.learningWorkspaceHeaderV08 h2 {
+  margin: 5px 0 6px;
+}
+
+.learningWorkspaceHeaderV08 p {
+  margin: 0;
+  max-width: 650px;
+  color: #68756e;
+  line-height: 1.5;
+}
+
+.learningFormV08 {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(70, 83, 97, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.learningFormV08 label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.learningFormV08 label > span {
+  color: #46534c;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.learningFormV08 input,
+.learningFormV08 select,
+.learningFormV08 textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid rgba(70, 83, 97, 0.18);
+  border-radius: 11px;
+  background: #fff;
+  color: #24322b;
+  font: inherit;
+}
+
+.learningFormV08 textarea {
+  resize: vertical;
+}
+
+.learningFormGridV08 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.learningFormActionsV08 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.growthSecondaryButtonV06 {
+  padding: 10px 14px;
+  border: 1px solid rgba(70, 83, 97, 0.16);
+  border-radius: 11px;
+  background: #fff;
+  color: #46534c;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.learningItemCardV08 {
+  padding: 20px;
+  border: 1px solid rgba(70, 83, 97, 0.13);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.learningItemTopV08 {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.learningItemMainV08 {
+  min-width: 0;
+  flex: 1;
+}
+
+.learningItemMainV08 h3 {
+  margin: 7px 0 6px;
+}
+
+.learningItemMainV08 p {
+  margin: 0;
+  color: #68756e;
+  line-height: 1.5;
+}
+
+.learningItemMetaV08,
+.learningItemDetailsV08 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.learningItemMetaV08 span,
+.learningItemDetailsV08 span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(241, 244, 242, 0.95);
+  color: #5a675f;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.learningItemDetailsV08 {
+  margin-top: 12px;
+}
+
+.learningStatusActionsV08 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.learningStatusActionsV08 button {
+  padding: 9px 12px;
+  border: 1px solid rgba(70, 83, 97, 0.16);
+  border-radius: 10px;
+  background: #fff;
+  color: #46534c;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.learningStatusActionsV08 button:hover,
+.learningStatusActionsV08 button.active {
+  border-color: rgba(53, 112, 84, 0.32);
+  background: rgba(239, 247, 242, 0.98);
+  color: #2f654c;
+}
+
+.learningHelpHintV08 {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(250, 246, 233, 0.95);
+  color: #645a38;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .learningWorkspaceHeaderV08 {
+    flex-direction: column;
+  }
+
+  .learningFormGridV08 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.learningHelpIntentV08,.learningHelpReadyV08{margin-top:16px;padding:16px;border:1px solid rgba(53,112,84,.18);border-radius:14px;background:rgba(247,251,248,.98);display:flex;flex-direction:column;gap:10px}
+.learningHelpModeGridV08{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.learningHelpModeGridV08 button{display:flex;flex-direction:column;gap:5px;padding:12px;border:1px solid rgba(70,83,97,.14);border-radius:11px;background:#fff;text-align:left;cursor:pointer}
+.learningHelpModeGridV08 button.active{border-color:rgba(53,112,84,.34);background:rgba(238,247,241,.98)}
+.learningHelpModeGridV08 button span,.learningHelpReadyV08 p{font-size:12px;color:#68756e;line-height:1.4}
+.learningHelpNoteV08{display:flex;flex-direction:column;gap:7px}
+.learningHelpNoteV08 textarea{box-sizing:border-box;width:100%;padding:11px;border:1px solid rgba(70,83,97,.18);border-radius:11px;font:inherit}
+.learningHelpReadyV08>div{display:flex;flex-direction:column;gap:5px}
+.learningHelpReadyV08 button{align-self:flex-start;padding:7px 10px;border:1px solid rgba(53,112,84,.2);border-radius:9px;background:#fff;color:#2f654c;font:inherit;font-weight:700;cursor:pointer}
+@media(max-width:760px){.learningHelpModeGridV08{grid-template-columns:1fr}}
+
+
+/* MVP v0.8 Phase 8.5 — Resource research plan */
+.learningResearchPlanV085 {
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(53, 112, 84, 0.14);
+}
+
+.learningResearchPlanV085 p {
+  margin: 4px 0 8px;
+  color: #536159;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.learningResearchPlanTagsV085 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.learningResearchPlanTagsV085 span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #476656;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+
+/* MVP v0.8 Phase 8.6A — Provider + Evaluation pipeline */
+.learningPipelineStatusV086 {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.learningPipelineStatusV086 strong {
+  color: #315542;
+  font-size: 12px;
+}
+
+.learningPipelineStatusV086 span {
+  color: #536159;
+  font-size: 12px;
+}
+
+.learningPipelineStatusV086 small {
+  color: #7a857f;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+
+/* ============================================================
+   MVP v0.8 Phase 8.6B — Student Resource Recommendations
+   ============================================================ */
+
+.learningRecommendationsV086 {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(53, 112, 84, 0.14);
+}
+
+.learningRecommendationsHeaderV086 h4 {
+  margin: 4px 0;
+  color: #2d493a;
+  font-size: 15px;
+}
+
+.learningRecommendationsHeaderV086 p {
+  margin: 0;
+  color: #68756e;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.learningRecommendationListV086 {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.learningRecommendationCardV086 {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(70, 83, 97, 0.12);
+  border-radius: 13px;
+  background: #fff;
+}
+
+.learningRecommendationRankV086 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(53, 112, 84, 0.1);
+  color: #315542;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.learningRecommendationBodyV086 {
+  min-width: 0;
+  flex: 1;
+}
+
+.learningRecommendationMetaV086 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.learningRecommendationMetaV086 span {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(244, 247, 245, 0.98);
+  color: #66736c;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.learningRecommendationBodyV086 h5 {
+  margin: 8px 0 4px;
+  color: #263c31;
+  font-size: 14px;
+}
+
+.learningRecommendationBodyV086 > p {
+  margin: 0;
+  color: #65716b;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.learningWhyV086 {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 10px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  background: rgba(247, 250, 248, 0.98);
+}
+
+.learningWhyV086 strong {
+  color: #3d5e4d;
+  font-size: 11px;
+}
+
+.learningWhyV086 span {
+  color: #69756f;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.learningRecommendationActionsV086 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.learningRecommendationActionsV086 button,
+.learningRecommendationActionsV086 a,
+.learningResourcePreviewV086 {
+  padding: 6px 9px;
+  border: 1px solid rgba(53, 112, 84, 0.16);
+  border-radius: 8px;
+  background: #fff;
+  color: #3b604d;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.learningRecommendationActionsV086 button {
+  cursor: pointer;
+}
+
+.learningRecommendationActionsV086 button.active {
+  border-color: rgba(53, 112, 84, 0.38);
+  background: rgba(232, 244, 236, 0.98);
+}
+
+.learningResourcePreviewV086 {
+  color: #89918d;
+  cursor: default;
+}
+
+.learningRecommendationsNoteV086 {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 10px;
+  color: #7a857f;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+@media (max-width: 760px) {
+  .learningRecommendationCardV086 {
+    align-items: flex-start;
+  }
+}
+
+
+/* ============================================================
+   MVP v0.8 Phase 8.6C — Resource Outcome & Continue Flow
+   ============================================================ */
+
+.learningRecommendationsDoneV086C {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 13px;
+  border-radius: 12px;
+  background: rgba(247, 250, 248, 0.98);
+}
+
+.learningRecommendationsDoneV086C > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.learningRecommendationsDoneV086C strong {
+  color: #345442;
+  font-size: 12px;
+}
+
+.learningRecommendationsDoneV086C span {
+  color: #6b7770;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.learningRecommendationsDoneV086C summary {
+  display: inline-flex;
+  padding: 8px 11px;
+  border-radius: 9px;
+  background: #315f49;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+
+.learningRecommendationsDoneV086C summary::-webkit-details-marker {
+  display: none;
+}
+
+.learningOutcomeChoicesV086C {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.learningOutcomeChoicesV086C button {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 11px;
+  border: 1px solid rgba(53, 112, 84, 0.14);
+  border-radius: 10px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.learningOutcomeChoicesV086C button.active {
+  border-color: rgba(53, 112, 84, 0.42);
+  background: rgba(232, 244, 236, 0.98);
+}
+
+.learningOutcomeChoicesV086C button strong {
+  font-size: 11px;
+}
+
+.learningOutcomeChoicesV086C button span {
+  font-size: 10px;
+}
+
+.learningOutcomeSavedV086C {
+  margin-top: 8px;
+  color: #377254;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .learningOutcomeChoicesV086C {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* MVP v0.8 Phase 8.7B — Learning History + conservative signals */
+.learningIntelligenceV087B {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 11px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.learningIntelligenceV087B > strong {
+  color: #345442;
+  font-size: 11px;
+}
+
+.learningIntelligenceV087B > span:not(.growthKickerV06) {
+  color: #6b7770;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.learningSignalTagsV087B {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.learningSignalTagsV087B span {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(232, 244, 236, 0.98);
+  color: #3f674f;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+
+/* ============================================================
+   MVP v0.8 Phase 8.8A — Pattern Intelligence
+   ============================================================ */
+
+.patternIntelligenceV088A {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid rgba(53, 112, 84, 0.12);
+  border-radius: 14px;
+  background: rgba(248, 251, 249, 0.96);
+}
+
+.patternIntelligenceHeaderV088A {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.patternIntelligenceHeaderV088A h3 {
+  margin: 4px 0;
+  color: #2f4c3c;
+  font-size: 15px;
+}
+
+.patternIntelligenceHeaderV088A p {
+  max-width: 680px;
+  margin: 0;
+  color: #6b7770;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.patternModeV088A {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #fff;
+  color: #50705f;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.patternCardsV088A {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 13px;
+}
+
+.patternCardV088A {
+  padding: 11px;
+  border: 1px solid rgba(53, 112, 84, 0.1);
+  border-radius: 11px;
+  background: #fff;
+}
+
+.patternCardTitleV088A {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.patternCardTitleV088A > span {
+  font-size: 18px;
+}
+
+.patternCardTitleV088A div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.patternCardTitleV088A strong {
+  color: #345442;
+  font-size: 11px;
+}
+
+.patternCardTitleV088A small {
+  color: #748078;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.patternMetricsV088A {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 8px;
+  color: #748078;
+  font-size: 9px;
+}
+
+.patternGuardrailV088A {
+  margin-top: 10px;
+  color: #7b857f;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+  .patternCardsV088A {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .patternIntelligenceHeaderV088A {
+    flex-direction: column;
+  }
+
+  .patternCardsV088A {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* MVP v0.8 Phase 8.8B — independent source visibility */
+.patternSourcesV088B {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.patternSourcesV088B span {
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(244, 247, 245, 0.98);
+  color: #68756e;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+
+/* ============================================================
+   MVP v0.8 Phase 8.8C — Controlled Pattern Promotion
+   ============================================================ */
+
+.patternPromotionV088C {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 8px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  background: rgba(246, 247, 246, 0.98);
+}
+
+.patternPromotionV088C strong {
+  color: #69736d;
+  font-size: 9px;
+}
+
+.patternPromotionV088C span {
+  color: #7b847f;
+  font-size: 8px;
+  line-height: 1.35;
+}
+
+.patternPromotionV088C.eligible {
+  background: rgba(231, 244, 235, 0.98);
+}
+
+.patternPromotionV088C.eligible strong {
+  color: #32704f;
+}
+
+.patternPromotionV088C.review {
+  background: rgba(250, 246, 233, 0.98);
+}
+
+.patternPromotionV088C.review strong {
+  color: #7b6730;
+}
+
+.patternPromotionSummaryV088C {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.patternPromotionSummaryV088C > div {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.patternPromotionSummaryV088C strong {
+  color: #315f49;
+  font-size: 18px;
+}
+
+.patternPromotionSummaryV088C span {
+  color: #5f6c65;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.patternPromotionSummaryV088C p {
+  margin: 0;
+  color: #77817c;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .patternPromotionSummaryV088C {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+
+/* ============================================================
+   MVP v0.8 Phase 8.9A — School & Learning Progress Tracker
+   ============================================================ */
+
+.learningTrackerV089A {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid rgba(67, 105, 139, 0.12);
+  border-radius: 14px;
+  background: rgba(248, 250, 252, 0.98);
+}
+
+.learningTrackerHeaderV089A {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.learningTrackerHeaderV089A h2 {
+  margin: 4px 0;
+  font-size: 16px;
+}
+
+.learningTrackerHeaderV089A p {
+  max-width: 650px;
+  margin: 0;
+  color: #6d7880;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.learningTrackerLatestV089A {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 180px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.learningTrackerLatestV089A > span {
+  color: #879198;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.learningTrackerLatestV089A strong {
+  color: #40515d;
+  font-size: 10px;
+}
+
+.learningTrackerLatestV089A small {
+  color: #657a6e;
+  font-size: 9px;
+}
+
+.learningTrackerBucketsV089A {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 13px;
+}
+
+.learningTrackerBucketV089A {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  padding: 11px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.learningTrackerBucketV089A > span {
+  color: #73808a;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.learningTrackerBucketV089A > strong {
+  grid-row: span 2;
+  color: #415b6c;
+  font-size: 20px;
+}
+
+.learningTrackerBucketV089A > small {
+  color: #8a949a;
+  font-size: 9px;
+}
+
+.learningTrackerBucketV089A.attention {
+  background: rgba(253, 248, 235, 0.98);
+}
+
+.learningTrackerBucketV089A.attention > strong {
+  color: #80672e;
+}
+
+.learningTrackerBucketV089A.completed {
+  background: rgba(238, 248, 241, 0.98);
+}
+
+.learningTrackerBucketV089A.completed > strong {
+  color: #3e7455;
+}
+
+.learningTrackerSubjectsV089A {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  color: #7b858b;
+  font-size: 9px;
+}
+
+.learningTrackerSubjectsV089A strong {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: #fff;
+  color: #526873;
+  font-size: 9px;
+}
+
+.learningCurrentStateV089A {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 7px;
+  margin-top: 8px;
+}
+
+.learningCurrentStateV089A > span {
+  color: #8a949a;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.learningCurrentStateV089A > strong {
+  color: #4d6b59;
+  font-size: 9px;
+}
+
+.learningCurrentStateV089A > small {
+  color: #89928d;
+  font-size: 8px;
+}
+
+.completedLearningMetaV089A {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 7px 0;
+}
+
+.completedLearningMetaV089A span,
+.completedLearningMetaV089A strong {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(244, 247, 245, 0.98);
+  color: #627269;
+  font-size: 9px;
+}
+
+.completedLearningMetaV089A strong {
+  background: rgba(232, 244, 236, 0.98);
+  color: #3f6d50;
+}
+
+@media (max-width: 720px) {
+  .learningTrackerHeaderV089A {
+    flex-direction: column;
+  }
+
+  .learningTrackerLatestV089A {
+    width: 100%;
+  }
+
+  .learningTrackerBucketsV089A {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ============================================================
+   MVP v0.8 Phase 8.9B — Learning Over Time
+   ============================================================ */
+
+.learningProgressionV089B {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid rgba(85, 105, 132, 0.12);
+  border-radius: 14px;
+  background: rgba(250, 250, 252, 0.98);
+}
+
+.learningProgressionHeaderV089B {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.learningProgressionHeaderV089B h2 {
+  margin: 4px 0;
+  font-size: 15px;
+}
+
+.learningProgressionHeaderV089B p {
+  max-width: 640px;
+  margin: 0;
+  color: #727b83;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.learningProgressionCountV089B {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.learningProgressionCountV089B strong {
+  color: #496075;
+  font-size: 18px;
+}
+
+.learningProgressionCountV089B span {
+  color: #78838c;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.learningProgressionGridV089B {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.learningProgressionCardV089B {
+  padding: 12px;
+  border: 1px solid rgba(85, 105, 132, 0.09);
+  border-radius: 11px;
+  background: #fff;
+}
+
+.learningProgressionTitleV089B {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.learningProgressionTitleV089B span {
+  color: #7b858e;
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.learningProgressionTitleV089B h3 {
+  margin: 2px 0 0;
+  color: #405464;
+  font-size: 12px;
+}
+
+.learningProgressionTitleV089B > strong {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(239, 245, 241, 0.98);
+  color: #52705e;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.learningProgressionCardV089B > p {
+  margin: 8px 0;
+  color: #6d777e;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.learningProgressionMetricsV089B {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.learningProgressionMetricsV089B span {
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: #f6f7f8;
+  color: #768087;
+  font-size: 8px;
+}
+
+.learningProgressionTimelineV089B {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 9px;
+}
+
+.learningProgressionTimelineV089B span {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #eef3f0;
+  color: #54705f;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.learningProgressionTimelineV089B span + span {
+  margin-left: 10px;
+  position: relative;
+}
+
+.learningProgressionTimelineV089B span + span::before {
+  content: '';
+  position: absolute;
+  right: 18px;
+  width: 10px;
+  height: 1px;
+  background: #d9dfdc;
+}
+
+.learningProgressionGuardrailV089B {
+  margin-top: 10px;
+  color: #858d92;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+@media (max-width: 720px) {
+  .learningProgressionHeaderV089B {
+    flex-direction: column;
+  }
+
+  .learningProgressionGridV089B {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ============================================================
+   MVP v0.8 Phase 8.9C — Learning Next Steps
+   ============================================================ */
+
+.learningNextStepsV089C {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid rgba(69, 104, 82, 0.12);
+  border-radius: 14px;
+  background: rgba(248, 251, 249, 0.98);
+}
+
+.learningNextStepsHeaderV089C {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.learningNextStepsHeaderV089C h2 {
+  margin: 4px 0;
+  font-size: 15px;
+}
+
+.learningNextStepsHeaderV089C p {
+  margin: 0;
+  color: #707c75;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.learningNextStepsAttentionV089C {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(252, 245, 226, 0.98);
+  color: #7b652c;
+  font-size: 9px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.learningNextStepsGridV089C {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.learningNextStepCardV089C {
+  padding: 12px;
+  border: 1px solid rgba(69, 104, 82, 0.09);
+  border-radius: 11px;
+  background: #fff;
+}
+
+.learningNextStepTopicV089C {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #7a867e;
+  font-size: 8px;
+}
+
+.learningNextStepTopicV089C strong {
+  color: #52665a;
+}
+
+.learningNextStepCardV089C h3 {
+  margin: 7px 0 4px;
+  color: #3f594a;
+  font-size: 12px;
+}
+
+.learningNextStepCardV089C p {
+  margin: 0;
+  color: #69766f;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.learningNextStepCardV089C small {
+  display: block;
+  margin-top: 8px;
+  color: #879089;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.learningNextStepFooterV089C {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 11px;
+}
+
+.learningNextStepFooterV089C button {
+  min-height: 34px;
+  padding: 8px 12px;
+  border: 1px solid rgba(69, 107, 84, 0.2);
+  border-radius: 9px;
+  background: rgba(239, 247, 242, 0.98);
+  color: #3f654f;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.learningNextStepFooterV089C button:hover {
+  background: rgba(229, 241, 233, 0.98);
+  border-color: rgba(69, 107, 84, 0.32);
+}
+
+.learningNextStepFooterV089C button:focus-visible {
+  outline: 2px solid rgba(69, 107, 84, 0.28);
+  outline-offset: 2px;
+}
+
+.learningNextStepFooterV089C em {
+  color: #939b96;
+  font-size: 8px;
+  font-style: normal;
+}
+
+.learningNextStepsGuardrailV089C {
+  margin-top: 10px;
+  color: #858f89;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+@media (max-width: 820px) {
+  .learningNextStepsGridV089C {
+    grid-template-columns: 1fr;
+  }
+}

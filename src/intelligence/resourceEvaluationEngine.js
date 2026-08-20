@@ -497,6 +497,10 @@ const evaluateActionability =
         'experiment',
         'lesson',
         'course',
+        'practice',
+        'interactive',
+        'study_guide',
+        'reference',
       ].includes(
         resource
           .resourceType
@@ -932,6 +936,8 @@ const evaluateEvidencePotential =
       'tutorial',
       'course',
       'lesson',
+      'practice',
+      'interactive',
     ]
 
     const active =
@@ -1205,8 +1211,17 @@ export const evaluateDiscoveredResource =
           ),
 
       experienceCandidateEligible:
-        status ===
-          evaluationStatuses.PASS,
+        discoveryRequest?.purpose ===
+          'guided_learning'
+          ? false
+          : status ===
+              evaluationStatuses.PASS,
+
+      learningResourceEligible:
+        discoveryRequest?.purpose ===
+          'guided_learning' &&
+        status !==
+          evaluationStatuses.REJECT,
 
       evaluatedAt:
         new Date()

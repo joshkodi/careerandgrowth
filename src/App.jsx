@@ -7,6 +7,14 @@ import './App.css'
 
 import { explorations } from './data/explorations'
 
+import {
+  buildGrowthPatternIntelligence,
+} from './intelligence/growthPatternCorroborationEngine'
+
+import {
+  buildPatternPromotionRegistry,
+} from './intelligence/growthPatternPromotionEngine'
+
 import GrowthHome from './components/GrowthHome'
 import DiscoveryFlow from './components/DiscoveryFlow'
 import GrowthProfileView from './components/GrowthProfileView'
@@ -480,6 +488,14 @@ function App() {
 
     handleJourneyProgress,
 
+    handleAddLearningItem,
+
+    handleLearningItemStatus,
+
+    handleLearningHelpRequest,
+    handleLearningResourceFeedback,
+    handleLearningSupportOutcome,
+
     handleCompleteJourney:
       handleCompleteJourneyBase,
 
@@ -568,6 +584,43 @@ function App() {
 
 
   // ==========================================================
+  // ==========================================================
+  // MVP v0.8 — RAW EVIDENCE FOR PATTERN CORROBORATION
+  // ==========================================================
+
+  const currentChildEvidenceEvents =
+    childProfile.name.trim()
+      ? getEvidenceEvents({
+          childId:
+            getChildEvidenceId(
+              childProfile
+            ),
+        })
+      : []
+
+
+  const holisticPatternIntelligence =
+    buildGrowthPatternIntelligence({
+      journeyItems,
+      evidenceEvents:
+        currentChildEvidenceEvents,
+    })
+
+  const holisticPatternPromotion =
+    buildPatternPromotionRegistry(
+      holisticPatternIntelligence
+    )
+
+  const promotedGrowthPatterns =
+    holisticPatternIntelligence.patterns.filter(
+      (pattern) =>
+        holisticPatternPromotion.eligiblePatterns.some(
+          (decision) =>
+            decision.patternId === pattern.id
+        )
+    )
+
+
   // LEGACY V0.2 PROFILE CALCULATIONS
   // ==========================================================
 
@@ -1378,6 +1431,9 @@ function App() {
           growthProfile={
             growthIntelligenceProfile
           }
+          evidenceEvents={
+            currentChildEvidenceEvents
+          }
 
           topTraits={
             intelligenceTraits
@@ -1437,6 +1493,26 @@ function App() {
 
           onCompleteJourney={
             handleCompleteJourney
+          }
+
+          onAddLearningItem={
+            handleAddLearningItem
+          }
+
+          onLearningItemStatus={
+            handleLearningItemStatus
+          }
+
+          onLearningHelpRequest={
+            handleLearningHelpRequest
+          }
+
+          onLearningResourceFeedback={
+            handleLearningResourceFeedback
+          }
+
+          onLearningSupportOutcome={
+            handleLearningSupportOutcome
           }
 
           onDiscover={
@@ -1562,6 +1638,13 @@ function App() {
 
           topPathways={
             intelligencePathways
+          }
+          promotedPatterns={
+            promotedGrowthPatterns
+          }
+
+          patternIntelligence={
+            holisticPatternIntelligence
           }
 
           parentPerspectiveComplete={

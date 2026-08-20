@@ -1,3 +1,5 @@
+import './GrowthProfileViewV088D.css'
+
 // src/components/GrowthProfileView.jsx
 
 function confidenceCopy(level) {
@@ -174,12 +176,53 @@ function PathwayCard({
 }
 
 
+function PromotedPatternCard({ pattern }) {
+  const sourceLabels = {
+    student_self_report: 'Discover You',
+    parent_observation: 'Parent Observation',
+    experience_behavior: 'Experience',
+    experience_reflection: 'Experience Reflection',
+    school_learning_behavior: 'School & Learning',
+  }
+
+  const visibleSources = (pattern.sources || [])
+    .filter((source) => source !== 'system_completion')
+    .map((source) => sourceLabels[source] || source.replaceAll('_', ' '))
+
+  return (
+    <article className="promotedPatternV088D">
+      <div className="promotedPatternIconV088D">{pattern.emoji}</div>
+      <div className="promotedPatternBodyV088D">
+        <div className="promotedPatternHeadingV088D">
+          <h3>{pattern.label}</h3>
+          <span>{pattern.status}</span>
+        </div>
+        <p>
+          We’re seeing this pattern repeatedly across different parts
+          of your growth journey.
+        </p>
+        <div className="promotedPatternSourcesV088D">
+          {visibleSources.map((source) => (
+            <span key={source}>{source}</span>
+          ))}
+        </div>
+        <small>
+          {pattern.evidenceCount} observations · {pattern.contextDiversity} contexts
+        </small>
+      </div>
+    </article>
+  )
+}
+
+
 function GrowthProfileView({
   childName,
   profile,
   topTraits = [],
   topDomains = [],
   topPathways = [],
+  promotedPatterns = [],
+  patternIntelligence = null,
   parentPerspectiveComplete = false,
   completedExplorations = [],
   onBack,
@@ -197,7 +240,8 @@ function GrowthProfileView({
 
   const hasProfileSignals =
     topTraits.length > 0 ||
-    topDomains.length > 0
+    topDomains.length > 0 ||
+    promotedPatterns.length > 0
 
   const visibleTraits =
     topTraits.slice(0, 4)
@@ -294,6 +338,31 @@ function GrowthProfileView({
         </section>
       ) : (
         <>
+          {promotedPatterns.length > 0 && (
+            <section className="promotedPatternsSectionV088D">
+              <div className="promotedPatternsIntroV088D">
+                <div>
+                  <span className="profileKickerV06">
+                    PATTERNS BECOMING CLEARER
+                  </span>
+                  <h2>
+                    What different parts of your journey are beginning to tell us
+                  </h2>
+                </div>
+                <p>
+                  These patterns have been seen across multiple independent
+                  experiences or perspectives. They can still strengthen,
+                  change, or fade as you grow.
+                </p>
+              </div>
+              <div className="promotedPatternsGridV088D">
+                {promotedPatterns.map((pattern) => (
+                  <PromotedPatternCard key={pattern.id} pattern={pattern} />
+                ))}
+              </div>
+            </section>
+          )}
+
           <section className="profileOverviewGridV06">
 
             <article className="profilePanelV06">
@@ -456,6 +525,26 @@ function GrowthProfileView({
                   <p>
                     What happens when you
                     actually try something.
+                  </p>
+                </div>
+              </div>
+
+              <div
+                className={
+                  patternIntelligence?.patterns?.some(
+                    (pattern) =>
+                      pattern.sources?.includes('school_learning_behavior')
+                  )
+                    ? 'profileEvidenceSourceV06 active'
+                    : 'profileEvidenceSourceV06'
+                }
+              >
+                <span className="profileEvidenceSourceIconV06">📚</span>
+                <div>
+                  <strong>School & Learning</strong>
+                  <p>
+                    How you seek help, use resources, persist,
+                    and learn over time.
                   </p>
                 </div>
               </div>

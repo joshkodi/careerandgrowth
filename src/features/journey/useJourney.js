@@ -1,6 +1,7 @@
 // src/features/journey/useJourney.js
 
 import {
+  useMemo,
   useState,
 } from 'react'
 
@@ -22,7 +23,44 @@ import {
   journeyOrigins,
   updateJourneyProgress,
   completeJourneyWithReflection,
+  journeyStatuses,
 } from '../../intelligence/journeyModels'
+
+import {
+  journeyPaths,
+  createUnifiedJourneyItem,
+  normalizeJourneyItems,
+  getJourneyItemsByPath,
+  getJourneySummary,
+  updateUnifiedJourneyStatus,
+  attachLearningSupportRequest,
+} from '../../intelligence/unifiedJourneyModels'
+
+import {
+  createLearningSupportRequest,
+} from '../../intelligence/learningIntentEngine'
+
+import {
+  buildLearningResearchBrief,
+} from '../../intelligence/learningResearchStrategyGenerator'
+
+import {
+  buildResourceDiscoveryRequest,
+} from '../../intelligence/resourceDiscoveryEngine'
+
+import {
+  runLearningResourcePipeline,
+} from '../../intelligence/learningResourcePipeline'
+
+import {
+  createLearningResourceFeedback,
+  createLearningSupportOutcome,
+} from '../../intelligence/learningResourceFeedback'
+
+import {
+  buildLearningHistoryEvent,
+  interpretLearningSupportOutcome,
+} from '../../intelligence/learningOutcomeInterpreter'
 
 import {
   findJourneyByExperience,
@@ -41,11 +79,16 @@ import {
 
 
 // ============================================================
-// Career & Growth — MVP v0.6
-// Journey / Grow Controller
+// Career & Growth — MVP v0.8
+// Unified Journey Controller
 //
-// Pure extraction from App.jsx.
-// No intended UI, evidence, scoring, or storage changes.
+// Phase 8.1:
+// - Preserves the existing v0.7 Experience Journey behavior.
+// - Adds a normalized Unified Journey read model.
+// - Exposes the three Journey paths without migrating storage.
+// - Does NOT yet add School & Learning creation workflows.
+//
+// Existing v0.7 Journey items remain stored exactly as before.
 // ============================================================
 
 export default function useJourney({
@@ -65,6 +108,76 @@ export default function useJourney({
   ] = useState(null)
 
 
+  // ==========================================================
+  // UNIFIED JOURNEY READ MODEL — MVP v0.8
+  // ==========================================================
+  //
+  // journeyItems remains the raw persisted representation so
+  // existing v0.7 behavior stays stable.
+  //
+  // unifiedJourneyItems is the normalized v0.8 representation
+  // used by new Journey UI/features.
+  // ==========================================================
+
+  const unifiedJourneyItems =
+    useMemo(
+      () =>
+        normalizeJourneyItems(
+          journeyItems
+        ),
+      [journeyItems]
+    )
+
+
+  const schoolLearningJourneyItems =
+    useMemo(
+      () =>
+        getJourneyItemsByPath(
+          journeyItems,
+          journeyPaths
+            .SCHOOL_LEARNING
+        ),
+      [journeyItems]
+    )
+
+
+  const experienceJourneyItems =
+    useMemo(
+      () =>
+        getJourneyItemsByPath(
+          journeyItems,
+          journeyPaths.EXPERIENCES
+        ),
+      [journeyItems]
+    )
+
+
+  const activitiesInterestJourneyItems =
+    useMemo(
+      () =>
+        getJourneyItemsByPath(
+          journeyItems,
+          journeyPaths
+            .ACTIVITIES_INTERESTS
+        ),
+      [journeyItems]
+    )
+
+
+  const journeySummary =
+    useMemo(
+      () =>
+        getJourneySummary(
+          journeyItems
+        ),
+      [journeyItems]
+    )
+
+
+  // ==========================================================
+  // RESTORE JOURNEY
+  // ==========================================================
+
   const restoreJourney =
     () => {
       if (
@@ -79,6 +192,8 @@ export default function useJourney({
           childProfile
         )
 
+      // Keep the raw stored representation in state.
+      // Unified Journey normalization is derived above.
       setJourneyItems(
         getJourneyItems({
           childId,
@@ -86,6 +201,15 @@ export default function useJourney({
       )
     }
 
+
+  // ==========================================================
+  // START GROW EXPERIENCE
+  // ==========================================================
+  //
+  // Intentionally unchanged from v0.7.
+  // Existing Grow recommendations continue creating the same
+  // Journey item contract and therefore the same evidence flow.
+  // ==========================================================
 
   const handleStartGrow =
     (recommendation) => {
@@ -183,6 +307,10 @@ export default function useJourney({
   }
 
 
+  // ==========================================================
+  // JOURNEY PROGRESS
+  // ==========================================================
+
   const handleJourneyProgress =
     (
       journeyId,
@@ -223,6 +351,17 @@ export default function useJourney({
       return updatedItem
     }
 
+
+  // ==========================================================
+  // COMPLETE EXPERIENCE JOURNEY
+  // ==========================================================
+  //
+  // This remains experience-specific in Phase 8.1 because the
+  // current completion/reflection adapter produces Experience
+  // evidence. School & Learning evidence gets its own explicit
+  // contract in a later v0.8 phase rather than reusing this
+  // behavior accidentally.
+  // ==========================================================
 
   const handleCompleteJourney =
     (
@@ -459,6 +598,400 @@ export default function useJourney({
     }
 
 
+
+  // ==========================================================
+  // SCHOOL & LEARNING — MVP v0.8 PHASE 8.3
+  // ==========================================================
+
+  const handleAddLearningItem =
+    (learningItem = {}) => {
+      const childId =
+        getChildEvidenceId(
+          childProfile
+        )
+
+      const journeyItem =
+        createUnifiedJourneyItem({
+          childId,
+
+          title:
+            learningItem.title,
+
+          path:
+            journeyPaths
+              .SCHOOL_LEARNING,
+
+          activityType:
+            learningItem
+              .activityType,
+
+          source:
+            learningItem.source,
+
+          description:
+            learningItem
+              .description ||
+            '',
+
+          emoji:
+            learningItem.emoji ||
+            '🏫',
+
+          subject:
+            learningItem.subject ||
+            null,
+
+          topic:
+            learningItem.topic ||
+            null,
+
+          dueDate:
+            learningItem.dueDate ||
+            null,
+
+          estimatedTime:
+            learningItem
+              .estimatedTime ||
+            null,
+
+          metadata: {
+            createdFrom:
+              'school_learning',
+          },
+        })
+
+      saveJourneyItem(
+        journeyItem
+      )
+
+      setJourneyItems(
+        (current) => [
+          ...current,
+          journeyItem,
+        ]
+      )
+
+      return journeyItem
+    }
+
+
+  const handleLearningItemStatus =
+    (
+      journeyId,
+      status
+    ) => {
+      const currentItem =
+        journeyItems.find(
+          (item) =>
+            item.id ===
+            journeyId
+        )
+
+      if (!currentItem) {
+        return null
+      }
+
+      const updatedItem =
+        updateUnifiedJourneyStatus(
+          currentItem,
+          status
+        )
+
+      saveJourneyItem(
+        updatedItem
+      )
+
+      setJourneyItems(
+        (current) =>
+          current.map(
+            (item) =>
+              item.id ===
+              updatedItem.id
+                ? updatedItem
+                : item
+          )
+      )
+
+      return updatedItem
+    }
+
+
+  const handleLearningHelpRequest = (journeyId, helpRequest = {}) => {
+    const currentItem = journeyItems.find((item) => item.id === journeyId)
+    if (!currentItem) return null
+
+    const supportRequest = createLearningSupportRequest({
+      journeyItem: currentItem,
+      modeId: helpRequest.modeId,
+      studentNote: helpRequest.studentNote || '',
+    })
+
+    const researchBrief = buildLearningResearchBrief({
+      journeyItem: currentItem,
+      supportRequest,
+      childProfile,
+    })
+
+    const discoveryRequest = buildResourceDiscoveryRequest(
+      researchBrief,
+      {
+        maxResults: 8,
+      }
+    )
+
+    const resourcePipeline =
+      runLearningResourcePipeline(
+        discoveryRequest
+      )
+
+    const enrichedSupportRequest = {
+      ...supportRequest,
+
+      researchBrief,
+
+      discoveryRequest,
+
+      resourcePipeline,
+
+      status:
+        resourcePipeline
+          ?.status ===
+          'evaluated'
+          ? 'resources_evaluated'
+          : discoveryRequest
+            ? 'research_ready'
+            : supportRequest.status,
+    }
+
+    const updatedItem = attachLearningSupportRequest(
+      currentItem,
+      enrichedSupportRequest
+    )
+
+    saveJourneyItem(updatedItem)
+
+    setJourneyItems((current) =>
+      current.map((item) =>
+        item.id === updatedItem.id
+          ? updatedItem
+          : item
+      )
+    )
+
+    return enrichedSupportRequest
+  }
+
+
+  const handleLearningResourceFeedback =
+    (
+      journeyId,
+      candidateId,
+      feedbackType
+    ) => {
+      const currentItem =
+        journeyItems.find(
+          (item) =>
+            item.id === journeyId
+        )
+
+      if (!currentItem) {
+        return null
+      }
+
+      const feedback =
+        createLearningResourceFeedback({
+          candidateId,
+          feedbackType,
+        })
+
+      if (!feedback) {
+        return null
+      }
+
+      const currentRequest =
+        currentItem
+          .learningSupportRequest ||
+        {}
+
+      const existingFeedback =
+        currentRequest
+          .resourceFeedback ||
+        {}
+
+      const historyEvent =
+        buildLearningHistoryEvent({
+          journeyItem:
+            currentItem,
+
+          eventType:
+            'resource_feedback',
+
+          payload: {
+            candidateId,
+            feedbackType,
+          },
+        })
+
+      const updatedItem = {
+        ...currentItem,
+
+        learningSupportRequest: {
+          ...currentRequest,
+
+          resourceFeedback: {
+            ...existingFeedback,
+
+            [candidateId]:
+              feedback,
+          },
+        },
+
+        learningHistory: [
+          ...(
+            currentItem
+              .learningHistory ||
+            []
+          ),
+          historyEvent,
+        ].filter(Boolean),
+
+        updatedAt:
+          new Date().toISOString(),
+      }
+
+      saveJourneyItem(
+        updatedItem
+      )
+
+      setJourneyItems(
+        (current) =>
+          current.map(
+            (item) =>
+              item.id ===
+              updatedItem.id
+                ? updatedItem
+                : item
+          )
+      )
+
+      return feedback
+    }
+
+
+  const handleLearningSupportOutcome =
+    (
+      journeyId,
+      outcomeType
+    ) => {
+      const currentItem =
+        journeyItems.find(
+          (item) =>
+            item.id === journeyId
+        )
+
+      if (!currentItem) {
+        return null
+      }
+
+      const outcome =
+        createLearningSupportOutcome({
+          outcomeType,
+        })
+
+      if (!outcome) {
+        return null
+      }
+
+      const currentRequest =
+        currentItem
+          .learningSupportRequest ||
+        {}
+
+      const interpretation =
+        interpretLearningSupportOutcome({
+          journeyItem:
+            currentItem,
+
+          outcomeType,
+        })
+
+      const updatedItem = {
+        ...currentItem,
+
+        learningSupportRequest: {
+          ...currentRequest,
+
+          outcome,
+
+          status:
+            outcomeType ===
+            'resolved'
+              ? 'resolved'
+              : outcomeType ===
+                  'more_help'
+                ? 'needs_more_help'
+                : 'resources_reviewed',
+        },
+
+        status:
+          outcomeType ===
+          'resolved'
+            ? journeyStatuses
+                .IN_PROGRESS
+            : currentItem.status,
+
+        learningHistory: [
+          ...(
+            currentItem
+              .learningHistory ||
+            []
+          ),
+          interpretation
+            ?.history,
+        ].filter(Boolean),
+
+        learningIntelligence: {
+          lastInterpretation:
+            interpretation,
+
+          signals: [
+            ...(
+              currentItem
+                .learningIntelligence
+                ?.signals ||
+              []
+            ),
+            ...(
+              interpretation
+                ?.signals ||
+              []
+            ),
+          ],
+        },
+
+        updatedAt:
+          new Date().toISOString(),
+      }
+
+      saveJourneyItem(
+        updatedItem
+      )
+
+      setJourneyItems(
+        (current) =>
+          current.map(
+            (item) =>
+              item.id ===
+              updatedItem.id
+                ? updatedItem
+                : item
+          )
+      )
+
+      return outcome
+    }
+
+
   const dismissCompletedJourneyInsight =
     () => {
       setCompletedJourneyInsight(
@@ -475,7 +1008,15 @@ export default function useJourney({
 
 
   return {
+    // Raw v0.7-compatible Journey state.
     journeyItems,
+
+    // MVP v0.8 Unified Journey read model.
+    unifiedJourneyItems,
+    schoolLearningJourneyItems,
+    experienceJourneyItems,
+    activitiesInterestJourneyItems,
+    journeySummary,
 
     completedJourneyInsight,
 
@@ -488,6 +1029,12 @@ export default function useJourney({
     handleJourneyProgress,
 
     handleCompleteJourney,
+
+    handleAddLearningItem,
+    handleLearningItemStatus,
+    handleLearningHelpRequest,
+    handleLearningResourceFeedback,
+    handleLearningSupportOutcome,
 
     dismissCompletedJourneyInsight,
 

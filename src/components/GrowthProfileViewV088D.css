@@ -1,0 +1,17 @@
+/* Career & Growth MVP v0.8 — Phase 8.8D */
+.promotedPatternsSectionV088D { margin:18px 0; padding:18px; border:1px solid rgba(53,112,84,.12); border-radius:16px; background:rgba(247,251,248,.96); }
+.promotedPatternsIntroV088D { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+.promotedPatternsIntroV088D h2 { margin:4px 0 0; }
+.promotedPatternsIntroV088D>p { max-width:430px; margin:0; color:#6f7b74; font-size:12px; line-height:1.5; }
+.promotedPatternsGridV088D { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:14px; }
+.promotedPatternV088D { display:flex; gap:11px; padding:13px; border:1px solid rgba(53,112,84,.1); border-radius:12px; background:#fff; }
+.promotedPatternIconV088D { font-size:22px; }
+.promotedPatternBodyV088D { min-width:0; flex:1; }
+.promotedPatternHeadingV088D { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.promotedPatternHeadingV088D h3 { margin:0; font-size:13px; }
+.promotedPatternHeadingV088D>span { padding:4px 7px; border-radius:999px; background:rgba(231,244,235,.98); color:#32704f; font-size:8px; font-weight:800; text-transform:capitalize; }
+.promotedPatternBodyV088D p { margin:6px 0; color:#68756e; font-size:10px; line-height:1.45; }
+.promotedPatternSourcesV088D { display:flex; flex-wrap:wrap; gap:5px; margin:7px 0; }
+.promotedPatternSourcesV088D span { padding:4px 7px; border-radius:999px; background:rgba(244,247,245,.98); color:#5e7066; font-size:9px; font-weight:700; }
+.promotedPatternBodyV088D small { color:#849087; font-size:9px; }
+@media (max-width:760px) { .promotedPatternsIntroV088D{flex-direction:column}.promotedPatternsGridV088D{grid-template-columns:1fr} }

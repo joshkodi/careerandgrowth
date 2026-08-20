@@ -32,6 +32,10 @@ export const resourceTypes = {
   EXPERIMENT: 'experiment',
   VIDEO: 'video',
   ARTICLE: 'article',
+  PRACTICE: 'practice',
+  INTERACTIVE: 'interactive',
+  REFERENCE: 'reference',
+  STUDY_GUIDE: 'study_guide',
   TOOL: 'tool',
   COMMUNITY_PROGRAM: 'community_program',
   OTHER: 'other',
@@ -280,6 +284,82 @@ const getAgePhrase =
 
 const buildSearchQueries =
   (brief) => {
+    const agePhrase =
+      getAgePhrase(
+        brief
+      )
+
+    if (
+      brief?.purpose ===
+      'guided_learning'
+    ) {
+      const learning =
+        brief.learningContext ||
+        {}
+
+      const subject =
+        humanize(
+          learning.subject ||
+          ''
+        )
+
+      const topic =
+        humanize(
+          learning.topic ||
+          ''
+        )
+
+      const intent =
+        humanize(
+          learning.learningIntent ||
+          brief.strategy ||
+          'understand'
+        )
+
+      const grade =
+        brief
+          ?.audience
+          ?.grade ||
+        ''
+
+      const note =
+        String(
+          learning.studentNote ||
+          ''
+        )
+          .replace(
+            /\s+/g,
+            ' '
+          )
+          .trim()
+
+      const core =
+        [subject, topic]
+          .filter(Boolean)
+          .join(' ')
+
+      return unique(
+        [
+          `${agePhrase} ${grade} ${core} ${intent} explanation educational resource`,
+          `${agePhrase} ${grade} ${core} visual example practice interactive`,
+          `${agePhrase} ${grade} ${core} lesson tutorial study guide ${intent}`,
+          note
+            ? `${agePhrase} ${core} ${intent} ${note}`
+            : null,
+        ]
+          .filter(Boolean)
+          .map(
+            (query) =>
+              query
+                .replace(
+                  /\s+/g,
+                  ' '
+                )
+                .trim()
+          )
+      )
+    }
+
     const profile =
       getProfileTerms(
         brief
@@ -287,11 +367,6 @@ const buildSearchQueries =
 
     const goals =
       getExplicitGoals(
-        brief
-      )
-
-    const agePhrase =
-      getAgePhrase(
         brief
       )
 
@@ -322,9 +397,7 @@ const buildSearchQueries =
 
     const queries = [
       `${agePhrase} ${strategy} hands-on project activity ${core}`,
-
       `${agePhrase} educational challenge tutorial ${core}`,
-
       `${agePhrase} project-based learning ${core}`,
     ]
 
@@ -339,6 +412,73 @@ const buildSearchQueries =
             .trim()
       )
     )
+  }
+
+
+const getPreferredResourceTypes =
+  (researchBrief) => {
+    if (
+      researchBrief?.purpose ===
+      'guided_learning'
+    ) {
+      const intent =
+        researchBrief
+          ?.learningContext
+          ?.learningIntent ||
+        researchBrief?.strategy
+
+      const byIntent = {
+        understand: [
+          resourceTypes.LESSON,
+          resourceTypes.TUTORIAL,
+          resourceTypes.VIDEO,
+          resourceTypes.INTERACTIVE,
+        ],
+
+        practice: [
+          resourceTypes.PRACTICE,
+          resourceTypes.INTERACTIVE,
+          resourceTypes.LESSON,
+        ],
+
+        review: [
+          resourceTypes.STUDY_GUIDE,
+          resourceTypes.PRACTICE,
+          resourceTypes.VIDEO,
+        ],
+
+        research: [
+          resourceTypes.REFERENCE,
+          resourceTypes.ARTICLE,
+          resourceTypes.VIDEO,
+        ],
+
+        enrich: [
+          resourceTypes.ACTIVITY,
+          resourceTypes.CHALLENGE,
+          resourceTypes.INTERACTIVE,
+          resourceTypes.COURSE,
+        ],
+      }
+
+      return (
+        byIntent[intent] ||
+        [
+          resourceTypes.LESSON,
+          resourceTypes.TUTORIAL,
+          resourceTypes.PRACTICE,
+          resourceTypes.VIDEO,
+        ]
+      )
+    }
+
+    return [
+      resourceTypes.PROJECT_GUIDE,
+      resourceTypes.ACTIVITY,
+      resourceTypes.CHALLENGE,
+      resourceTypes.EXPERIMENT,
+      resourceTypes.TUTORIAL,
+    ]
   }
 
 
@@ -386,6 +526,11 @@ export const buildResourceDiscoveryRequest =
       strategy:
         researchBrief.strategy,
 
+      learningContext:
+        researchBrief
+          .learningContext ||
+        null,
+
       audience:
         researchBrief.audience,
 
@@ -415,22 +560,10 @@ export const buildResourceDiscoveryRequest =
       },
 
       discoveryCriteria: {
-        preferredResourceTypes: [
-          resourceTypes
-            .PROJECT_GUIDE,
-
-          resourceTypes
-            .ACTIVITY,
-
-          resourceTypes
-            .CHALLENGE,
-
-          resourceTypes
-            .EXPERIMENT,
-
-          resourceTypes
-            .TUTORIAL,
-        ],
+        preferredResourceTypes:
+          getPreferredResourceTypes(
+            researchBrief
+          ),
 
         allowSupportingContent: [
           resourceTypes
