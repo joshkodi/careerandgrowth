@@ -38,6 +38,7 @@ const WEIGHTS = {
   PROFILE: 40,
   STUDENT_INTENT: 35,
   PARENT_INTENT: 25,
+  PROMOTED_PATTERN: 30,
 }
 
 
@@ -411,6 +412,63 @@ const scoreGrowthProfile =
   }
 
 
+
+// ============================================================
+// PROMOTED PATTERN MATCH
+// ============================================================
+//
+// A promoted pattern may influence recommendation ranking only after
+// the corroboration + promotion engines have declared it eligible.
+// This does not create evidence and does not modify the Growth Profile.
+// ============================================================
+
+const scorePromotedPattern =
+  (
+    experience,
+    promotedPattern
+  ) => {
+    if (!promotedPattern) {
+      return {
+        score: 0,
+        matches: [],
+      }
+    }
+
+    const patternText =
+      [
+        promotedPattern.patternId,
+        promotedPattern.patternLabel,
+        promotedPattern.label,
+      ]
+        .filter(Boolean)
+        .join(' ')
+
+    const matchScore =
+      getTextMatchScore(
+        patternText,
+        experience
+      )
+
+    return {
+      score: matchScore,
+      matches:
+        matchScore > 0
+          ? [
+              {
+                id:
+                  promotedPattern.patternId ||
+                  promotedPattern.id,
+                label:
+                  promotedPattern.patternLabel ||
+                  promotedPattern.label ||
+                  promotedPattern.patternId,
+              },
+            ]
+          : [],
+    }
+  }
+
+
 // ============================================================
 // AGE ELIGIBILITY
 // ============================================================
@@ -470,6 +528,8 @@ const buildReasons =
     studentMatch,
     parentMatch,
     profileMatch,
+    patternMatch,
+    recommendationMode,
   }) => {
     const reasons = []
 
@@ -504,6 +564,26 @@ const buildReasons =
     }
 
     if (
+      recommendationMode === 'deepen' &&
+      patternMatch
+        .matches
+        .length > 0
+    ) {
+      reasons.unshift(
+        `Deepens a corroborated pattern: ${patternMatch.matches[0].label}`
+      )
+    }
+
+    if (
+      recommendationMode === 'explore' &&
+      reasons.length === 0
+    ) {
+      reasons.push(
+        'Adds a new experience so Career & Growth can learn from another context.'
+      )
+    }
+
+    if (
       reasons.length === 0
     ) {
       reasons.push(
@@ -525,6 +605,8 @@ const scoreExperience =
     growthProfile,
     studentIntents,
     parentIntents,
+    promotedPattern = null,
+    recommendationMode = 'explore',
   }) => {
     const profileMatch =
       scoreGrowthProfile(
@@ -544,6 +626,12 @@ const scoreExperience =
         parentIntents
       )
 
+    const patternMatch =
+      scorePromotedPattern(
+        experience,
+        promotedPattern
+      )
+
     const weightedProfile =
       profileMatch.score *
       WEIGHTS.PROFILE
@@ -556,11 +644,21 @@ const scoreExperience =
       parentMatch.score *
       WEIGHTS.PARENT_INTENT
 
+    const weightedPattern =
+      recommendationMode === 'deepen'
+        ? patternMatch.score *
+          WEIGHTS.PROMOTED_PATTERN
+        : 0
+
     const totalScore =
-      Math.round(
-        weightedProfile +
-        weightedStudent +
-        weightedParent
+      Math.min(
+        100,
+        Math.round(
+          weightedProfile +
+          weightedStudent +
+          weightedParent +
+          weightedPattern
+        )
       )
 
     const reasons =
@@ -568,6 +666,8 @@ const scoreExperience =
         studentMatch,
         parentMatch,
         profileMatch,
+        patternMatch,
+        recommendationMode,
       })
 
     return createRecommendationCandidate({
@@ -601,6 +701,8 @@ export const getGrowthRecommendations =
     studentIntents = [],
     parentIntents = [],
     completedExperienceIds = [],
+    promotedPattern = null,
+    recommendationMode = 'explore',
     limit = 5,
   }) => {
     const completed =
@@ -629,6 +731,8 @@ export const getGrowthRecommendations =
               growthProfile,
               studentIntents,
               parentIntents,
+              promotedPattern,
+              recommendationMode,
             })
         )
         .filter(Boolean)

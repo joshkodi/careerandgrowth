@@ -61,6 +61,25 @@ function recommendationForTopic(
   let template = null
   let priority = 0
 
+  // A recommendation is considered acted upon when the newest
+  // Journey item for this topic is already planned or underway.
+  //
+  // Example:
+  //   Fractions Homework -> support resolved
+  //   Fractions follow-up -> planned
+  //
+  // In that state we should not recommend "Add follow-up practice"
+  // again. The Journey already contains the action that satisfied
+  // the previous recommendation.
+  if (
+    topic.latestState ===
+      'planned' ||
+    topic.latestState ===
+      'working'
+  ) {
+    return null
+  }
+
   if (
     topic.latestState ===
       'needs_more_support'
@@ -78,6 +97,8 @@ function recommendationForTopic(
         .START_WITH_SUPPORT
     priority = 90
   } else if (
+    topic.latestState ===
+      'support_resolved' &&
     topic.resolvedCount > 0 &&
     topic.completedCount <
       topic.itemCount

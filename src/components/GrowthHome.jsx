@@ -16,6 +16,10 @@ import {
 } from '../intelligence/learningIntentEngine'
 
 import {
+  buildIntelligenceRecommendationLoop,
+} from '../intelligence/intelligenceRecommendationLoop'
+
+import {
   buildLearningNextSteps,
 } from '../intelligence/learningNextStepEngine'
 
@@ -57,6 +61,7 @@ function GrowthHome({
   researchedExperienceCandidates = [],
   onAddResearchedExperienceToJourney,
   studentIntents = [],
+  parentIntents = [],
   journeyItems = [],
   completedJourneyInsight = null,
   onDismissJourneyInsight,
@@ -142,6 +147,9 @@ function GrowthHome({
         {activeView === 'journey' ? (
           <JourneyPanel
             childName={childName}
+            childProfile={childProfile}
+            studentIntents={studentIntents}
+            parentIntents={parentIntents}
             journeyItems={journeyItems}
             onHome={onHome}
             onJourneyProgress={
@@ -167,6 +175,9 @@ function GrowthHome({
             }
             evidenceEvents={
               evidenceEvents
+            }
+            onStartGrow={
+              onStartGrow
             }
           />
         ) : (
@@ -1050,6 +1061,9 @@ function LearningResourceRecommendations({
 
 function JourneyPanel({
   childName,
+  childProfile = null,
+  studentIntents = [],
+  parentIntents = [],
   journeyItems = [],
   onHome,
   onJourneyProgress,
@@ -1060,6 +1074,7 @@ function JourneyPanel({
   onLearningResourceFeedback,
   onLearningSupportOutcome,
   evidenceEvents = [],
+  onStartGrow,
 }) {
   const [
     activeJourneyPath,
@@ -1372,7 +1387,63 @@ function JourneyPanel({
     }
 
 
-  const learningNextSteps =
+  const intelligenceRecommendationLoop =
+    useMemo(
+      () => {
+        try {
+          return (
+            buildIntelligenceRecommendationLoop({
+              childId:
+                childProfile?.id ||
+                childProfile?.name ||
+                null,
+
+              age:
+                childProfile?.age ||
+                null,
+
+              evidenceEvents,
+              journeyItems:
+                unifiedJourneyItems,
+
+              studentIntents,
+              parentIntents,
+
+              completedExperienceIds:
+                unifiedJourneyItems
+                  .map(
+                    (item) =>
+                      item.experienceId
+                  )
+                  .filter(Boolean),
+
+              recommendationLimit: 5,
+              actionLimit: 5,
+            })
+          )
+        } catch (error) {
+          console.error(
+            'Career & Growth v0.8.11 recommendation loop failed safely.',
+            error
+          )
+
+          return null
+        }
+      },
+
+      [
+        childProfile?.id,
+        childProfile?.name,
+        childProfile?.age,
+        evidenceEvents,
+        unifiedJourneyItems,
+        studentIntents,
+        parentIntents,
+      ]
+    )
+
+
+  const fallbackLearningNextSteps =
     useMemo(
       () =>
         buildLearningNextSteps(
@@ -1381,6 +1452,69 @@ function JourneyPanel({
 
       [learningProgression]
     )
+
+
+  const learningNextSteps =
+    useMemo(
+      () => {
+        const loopNextSteps =
+          intelligenceRecommendationLoop
+            ?.recommendations
+            ?.learningNextSteps
+
+        const nextSteps =
+          Array.isArray(loopNextSteps)
+            ? loopNextSteps
+            : (
+                fallbackLearningNextSteps
+                  ?.nextSteps || []
+              )
+
+        return {
+          nextSteps,
+
+          urgentCount:
+            nextSteps.filter(
+              (step) =>
+                step.priority >= 90
+            ).length,
+        }
+      },
+
+      [
+        intelligenceRecommendationLoop,
+        fallbackLearningNextSteps,
+      ]
+    )
+
+
+  const recommendationIntent =
+    intelligenceRecommendationLoop
+      ?.recommendations
+      ?.intent || null
+
+
+  const recommendationIntentLabel =
+    ({
+      support: 'Support now',
+      practice: 'Practice next',
+      deepen: 'Deepen an interest',
+      explore: 'Explore next',
+    }[
+      recommendationIntent?.type
+    ] || 'Next step')
+
+
+  const experienceRecommendations =
+    intelligenceRecommendationLoop
+      ?.recommendations
+      ?.growthExperiences || []
+
+
+  const experienceStrategy =
+    intelligenceRecommendationLoop
+      ?.recommendations
+      ?.experienceStrategy || null
 
 
   const learningProgressStateLabel =
@@ -2447,21 +2581,24 @@ function JourneyPanel({
               </span>
 
               <h2>
-                Next steps from your learning history
+                {recommendationIntent?.type === 'support'
+                  ? 'Support that could help now'
+                  : recommendationIntent?.type === 'practice'
+                    ? 'A good time to practice again'
+                    : 'Next steps from your learning history'}
               </h2>
 
               <p>
-                These suggestions use what you have worked on,
-                the help you asked for, and what happened afterward.
-                You can act on them directly from here.
+                {recommendationIntent?.reason ||
+                  'These suggestions use what you have worked on, the help you asked for, and what happened afterward.'}
               </p>
             </div>
 
-            {learningNextSteps.urgentCount > 0 && (
-              <span className="learningNextStepsAttentionV089C">
-                {learningNextSteps.urgentCount} need attention
-              </span>
-            )}
+            <span className="learningNextStepsAttentionV089C">
+              {learningNextSteps.urgentCount > 0
+                ? `${learningNextSteps.urgentCount} need attention`
+                : recommendationIntentLabel}
+            </span>
           </div>
 
           <div className="learningNextStepsGridV089C">
@@ -2518,8 +2655,104 @@ function JourneyPanel({
           </div>
 
           <div className="learningNextStepsGuardrailV089C">
-            Recommendations are based on learning history and support
-            outcomes—not grades, mastery labels, or assumptions about ability.
+            The recommendation loop uses learning history, support outcomes,
+            growth evidence, and stated intent. Recommendations never become
+            evidence and do not infer grades, mastery, weakness, or ability.
+          </div>
+        </section>
+      )}
+
+      {activeJourneyPath ===
+        journeyPaths.EXPERIENCES &&
+        experienceRecommendations.length > 0 && (
+        <section className="learningNextStepsV089C">
+          <div className="learningNextStepsHeaderV089C">
+            <div>
+              <span className="growthKickerV06">
+                WHAT COULD HELP NEXT
+              </span>
+
+              <h2>
+                {experienceStrategy?.mode === 'deepen'
+                  ? 'Build on a pattern that is taking shape'
+                  : 'Explore something that can teach us more'}
+              </h2>
+
+              <p>
+                {recommendationIntent?.reason ||
+                  'Choose a useful next experience from the evidence and interests available so far.'}
+              </p>
+            </div>
+
+            <span className="learningNextStepsAttentionV089C">
+              {experienceStrategy?.mode === 'deepen'
+                ? 'Deepen'
+                : 'Explore'}
+            </span>
+          </div>
+
+          <div className="learningNextStepsGridV089C">
+            {experienceRecommendations
+              .slice(0, 3)
+              .map(
+                (recommendation) => (
+                  <article
+                    className="learningNextStepCardV089C"
+                    key={recommendation.experienceId}
+                  >
+                    <div className="learningNextStepTopicV089C">
+                      <span>
+                        {experienceStrategy?.mode === 'deepen'
+                          ? 'DEEPEN'
+                          : 'EXPLORE'}
+                      </span>
+
+                      <strong>
+                        {recommendation.emoji || '✨'}
+                      </strong>
+                    </div>
+
+                    <h3>
+                      {recommendation.title}
+                    </h3>
+
+                    <p>
+                      {recommendation.description}
+                    </p>
+
+                    <small>
+                      Why: {recommendation.reasons?.[0] ||
+                        'A useful next experience based on the current Journey.'}
+                    </small>
+
+                    <div className="learningNextStepFooterV089C">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onStartGrow?.(
+                            recommendation
+                          )
+                        }
+                      >
+                        {experienceStrategy?.mode === 'deepen'
+                          ? 'Deepen this'
+                          : 'Try this'}
+                      </button>
+
+                      <em>
+                        Recommendation only · not evidence
+                      </em>
+                    </div>
+                  </article>
+                )
+              )}
+          </div>
+
+          <div className="learningNextStepsGuardrailV089C">
+            Deepen requires a pattern that already passed corroboration and
+            controlled promotion. Repetition from School & Learning alone
+            cannot trigger Deepen. Explore is used when stronger guidance is
+            not yet justified.
           </div>
         </section>
       )}

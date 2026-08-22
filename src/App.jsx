@@ -1483,6 +1483,10 @@ function App() {
               studentGrowthIntents
             }
 
+            parentIntents={
+              parentGrowthIntents
+            }
+
             journeyItems={
               journeyItems
             }
