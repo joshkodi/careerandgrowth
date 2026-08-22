@@ -1405,136 +1405,161 @@ function App() {
       )}
       {(screen === 'childSpace' ||
         screen === 'journey') && (
-        <GrowthHome
-          activeView={
+        <BppWorkspaceShell
+          activeSection={
             screen === 'journey'
               ? 'journey'
               : 'home'
           }
-
-          childProfile={
-            childProfile
+          childProfile={childProfile}
+          activeJourneyCount={
+            journeyItems.filter(
+              (item) => item.status !== 'completed'
+            ).length
           }
-
-          discoveryComplete={
-            discoveryComplete
-          }
-
-          completedExplorations={
-            completedExplorations
-          }
-
-          evidenceEventCount={
-            evidenceEventCount
-          }
-
-          growthProfile={
-            growthIntelligenceProfile
-          }
-          evidenceEvents={
-            currentChildEvidenceEvents
-          }
-
-          topTraits={
-            intelligenceTraits
-          }
-
-          topDomains={
-            intelligenceDomains
-          }
-
-          recommendations={
-            growthRecommendations
-          }
-
-          researchedExperienceCandidates={
-            researchedExperienceCandidates
-          }
-
-          onAddResearchedExperienceToJourney={
-            handleAddResearchedExperienceToJourney
-          }
-
-          studentIntents={
-            studentGrowthIntents
-          }
-
-          journeyItems={
-            journeyItems
-          }
-
-          completedJourneyInsight={
-            completedJourneyInsight
-          }
-
-          onDismissJourneyInsight={
-            dismissCompletedJourneyInsight
-          }
-
-          onSaveStudentIntent={
-            handleSaveStudentIntent
-          }
-
-          onStartGrow={
-            handleStartGrow
-          }
-
-          onHome={
-            goToChildSpace
-          }
-
-          onJourney={
-            goToJourney
-          }
-
-          onJourneyProgress={
-            handleJourneyProgress
-          }
-
-          onCompleteJourney={
-            handleCompleteJourney
-          }
-
-          onAddLearningItem={
-            handleAddLearningItem
-          }
-
-          onLearningItemStatus={
-            handleLearningItemStatus
-          }
-
-          onLearningHelpRequest={
-            handleLearningHelpRequest
-          }
-
-          onLearningResourceFeedback={
-            handleLearningResourceFeedback
-          }
-
-          onLearningSupportOutcome={
-            handleLearningSupportOutcome
-          }
-
-          onDiscover={
-            startDiscovery
-          }
-
+          onHome={goToChildSpace}
+          onJourney={goToJourney}
           onExplore={() =>
-            setScreen(
-              'adventures'
-            )
+            setScreen('adventures')
           }
-
-          onGrowthProfile={() =>
-            setScreen(
-              'growthProfile'
-            )
+          onProfile={() =>
+            setScreen('growthProfile')
           }
-
-          onParentPerspective={
+          onParent={
             startParentPerspective
           }
-        />
+        >
+          <GrowthHome
+            activeView={
+              screen === 'journey'
+                ? 'journey'
+                : 'home'
+            }
+
+            childProfile={
+              childProfile
+            }
+
+            discoveryComplete={
+              discoveryComplete
+            }
+
+            completedExplorations={
+              completedExplorations
+            }
+
+            evidenceEventCount={
+              evidenceEventCount
+            }
+
+            growthProfile={
+              growthIntelligenceProfile
+            }
+            evidenceEvents={
+              currentChildEvidenceEvents
+            }
+
+            topTraits={
+              intelligenceTraits
+            }
+
+            topDomains={
+              intelligenceDomains
+            }
+
+            recommendations={
+              growthRecommendations
+            }
+
+            researchedExperienceCandidates={
+              researchedExperienceCandidates
+            }
+
+            onAddResearchedExperienceToJourney={
+              handleAddResearchedExperienceToJourney
+            }
+
+            studentIntents={
+              studentGrowthIntents
+            }
+
+            journeyItems={
+              journeyItems
+            }
+
+            completedJourneyInsight={
+              completedJourneyInsight
+            }
+
+            onDismissJourneyInsight={
+              dismissCompletedJourneyInsight
+            }
+
+            onSaveStudentIntent={
+              handleSaveStudentIntent
+            }
+
+            onStartGrow={
+              handleStartGrow
+            }
+
+            onHome={
+              goToChildSpace
+            }
+
+            onJourney={
+              goToJourney
+            }
+
+            onJourneyProgress={
+              handleJourneyProgress
+            }
+
+            onCompleteJourney={
+              handleCompleteJourney
+            }
+
+            onAddLearningItem={
+              handleAddLearningItem
+            }
+
+            onLearningItemStatus={
+              handleLearningItemStatus
+            }
+
+            onLearningHelpRequest={
+              handleLearningHelpRequest
+            }
+
+            onLearningResourceFeedback={
+              handleLearningResourceFeedback
+            }
+
+            onLearningSupportOutcome={
+              handleLearningSupportOutcome
+            }
+
+            onDiscover={
+              startDiscovery
+            }
+
+            onExplore={() =>
+              setScreen(
+                'adventures'
+              )
+            }
+
+            onGrowthProfile={() =>
+              setScreen(
+                'growthProfile'
+              )
+            }
+
+            onParentPerspective={
+              startParentPerspective
+            }
+          />
+        </BppWorkspaceShell>
       )}
 
 
@@ -1619,288 +1644,393 @@ function App() {
 
       {screen ===
         'growthProfile' && (
-        <GrowthProfileView
-          childName={
-            childProfile.name.trim()
+        <BppWorkspaceShell
+          activeSection="profile"
+          childProfile={childProfile}
+          activeJourneyCount={
+            journeyItems.filter(
+              (item) => item.status !== 'completed'
+            ).length
           }
-
-          profile={
-            growthIntelligenceProfile
+          onHome={goToChildSpace}
+          onJourney={goToJourney}
+          onExplore={() =>
+            setScreen('adventures')
           }
-
-          topTraits={
-            intelligenceTraits
+          onProfile={() =>
+            setScreen('growthProfile')
           }
-
-          topDomains={
-            intelligenceDomains
+          onParent={() =>
+            setScreen('parentPerspectiveIntro')
           }
-
-          topPathways={
-            intelligencePathways
-          }
-          promotedPatterns={
-            promotedGrowthPatterns
-          }
-
-          patternIntelligence={
-            holisticPatternIntelligence
-          }
-
-          parentPerspectiveComplete={
-            parentPerspectiveComplete
-          }
-
-          completedExplorations={
-            completedExplorations
-          }
-
-          onBack={
-            goToChildSpace
-          }
-
-          onExploreAdventures={() =>
-            setScreen(
-              'adventures'
-            )
-          }
-
-          developerInspector={
-            growthIntelligenceProfile ? (
-              <GrowthIntelligenceInspector
-                profile={
-                  growthIntelligenceProfile
-                }
-
-                evidenceEventCount={
-                  evidenceEventCount
-                }
-
-                traits={
-                  intelligenceTraits
-                }
-
-                domains={
-                  intelligenceDomains
-                }
-
-                pathways={
-                  intelligencePathways
-                }
-
-                careers={
-                  intelligenceCareers
-                }
-
-                recommendations={
-                  growthRecommendations
-                }
-
-                onReset={
-                  resetTestData
-                }
-              />
-            ) : null
-          }
-        />
+        >
+          <GrowthProfileView
+                    childName={
+                      childProfile.name.trim()
+                    }
+          
+                    profile={
+                      growthIntelligenceProfile
+                    }
+          
+                    topTraits={
+                      intelligenceTraits
+                    }
+          
+                    topDomains={
+                      intelligenceDomains
+                    }
+          
+                    topPathways={
+                      intelligencePathways
+                    }
+                    promotedPatterns={
+                      promotedGrowthPatterns
+                    }
+          
+                    patternIntelligence={
+                      holisticPatternIntelligence
+                    }
+          
+                    parentPerspectiveComplete={
+                      parentPerspectiveComplete
+                    }
+          
+                    completedExplorations={
+                      completedExplorations
+                    }
+          
+                    onBack={
+                      goToChildSpace
+                    }
+          
+                    onExploreAdventures={() =>
+                      setScreen(
+                        'adventures'
+                      )
+                    }
+          
+                    developerInspector={
+                      growthIntelligenceProfile ? (
+                        <GrowthIntelligenceInspector
+                          profile={
+                            growthIntelligenceProfile
+                          }
+          
+                          evidenceEventCount={
+                            evidenceEventCount
+                          }
+          
+                          traits={
+                            intelligenceTraits
+                          }
+          
+                          domains={
+                            intelligenceDomains
+                          }
+          
+                          pathways={
+                            intelligencePathways
+                          }
+          
+                          careers={
+                            intelligenceCareers
+                          }
+          
+                          recommendations={
+                            growthRecommendations
+                          }
+          
+                          onReset={
+                            resetTestData
+                          }
+                        />
+                      ) : null
+                    }
+                  />
+        </BppWorkspaceShell>
       )}
 
 
       {screen ===
         'parentPerspectiveIntro' && (
-        <ParentPerspectiveFlow
-          mode="intro"
-
-          childName={
-            childProfile.name.trim()
+        <BppWorkspaceShell
+          activeSection="parent"
+          childProfile={childProfile}
+          activeJourneyCount={
+            journeyItems.filter(
+              (item) => item.status !== 'completed'
+            ).length
           }
-
-          currentQuestion={
-            currentParentQuestion
+          onHome={goToChildSpace}
+          onJourney={goToJourney}
+          onExplore={() =>
+            setScreen('adventures')
           }
-
-          currentQuestionIndex={
-            parentQuestionIndex
+          onProfile={() =>
+            setScreen('growthProfile')
           }
-
-          totalQuestions={
-            parentPerspectiveQuestions.length
+          onParent={() =>
+            setScreen('parentPerspectiveIntro')
           }
-
-          parentIntents={
-            parentGrowthIntents
-          }
-
-          experienceObservations={
-            parentExperienceObservations
-          }
-
-          onAddExperienceObservation={
-            startParentExperienceObservation
-          }
-
-          onBackToChildSpace={
-            goToChildSpace
-          }
-
-          onBegin={
-            beginParentPerspective
-          }
-
-          onQuestionBack={
-            handleParentPerspectiveBack
-          }
-
-          onAnswer={
-            handleParentAnswer
-          }
-
-          onSaveParentIntent={
-            handleSaveParentIntent
-          }
-        />
+        >
+          <ParentPerspectiveFlow
+                    mode="intro"
+          
+                    childName={
+                      childProfile.name.trim()
+                    }
+          
+                    currentQuestion={
+                      currentParentQuestion
+                    }
+          
+                    currentQuestionIndex={
+                      parentQuestionIndex
+                    }
+          
+                    totalQuestions={
+                      parentPerspectiveQuestions.length
+                    }
+          
+                    parentIntents={
+                      parentGrowthIntents
+                    }
+          
+                    experienceObservations={
+                      parentExperienceObservations
+                    }
+          
+                    onAddExperienceObservation={
+                      startParentExperienceObservation
+                    }
+          
+                    onBackToChildSpace={
+                      goToChildSpace
+                    }
+          
+                    onBegin={
+                      beginParentPerspective
+                    }
+          
+                    onQuestionBack={
+                      handleParentPerspectiveBack
+                    }
+          
+                    onAnswer={
+                      handleParentAnswer
+                    }
+          
+                    onSaveParentIntent={
+                      handleSaveParentIntent
+                    }
+                  />
+        </BppWorkspaceShell>
       )}
 
 
       {screen ===
         'parentPerspective' && (
-        <ParentPerspectiveFlow
-          mode="questions"
-
-          childName={
-            childProfile.name.trim()
+        <BppWorkspaceShell
+          activeSection="parent"
+          childProfile={childProfile}
+          activeJourneyCount={
+            journeyItems.filter(
+              (item) => item.status !== 'completed'
+            ).length
           }
-
-          currentQuestion={
-            currentParentQuestion
+          onHome={goToChildSpace}
+          onJourney={goToJourney}
+          onExplore={() =>
+            setScreen('adventures')
           }
-
-          currentQuestionIndex={
-            parentQuestionIndex
+          onProfile={() =>
+            setScreen('growthProfile')
           }
-
-          totalQuestions={
-            parentPerspectiveQuestions.length
+          onParent={() =>
+            setScreen('parentPerspectiveIntro')
           }
-
-          parentIntents={
-            parentGrowthIntents
-          }
-
-          experienceObservations={
-            parentExperienceObservations
-          }
-
-          onAddExperienceObservation={
-            startParentExperienceObservation
-          }
-
-          onBackToChildSpace={
-            goToChildSpace
-          }
-
-          onBegin={
-            beginParentPerspective
-          }
-
-          onQuestionBack={
-            handleParentPerspectiveBack
-          }
-
-          onAnswer={
-            handleParentAnswer
-          }
-
-          onSaveParentIntent={
-            handleSaveParentIntent
-          }
-        />
+        >
+          <ParentPerspectiveFlow
+                    mode="questions"
+          
+                    childName={
+                      childProfile.name.trim()
+                    }
+          
+                    currentQuestion={
+                      currentParentQuestion
+                    }
+          
+                    currentQuestionIndex={
+                      parentQuestionIndex
+                    }
+          
+                    totalQuestions={
+                      parentPerspectiveQuestions.length
+                    }
+          
+                    parentIntents={
+                      parentGrowthIntents
+                    }
+          
+                    experienceObservations={
+                      parentExperienceObservations
+                    }
+          
+                    onAddExperienceObservation={
+                      startParentExperienceObservation
+                    }
+          
+                    onBackToChildSpace={
+                      goToChildSpace
+                    }
+          
+                    onBegin={
+                      beginParentPerspective
+                    }
+          
+                    onQuestionBack={
+                      handleParentPerspectiveBack
+                    }
+          
+                    onAnswer={
+                      handleParentAnswer
+                    }
+          
+                    onSaveParentIntent={
+                      handleSaveParentIntent
+                    }
+                  />
+        </BppWorkspaceShell>
       )}
 
 
       {screen ===
         'parentPerspectiveComplete' && (
-        <ParentPerspectiveFlow
-          mode="complete"
-
-          childName={
-            childProfile.name.trim()
+        <BppWorkspaceShell
+          activeSection="parent"
+          childProfile={childProfile}
+          activeJourneyCount={
+            journeyItems.filter(
+              (item) => item.status !== 'completed'
+            ).length
           }
-
-          currentQuestion={
-            currentParentQuestion
+          onHome={goToChildSpace}
+          onJourney={goToJourney}
+          onExplore={() =>
+            setScreen('adventures')
           }
-
-          currentQuestionIndex={
-            parentQuestionIndex
+          onProfile={() =>
+            setScreen('growthProfile')
           }
-
-          totalQuestions={
-            parentPerspectiveQuestions.length
+          onParent={() =>
+            setScreen('parentPerspectiveIntro')
           }
-
-          parentIntents={
-            parentGrowthIntents
-          }
-
-          experienceObservations={
-            parentExperienceObservations
-          }
-
-          onAddExperienceObservation={
-            startParentExperienceObservation
-          }
-
-          onBackToChildSpace={
-            goToChildSpace
-          }
-
-          onBegin={
-            beginParentPerspective
-          }
-
-          onQuestionBack={
-            handleParentPerspectiveBack
-          }
-
-          onAnswer={
-            handleParentAnswer
-          }
-
-          onSaveParentIntent={
-            handleSaveParentIntent
-          }
-        />
+        >
+          <ParentPerspectiveFlow
+                    mode="complete"
+          
+                    childName={
+                      childProfile.name.trim()
+                    }
+          
+                    currentQuestion={
+                      currentParentQuestion
+                    }
+          
+                    currentQuestionIndex={
+                      parentQuestionIndex
+                    }
+          
+                    totalQuestions={
+                      parentPerspectiveQuestions.length
+                    }
+          
+                    parentIntents={
+                      parentGrowthIntents
+                    }
+          
+                    experienceObservations={
+                      parentExperienceObservations
+                    }
+          
+                    onAddExperienceObservation={
+                      startParentExperienceObservation
+                    }
+          
+                    onBackToChildSpace={
+                      goToChildSpace
+                    }
+          
+                    onBegin={
+                      beginParentPerspective
+                    }
+          
+                    onQuestionBack={
+                      handleParentPerspectiveBack
+                    }
+          
+                    onAnswer={
+                      handleParentAnswer
+                    }
+          
+                    onSaveParentIntent={
+                      handleSaveParentIntent
+                    }
+                  />
+        </BppWorkspaceShell>
       )}
 
 
       {screen ===
         'adventures' && (
-        <AdventuresHub
-          childName={
-            childProfile.name.trim()
+        <BppWorkspaceShell
+          activeSection="explore"
+          childProfile={childProfile}
+          activeJourneyCount={
+            journeyItems.filter(
+              (item) => item.status !== 'completed'
+            ).length
           }
-
-          recommendations={
-            recommendations
+          onHome={goToChildSpace}
+          onJourney={goToJourney}
+          onExplore={() =>
+            setScreen('adventures')
           }
-
-          catalog={
-            Object.values(explorations)
+          onProfile={() =>
+            setScreen('growthProfile')
           }
-
-          completedExplorations={
-            completedExplorations
+          onParent={() =>
+            setScreen('parentPerspectiveIntro')
           }
-
-          onBack={
-            goToChildSpace
-          }
-
-          onStartAdventure={
-            startExploration
-          }
-        />
+        >
+          <AdventuresHub
+                    childName={
+                      childProfile.name.trim()
+                    }
+          
+                    recommendations={
+                      recommendations
+                    }
+          
+                    catalog={
+                      Object.values(explorations)
+                    }
+          
+                    completedExplorations={
+                      completedExplorations
+                    }
+          
+                    onBack={
+                      goToChildSpace
+                    }
+          
+                    onStartAdventure={
+                      startExploration
+                    }
+                  />
+        </BppWorkspaceShell>
       )}
 
 
@@ -2147,6 +2277,166 @@ function App() {
       )}
 
     </main>
+  )
+}
+
+
+// ============================================================
+// MVP v0.8.10B-6A — OPTION B++ WORKSPACE SHELL
+// ============================================================
+
+function BppWorkspaceShell({
+  activeSection,
+  childProfile,
+  activeJourneyCount = 0,
+  onHome,
+  onJourney,
+  onExplore,
+  onProfile,
+  onParent,
+  children,
+}) {
+  const childName =
+    childProfile?.name?.trim() ||
+    'Explorer'
+
+  const navItems = [
+    {
+      id: 'home',
+      label: 'Home',
+      icon: '⌂',
+      onClick: onHome,
+    },
+    {
+      id: 'journey',
+      label: 'Journey',
+      icon: '♬',
+      onClick: onJourney,
+      count: activeJourneyCount,
+    },
+    {
+      id: 'explore',
+      label: 'Explore',
+      icon: '◉',
+      onClick: onExplore,
+    },
+    {
+      id: 'profile',
+      label: 'Profile',
+      icon: '♙',
+      onClick: onProfile,
+    },
+    {
+      id: 'parent',
+      label: 'Parent',
+      icon: '♧',
+      onClick: onParent,
+    },
+  ]
+
+  return (
+    <div className="bppWorkspaceShellV0810">
+
+      <aside className="bppSidebarV0810">
+
+        <button
+          type="button"
+          className="bppSidebarBrandV0810"
+          onClick={onHome}
+        >
+          <span className="bppSidebarRocketV0810">
+            🚀
+          </span>
+
+          <span>
+            <strong>Career & Growth</strong>
+            <small>Discover. Learn. Grow.</small>
+          </span>
+        </button>
+
+        <nav
+          className="bppSidebarNavV0810"
+          aria-label="Growth Space"
+        >
+          {navItems.map((item) => (
+            <button
+              type="button"
+              key={item.id}
+              className={
+                activeSection === item.id
+                  ? 'active'
+                  : ''
+              }
+              onClick={item.onClick}
+            >
+              <span className="bppSidebarNavIconV0810">
+                {item.icon}
+              </span>
+
+              <span>{item.label}</span>
+
+              {item.count > 0 && (
+                <small>{item.count}</small>
+              )}
+            </button>
+          ))}
+        </nav>
+
+        <div className="bppSidebarBottomV0810">
+
+          <button
+            type="button"
+            className="bppSidebarSettingsV0810"
+            disabled
+            title="Settings will be added later"
+          >
+            <span>⚙</span>
+            Settings
+          </button>
+
+          <div className="bppSidebarEncouragementV0810">
+            <span aria-hidden="true">⭐</span>
+
+            <strong>
+              You’re doing great, {childName}!
+            </strong>
+
+            <p>
+              Keep exploring, keep learning,
+              keep growing! ✨
+            </p>
+          </div>
+
+        </div>
+
+      </aside>
+
+      <div className="bppWorkspaceCanvasV0810">
+        {children}
+      </div>
+
+      <nav
+        className="bppMobileNavV0810"
+        aria-label="Mobile Growth Space"
+      >
+        {navItems.map((item) => (
+          <button
+            type="button"
+            key={item.id}
+            className={
+              activeSection === item.id
+                ? 'active'
+                : ''
+            }
+            onClick={item.onClick}
+          >
+            <span>{item.icon}</span>
+            <small>{item.label}</small>
+          </button>
+        ))}
+      </nav>
+
+    </div>
   )
 }
 

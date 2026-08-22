@@ -4,10 +4,10 @@ import {
   useState,
 } from 'react'
 
-import './GrowthHome.css'
 import './ExperienceResearchPanel.css'
 import './JourneyPolish.css'
 import './UnifiedJourney.css'
+import './GrowthHome.css'
 
 import ExperienceResearchPanel from './ExperienceResearchPanel'
 
@@ -136,89 +136,6 @@ function GrowthHome({
   return (
     <div className="growthHomeV06">
 
-      <header className="growthAppHeaderV06">
-        <button
-          type="button"
-          className="growthBrandButtonV06"
-          onClick={onHome}
-        >
-          <span className="growthBrandMarkV06">
-            🌱
-          </span>
-
-          <span className="growthBrandCopyV06">
-            <strong>Career & Growth</strong>
-            <small>Grow into you.</small>
-          </span>
-        </button>
-
-        <nav
-          className="growthTopNavV06"
-          aria-label="Primary"
-        >
-          <button
-            className={
-              activeView === 'home'
-                ? 'active'
-                : ''
-            }
-            onClick={onHome}
-          >
-            Home
-          </button>
-
-          <button onClick={onDiscover}>
-            Discover
-          </button>
-
-          <button onClick={onExplore}>
-            Explore
-          </button>
-
-          <button
-            className={
-              activeView === 'journey'
-                ? 'active'
-                : ''
-            }
-            onClick={onJourney}
-          >
-            Journey
-
-            {activeJourneyItems.length > 0 && (
-              <span className="navCountV06">
-                {activeJourneyItems.length}
-              </span>
-            )}
-          </button>
-        </nav>
-
-        <div className="growthHeaderActionsV06">
-          <button
-            className="parentViewLinkV06"
-            onClick={onParentPerspective}
-          >
-            Parent View
-          </button>
-
-          <button
-            className="childMenuButtonV06"
-            onClick={onGrowthProfile}
-            title="Open growth profile"
-          >
-            <span className="childAvatarV06">
-              {childName
-                .charAt(0)
-                .toUpperCase()}
-            </span>
-
-            <span className="childMenuCopyV06">
-              <strong>{childName}</strong>
-              <small>Age {childProfile?.age}</small>
-            </span>
-          </button>
-        </div>
-      </header>
 
       <main className="growthWorkspaceV06">
 
@@ -254,36 +171,38 @@ function GrowthHome({
           />
         ) : (
           <>
-            <section className="growthPageIntroV06">
-              <div>
-                <span className="growthKickerV06">
-                  MY GROWTH SPACE
-                </span>
+            {!discoveryComplete && (
+              <section className="growthPageIntroV06">
+                <div>
+                  <span className="growthKickerV06">
+                    MY GROWTH SPACE
+                  </span>
 
-                <h1>
-                  Hi {childName}.
-                </h1>
+                  <h1>
+                    Hi {childName}.
+                  </h1>
 
-                <p>
-                  Pick up where you left off,
-                  explore something new, or
-                  tell us what sounds interesting.
-                </p>
-              </div>
+                  <p>
+                    Pick up where you left off,
+                    explore something new, or
+                    tell us what sounds interesting.
+                  </p>
+                </div>
 
-              <button
-                className="profileStatusV06"
-                onClick={onGrowthProfile}
-              >
-                <span className="statusDotV06" />
-                <span>
-                  {growthProfile
-                    ? 'Profile is evolving'
-                    : 'Profile is getting started'}
-                </span>
-                <strong>View profile →</strong>
-              </button>
-            </section>
+                <button
+                  className="profileStatusV06"
+                  onClick={onGrowthProfile}
+                >
+                  <span className="statusDotV06" />
+                  <span>
+                    {growthProfile
+                      ? 'Profile is evolving'
+                      : 'Profile is getting started'}
+                  </span>
+                  <strong>View profile →</strong>
+                </button>
+              </section>
+            )}
 
             {!discoveryComplete && (
               <section className="discoveryStartBannerV06">
@@ -323,290 +242,340 @@ function GrowthHome({
 
             {discoveryComplete && (
               <>
-                <section className="homePrimaryGridV06">
+                <section className="bppHomeHeroV0810 bppHomeHeroFidelityV0810">
+                  <div className="bppGreetingV0810">
+                    <h1>
+                      Hi, {childName}! <span aria-hidden="true">👋</span>
+                    </h1>
+                    <p>
+                      Every day is a chance to learn something new
+                      about yourself.
+                    </p>
+                  </div>
 
-                  <article className="homeFocusCardV06">
-                    <div className="cardHeadingRowV06">
-                      <div>
-                        <span className="growthKickerV06">
-                          CONTINUE
-                        </span>
-                        <h2>
-                          What you're doing now
-                        </h2>
-                      </div>
-                      <button
-                        className="textActionV06"
-                        onClick={onJourney}
-                      >
-                        Open Journey →
-                      </button>
+                  <div className="bppHomeSceneV0810" aria-hidden="true">
+                    <span className="bppHomeCloudV0810 bppHomeCloudOneV0810">☁️</span>
+                    <span className="bppHomeCloudV0810 bppHomeCloudTwoV0810">☁️</span>
+                    <span className="bppHomeSparkOneV0810">✦</span>
+                    <span className="bppHomeSparkTwoV0810">✧</span>
+                    <span className="bppHomeKidV0810">👦</span>
+                    <span className="bppHomeStarV0810">⭐</span>
+                  </div>
+                </section>
+
+                <section className="bppHomeFocusV0810 bppHomeFocusFidelityV0810">
+                  <div className="bppSectionHeadingV0810 bppHomeCardHeadingV0810">
+                    <div>
+                      <span className="bppEyebrowV0810">WORKING ON NOW</span>
                     </div>
+                    <button
+                      className="bppMoreButtonV0810"
+                      onClick={onJourney}
+                      aria-label="Open My Journey"
+                    >
+                      •••
+                    </button>
+                  </div>
 
-                    {currentJourney ? (
-                      <div className="currentJourneyV06">
-                        <div className="currentJourneyIconV06">
-                          {currentJourney.emoji || '🌱'}
-                        </div>
-
-                        <div className="currentJourneyBodyV06">
-                          <div className="currentJourneyTitleRowV06">
-                            <h3>{currentJourney.title}</h3>
-                            <span>
-                              {currentJourney.progress?.percent || 0}%
-                            </span>
-                          </div>
-
-                          <p>
-                            {currentJourney.description ||
-                              'Keep moving this experience forward and notice what you learn.'}
-                          </p>
-
-                          <div className="miniProgressTrackV06">
-                            <div
-                              style={{
-                                width:
-                                  `${currentJourney.progress?.percent || 0}%`,
-                              }}
-                            />
-                          </div>
-
-                          <button
-                            className="growthPrimaryButtonV06"
-                            onClick={onJourney}
-                          >
-                            Continue <span>→</span>
-                          </button>
-                        </div>
+                  {currentJourney ? (
+                    <div className="bppCurrentActivityV0810 bppCurrentActivityFidelityV0810">
+                      <div className="bppCurrentActivityIconV0810">
+                        {currentJourney.emoji || '📘'}
                       </div>
-                    ) : (
-                      <div className="focusEmptyV06">
-                        <span>🛤️</span>
-                        <div>
-                          <strong>
-                            Nothing in progress yet.
-                          </strong>
-                          <p>
-                            Pick an experience and it will become
-                            part of your Journey.
-                          </p>
-                        </div>
+
+                      <div className="bppCurrentActivityCopyV0810">
+                        <h3>{currentJourney.title}</h3>
+                        <span className="bppActivityTypeV0810">
+                          {currentJourney.path
+                            ? journeyPathLabels[currentJourney.path] || 'My Journey'
+                            : 'My Journey'}
+                        </span>
+
+                        <p className="bppLearningStateV0810">
+                          <span aria-hidden="true">●</span>
+                          {currentJourney.learningStateLabel ||
+                            currentJourney.supportOutcomeLabel ||
+                            'Keep going — every step counts!'}
+                        </p>
+
                         <button
-                          className="growthPrimaryButtonV06"
-                          onClick={onExplore}
+                          className="bppPrimaryButtonV0810"
+                          onClick={onJourney}
                         >
-                          Find an Experience <span>→</span>
+                          Continue <span>→</span>
                         </button>
                       </div>
-                    )}
-                  </article>
 
-                  <article className="homeRecommendationCardV06">
-                    <div className="cardHeadingRowV06">
-                      <div>
-                        <span className="growthKickerV06">
-                          PICKED FOR YOU
-                        </span>
-                        <h2>
-                          Try something next
-                        </h2>
+                      <div className="bppCurrentIllustrationV0810" aria-hidden="true">
+                        <span className="bppDeskKidV0810">🧒</span>
+                        <span className="bppNotebookV0810">📖</span>
+                        <span className="bppPencilV0810">✏️</span>
                       </div>
+                    </div>
+                  ) : (
+                    <div className="bppCurrentActivityV0810 bppCurrentActivityFidelityV0810">
+                      <div className="bppCurrentActivityIconV0810">🛤️</div>
+                      <div className="bppCurrentActivityCopyV0810">
+                        <h3>Ready to start something?</h3>
+                        <span className="bppActivityTypeV0810">
+                          Your Journey
+                        </span>
+                        <p className="bppLearningStateV0810">
+                          <span aria-hidden="true">●</span>
+                          Pick something that sounds interesting.
+                        </p>
+                        <button
+                          className="bppPrimaryButtonV0810"
+                          onClick={onExplore}
+                        >
+                          Explore <span>→</span>
+                        </button>
+                      </div>
+                      <div className="bppCurrentIllustrationV0810" aria-hidden="true">
+                        <span className="bppDeskKidV0810">🧭</span>
+                        <span className="bppNotebookV0810">✨</span>
+                      </div>
+                    </div>
+                  )}
+                </section>
+
+                <section className="bppHomeNextV0810 bppHomeNextFidelityV0810">
+                  <div className="bppNextColumnV0810">
+                    <div className="bppSectionHeadingV0810 bppSectionHeadingCompactV0810">
+                      <div>
+                        <h2>Up next</h2>
+                      </div>
+                    </div>
+
+                    <div className="bppHomeActionStackV0810">
+                      {secondaryRecommendation ? (
+                        <button
+                          className="bppActionRowV0810"
+                          onClick={() => onStartGrow?.(secondaryRecommendation)}
+                        >
+                          <span className="bppActionIconV0810 bppActionIconWarmV0810">
+                            {secondaryRecommendation.emoji || '🧩'}
+                          </span>
+                          <span>
+                            <strong>{secondaryRecommendation.title}</strong>
+                            <small>
+                              {secondaryRecommendation.reasons?.[0] ||
+                                'Based on your recent work'}
+                            </small>
+                          </span>
+                          <span aria-hidden="true">›</span>
+                        </button>
+                      ) : (
+                        <button
+                          className="bppActionRowV0810"
+                          onClick={onJourney}
+                        >
+                          <span className="bppActionIconV0810 bppActionIconWarmV0810">🧩</span>
+                          <span>
+                            <strong>Continue your next step</strong>
+                            <small>Based on your Journey</small>
+                          </span>
+                          <span aria-hidden="true">›</span>
+                        </button>
+                      )}
+
                       <button
-                        className="textActionV06"
+                        className="bppActionRowV0810"
                         onClick={onExplore}
                       >
-                        Explore all →
+                        <span className="bppActionIconV0810 bppActionIconBlueV0810">🤖</span>
+                        <span>
+                          <strong>Robot Builder</strong>
+                          <small>Hands-on experience</small>
+                        </span>
+                        <span aria-hidden="true">›</span>
                       </button>
+                    </div>
+                  </div>
+
+                  <div className="bppNextColumnV0810">
+                    <div className="bppSectionHeadingV0810 bppSectionHeadingCompactV0810">
+                      <div>
+                        <h2>Picked for you</h2>
+                      </div>
                     </div>
 
                     {topRecommendation ? (
-                      <div className="recommendationMainV06">
-                        <div className="recommendationIconV06">
-                          {topRecommendation.emoji || '✨'}
-                        </div>
-                        <div>
-                          <h3>{topRecommendation.title}</h3>
-                          <p>
-                            {topRecommendation.reasons?.[0] ||
-                              'This fits patterns we are starting to notice about you.'}
-                          </p>
-                          <button
-                            className="growthPrimaryButtonV06"
-                            onClick={() =>
-                              onStartGrow?.(
-                                topRecommendation
-                              )
-                            }
-                          >
-                            Explore This <span>→</span>
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="mutedCopyV06">
-                        Recommendations will appear as we learn
-                        more about you.
-                      </p>
-                    )}
-
-                    {secondaryRecommendation && (
                       <button
-                        className="secondaryRecommendationV06"
-                        onClick={() =>
-                          onStartGrow?.(
-                            secondaryRecommendation
-                          )
-                        }
+                        className="bppActionRowV0810 bppActionRowPickedV0810"
+                        onClick={() => onStartGrow?.(topRecommendation)}
                       >
-                        <span>
-                          {secondaryRecommendation.emoji || '🌱'}
+                        <span className="bppActionIconV0810 bppActionIconPurpleV0810">
+                          {topRecommendation.emoji || '★'}
                         </span>
                         <span>
-                          <strong>
-                            {secondaryRecommendation.title}
-                          </strong>
+                          <strong>{topRecommendation.title}</strong>
                           <small>
-                            Another idea worth trying
+                            {topRecommendation.reasons?.[0] ||
+                              'Picked for you'}
                           </small>
                         </span>
-                        <span>→</span>
+                        <span aria-hidden="true">›</span>
+                      </button>
+                    ) : (
+                      <button
+                        className="bppActionRowV0810 bppActionRowPickedV0810"
+                        onClick={onExplore}
+                      >
+                        <span className="bppActionIconV0810 bppActionIconPurpleV0810">★</span>
+                        <span>
+                          <strong>Try something new</strong>
+                          <small>Picked for you</small>
+                        </span>
+                        <span aria-hidden="true">›</span>
                       </button>
                     )}
-                  </article>
-
+                  </div>
                 </section>
 
-                <ExperienceResearchPanel
-                  childName={childName}
-                  candidates={
-                    researchedExperienceCandidates
-                  }
-                  journeyItems={
-                    journeyItems
-                  }
-                  onAddToJourney={
-                    onAddResearchedExperienceToJourney
-                  }
-                />
-
-                <section className="homeSnapshotV06">
-
-                  <article className="snapshotProfileV06">
-                    <div className="cardHeadingRowV06">
-                      <div>
-                        <span className="growthKickerV06">
-                          WHAT WE'RE NOTICING
-                        </span>
-                        <h2>
-                          Your Growth Profile
-                        </h2>
-                      </div>
-                      <button
-                        className="textActionV06"
-                        onClick={onGrowthProfile}
-                      >
-                        See details →
-                      </button>
+                <section className="bppRecentlyV0810 bppRecentlyFidelityV0810">
+                  <div className="bppSectionHeadingV0810 bppSectionHeadingCompactV0810">
+                    <div>
+                      <h2>Recently</h2>
                     </div>
+                    <button
+                      className="bppTextLinkV0810"
+                      onClick={onJourney}
+                    >
+                      View all →
+                    </button>
+                  </div>
 
-                    <div className="traitChipListV06">
-                      {strongestTraits.length > 0 ? (
-                        strongestTraits.map(
-                          (trait) => (
-                            <span
-                              className="traitChipV06"
-                              key={trait.id}
-                            >
-                              <span>
-                                {trait.emoji || '🌱'}
-                              </span>
+                  <div className="bppRecentStripV0810">
+                    {completedJourneyItems.slice(0, 3).map((item) => (
+                      <button
+                        type="button"
+                        className="bppRecentItemV0810"
+                        key={item.id}
+                        onClick={onJourney}
+                      >
+                        <span className="bppRecentIconV0810">
+                          {item.emoji || '✓'}
+                        </span>
+                        <span>
+                          <strong>{item.title}</strong>
+                          <small>
+                            {item.path === journeyPaths.LEARNING
+                              ? 'Got help'
+                              : 'Built & reflected'}
+                          </small>
+                        </span>
+                        <span className="bppCompleteDotV0810">✓</span>
+                      </button>
+                    ))}
+
+                    {completedJourneyItems.length === 0 &&
+                      completedExplorations.slice(0, 3).map((item, index) => (
+                        <button
+                          type="button"
+                          className="bppRecentItemV0810"
+                          key={item.id || item.title || index}
+                          onClick={onJourney}
+                        >
+                          <span className="bppRecentIconV0810">
+                            {item.emoji || '✨'}
+                          </span>
+                          <span>
+                            <strong>{item.title || 'Experience'}</strong>
+                            <small>Tried & reflected</small>
+                          </span>
+                          <span className="bppCompleteDotV0810">✓</span>
+                        </button>
+                      ))}
+
+                    {completedJourneyItems.length === 0 &&
+                      completedExplorations.length === 0 && (
+                        <div className="bppQuietMessageV0810">
+                          Your completed activities will show up here.
+                        </div>
+                      )}
+                  </div>
+                </section>
+
+                <details className="bppHomeMoreToolsV0810">
+                  <summary>More from your Growth Space</summary>
+
+                  <div className="bppHomeLowerGridV0810">
+                    <article className="bppProfilePreviewV0810">
+                      <div className="bppSectionHeadingV0810 bppSectionHeadingCompactV0810">
+                        <div>
+                          <span className="bppEyebrowV0810">ABOUT YOU</span>
+                          <h2>Your strengths are taking shape</h2>
+                        </div>
+                        <button
+                          className="bppTextLinkV0810"
+                          onClick={onGrowthProfile}
+                        >
+                          My Profile →
+                        </button>
+                      </div>
+
+                      <div className="bppTraitLineV0810">
+                        {strongestTraits.length > 0 ? (
+                          strongestTraits.map((trait) => (
+                            <span key={trait.id}>
+                              <b>{trait.emoji || '🌱'}</b>
                               {trait.label}
                             </span>
-                          )
-                        )
-                      ) : (
-                        <span className="mutedCopyV06">
-                          Keep exploring to reveal more patterns.
-                        </span>
-                      )}
-                    </div>
-
-                    {strongestDomains.length > 0 && (
-                      <div className="domainLineV06">
-                        <span>Curiosity:</span>
-                        <strong>
-                          {strongestDomains
-                            .map(
-                              (domain) =>
-                                domain.label
-                            )
-                            .join(' · ')}
-                        </strong>
+                          ))
+                        ) : (
+                          <span className="bppQuietMessageV0810">
+                            Keep learning and trying things to reveal your strengths.
+                          </span>
+                        )}
                       </div>
-                    )}
+                    </article>
 
-                    <div className="metricStripV06">
-                      <div>
-                        <strong>{journeyItems.length}</strong>
-                        <span>Journey items</span>
-                      </div>
-                      <div>
-                        <strong>
-                          {completedJourneyItems.length +
-                            completedExplorations.length}
-                        </strong>
-                        <span>Experiences tried</span>
-                      </div>
-                      <div>
-                        <strong>{evidenceEventCount}</strong>
-                        <span>Clues learned</span>
-                      </div>
-                    </div>
-                  </article>
-
-                  <article className="studentVoiceV06">
-                    <span className="growthKickerV06">
-                      YOUR VOICE
-                    </span>
-                    <h2>
-                      What sounds interesting to you?
-                    </h2>
-                    <p>
-                      You don't have to wait for a recommendation.
-                    </p>
-
-                    <form
-                      className="studentIdeaFormV06"
-                      onSubmit={handleStudentIdeaSubmit}
-                    >
-                      <input
-                        type="text"
-                        value={studentIdea}
-                        onChange={(event) =>
-                          setStudentIdea(event.target.value)
-                        }
-                        placeholder="I want to..."
-                        aria-label="What do you want to try?"
-                      />
-                      <button
-                        type="submit"
-                        disabled={!studentIdea.trim()}
+                    <article className="bppStudentVoiceV0810">
+                      <span className="bppEyebrowV0810">YOUR VOICE</span>
+                      <h2>What sounds fun to try?</h2>
+                      <form
+                        className="bppIdeaFormV0810"
+                        onSubmit={handleStudentIdeaSubmit}
                       >
-                        →
-                      </button>
-                    </form>
+                        <input
+                          type="text"
+                          value={studentIdea}
+                          onChange={(event) => setStudentIdea(event.target.value)}
+                          placeholder="I want to..."
+                          aria-label="What do you want to try?"
+                        />
+                        <button
+                          type="submit"
+                          disabled={!studentIdea.trim()}
+                          aria-label="Save idea"
+                        >
+                          →
+                        </button>
+                      </form>
+                      {latestStudentIntent && (
+                        <p className="bppLatestIdeaV0810">
+                          <span>You told us:</span> “{latestStudentIntent.text}”
+                        </p>
+                      )}
+                    </article>
+                  </div>
 
-                    {latestStudentIntent && (
-                      <div className="latestIdeaV06">
-                        <span>You told us</span>
-                        <strong>
-                          “{latestStudentIntent.text}”
-                        </strong>
+                  <section className="bppResearchShelfV0810">
+                    <div className="bppSectionHeadingV0810 bppSectionHeadingCompactV0810">
+                      <div>
+                        <span className="bppEyebrowV0810">MORE TO EXPLORE</span>
+                        <h2>Experiences picked for you</h2>
                       </div>
-                    )}
-                  </article>
-
-                </section>
+                    </div>
+                    <ExperienceResearchPanel
+                      childName={childName}
+                      candidates={researchedExperienceCandidates}
+                      journeyItems={journeyItems}
+                      onAddToJourney={onAddResearchedExperienceToJourney}
+                    />
+                  </section>
+                </details>
               </>
             )}
           </>
@@ -1718,14 +1687,10 @@ function JourneyPanel({
             MY JOURNEY
           </span>
           <h1>
-            What you're working on,
-            {` ${childName}`}.
+            Your Journey, {childName}.
           </h1>
           <p>
-            Continue what you're trying,
-            reflect when you're done,
-            and keep a history of what
-            you've explored.
+            Keep moving on what matters now, then see how far you've come.
           </p>
         </div>
 
@@ -1888,7 +1853,7 @@ function JourneyPanel({
       )}
 
       <section
-        className="unifiedJourneyPathsV08"
+        className="unifiedJourneyPathsV08 bppJourneyPathTabsV0810"
         aria-label="Journey paths"
       >
         {journeyPathOptions.map(
@@ -2569,12 +2534,12 @@ function JourneyPanel({
               {activeJourneyPath ===
               journeyPaths
                 .SCHOOL_LEARNING
-                ? 'Keep learning'
+                ? 'Working on now'
                 : activeJourneyPath ===
                     journeyPaths
                       .ACTIVITIES_INTERESTS
-                  ? 'Keep growing'
-                  : 'Keep going'}
+                  ? 'Working on now'
+                  : 'Working on now'}
             </h2>
           </div>
         </div>
@@ -2582,7 +2547,7 @@ function JourneyPanel({
         {activeItems.length > 0 ? (
           <div className="journeyListV06">
             {activeItems.map(
-              (item) => {
+              (item, itemIndex) => {
                 if (
                   item.path ===
                   journeyPaths
@@ -2605,7 +2570,11 @@ function JourneyPanel({
 
                   return (
                     <article
-                      className="learningItemCardV08"
+                      className={
+                        itemIndex === 0
+                          ? 'learningItemCardV08 bppJourneyPrimaryItemV0810'
+                          : 'learningItemCardV08 bppJourneySecondaryItemV0810'
+                      }
                       key={item.id}
                     >
                       <div className="learningItemTopV08">
@@ -2866,7 +2835,11 @@ function JourneyPanel({
 
                 return (
                   <article
-                    className="journeyCardV06"
+                    className={
+                      itemIndex === 0
+                        ? 'journeyCardV06 bppJourneyPrimaryItemV0810'
+                        : 'journeyCardV06 bppJourneySecondaryItemV0810'
+                    }
                     key={item.id}
                   >
                   <div className="journeyCardIconV06">

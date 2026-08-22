@@ -1,6 +1,13 @@
-import './GrowthProfileViewV088D.css'
-
 // src/components/GrowthProfileView.jsx
+// ============================================================
+// Career & Growth
+// MVP v0.8.10B-3 — Option B++ Profile
+//
+// Presentation-only profile consolidation.
+// Intelligence, evidence, confidence and pathway logic are preserved.
+// ============================================================
+
+import './GrowthProfileView.css'
 
 function confidenceCopy(level) {
   switch (level) {
@@ -61,7 +68,7 @@ function ConfidenceBadge({
 
   return (
     <span
-      className={`profileConfidenceV06 profileConfidence-${confidence.level}`}
+      className={`bppProfileConfidence bppProfileConfidence-${confidence.level}`}
     >
       {confidence.label}
     </span>
@@ -69,22 +76,19 @@ function ConfidenceBadge({
 }
 
 
-function TraitCard({
+function TraitRow({
   trait,
 }) {
   return (
-    <article className="profileTraitV06">
+    <article className="bppProfileTraitRow">
 
-      <div className="profileTraitIconV06">
-        {trait.emoji}
+      <div className="bppProfileTraitIcon">
+        {trait.emoji || '✨'}
       </div>
 
-      <div className="profileTraitBodyV06">
-
-        <div className="profileTraitHeadingV06">
-          <h3>
-            {trait.label}
-          </h3>
+      <div className="bppProfileTraitCopy">
+        <div className="bppProfileRowTitle">
+          <h3>{trait.label}</h3>
 
           <ConfidenceBadge
             confidence={
@@ -93,16 +97,15 @@ function TraitCard({
           />
         </div>
 
-        <p className="profileTraitInterpretationV06">
+        <p className="bppProfileInterpretation">
           {confidenceCopy(
             trait.confidence?.level
           )}
         </p>
 
-        <p className="profileTraitEvidenceV06">
+        <small>
           {getEvidenceCopy(trait)}
-        </p>
-
+        </small>
       </div>
 
     </article>
@@ -110,22 +113,19 @@ function TraitCard({
 }
 
 
-function DomainCard({
+function DomainRow({
   domain,
 }) {
   return (
-    <article className="profileDomainV06">
+    <article className="bppProfileDomainRow">
 
-      <div className="profileDomainIconV06">
-        {domain.emoji}
+      <div className="bppProfileDomainIcon">
+        {domain.emoji || '🔎'}
       </div>
 
-      <div className="profileDomainBodyV06">
-
-        <div className="profileDomainHeadingV06">
-          <h3>
-            {domain.label}
-          </h3>
+      <div className="bppProfileTraitCopy">
+        <div className="bppProfileRowTitle">
+          <h3>{domain.label}</h3>
 
           <ConfidenceBadge
             confidence={
@@ -134,10 +134,9 @@ function DomainCard({
           />
         </div>
 
-        <p>
+        <small>
           {getEvidenceCopy(domain)}
-        </p>
-
+        </small>
       </div>
 
     </article>
@@ -149,67 +148,26 @@ function PathwayCard({
   pathway,
 }) {
   return (
-    <article className="profilePathwayV06">
+    <article className="bppProfilePathway">
 
-      <div className="profilePathwayIconV06">
-        {pathway.emoji}
+      <div className="bppProfilePathwayIcon">
+        {pathway.emoji || '🌱'}
       </div>
 
       <div>
-        <span className="profileKickerV06">
-          WORTH EXPLORING
+        <span className="bppProfileKicker">
+          WORTH TRYING
         </span>
 
-        <h3>
-          {pathway.label}
-        </h3>
+        <h3>{pathway.label}</h3>
 
         <p>
-          A direction worth trying through
+          A direction worth exploring through
           more experiences — not a prediction
           about your future.
         </p>
       </div>
 
-    </article>
-  )
-}
-
-
-function PromotedPatternCard({ pattern }) {
-  const sourceLabels = {
-    student_self_report: 'Discover You',
-    parent_observation: 'Parent Observation',
-    experience_behavior: 'Experience',
-    experience_reflection: 'Experience Reflection',
-    school_learning_behavior: 'School & Learning',
-  }
-
-  const visibleSources = (pattern.sources || [])
-    .filter((source) => source !== 'system_completion')
-    .map((source) => sourceLabels[source] || source.replaceAll('_', ' '))
-
-  return (
-    <article className="promotedPatternV088D">
-      <div className="promotedPatternIconV088D">{pattern.emoji}</div>
-      <div className="promotedPatternBodyV088D">
-        <div className="promotedPatternHeadingV088D">
-          <h3>{pattern.label}</h3>
-          <span>{pattern.status}</span>
-        </div>
-        <p>
-          We’re seeing this pattern repeatedly across different parts
-          of your growth journey.
-        </p>
-        <div className="promotedPatternSourcesV088D">
-          {visibleSources.map((source) => (
-            <span key={source}>{source}</span>
-          ))}
-        </div>
-        <small>
-          {pattern.evidenceCount} observations · {pattern.contextDiversity} contexts
-        </small>
-      </div>
     </article>
   )
 }
@@ -221,8 +179,6 @@ function GrowthProfileView({
   topTraits = [],
   topDomains = [],
   topPathways = [],
-  promotedPatterns = [],
-  patternIntelligence = null,
   parentPerspectiveComplete = false,
   completedExplorations = [],
   onBack,
@@ -240,8 +196,7 @@ function GrowthProfileView({
 
   const hasProfileSignals =
     topTraits.length > 0 ||
-    topDomains.length > 0 ||
-    promotedPatterns.length > 0
+    topDomains.length > 0
 
   const visibleTraits =
     topTraits.slice(0, 4)
@@ -253,141 +208,113 @@ function GrowthProfileView({
     topPathways.slice(0, 2)
 
   return (
-    <section className="growthProfileV06">
+    <section className="bppProfile">
 
-      <div className="profileTopbarV06">
+      <div className="bppProfileTopbar">
         <button
           type="button"
-          className="profileBackV06"
+          className="bppProfileBack"
           onClick={onBack}
         >
           ← Back to {childName}'s Space
         </button>
 
-        <span className="profileModePillV06">
-          Growth Profile
+        <span className="bppProfileMode">
+          My Profile
         </span>
       </div>
 
 
-      <header className="profileHeroV06">
+      <header className="bppProfileHero">
 
         <div>
-          <span className="profileKickerV06">
+          <span className="bppProfileKicker">
             MY GROWTH PROFILE
           </span>
 
           <h1>
-            What we're learning about
-            {` ${childName}`}.
+            Here’s what we’re learning
+            about you, {childName}.
           </h1>
 
           <p>
-            This is an evolving picture —
-            not a test result or a label.
-            It grows from what you tell us,
-            what you try, and what others
-            notice over time.
+            This is an evolving picture, not a label.
+            It grows as you answer questions, try things,
+            reflect, and get observations from people
+            who know you well.
           </p>
         </div>
 
         <div
-          className="profileHeroMarkV06"
+          className="bppProfileHeroMark"
           aria-hidden="true"
         >
           <span>✨</span>
-          <small>Evolving</small>
+          <strong>Still growing</strong>
         </div>
 
       </header>
 
 
       {!hasProfileSignals ? (
-        <section className="profileStartingV06">
-
-          <div className="profileStartingIconV06">
+        <section className="bppProfileStarting">
+          <div className="bppProfileStartingIcon">
             🌱
           </div>
 
           <div>
-            <span className="profileKickerV06">
+            <span className="bppProfileKicker">
               JUST GETTING STARTED
             </span>
 
             <h2>
-              Your profile will grow
-              as you explore.
+              Your profile will grow as you explore.
             </h2>
 
             <p>
-              Try experiences, share what
-              you notice, and keep telling
-              us what interests you.
+              Try experiences, share what you notice,
+              and keep telling us what interests you.
             </p>
           </div>
 
           <button
             type="button"
-            className="profilePrimaryV06"
+            className="bppProfilePrimary"
             onClick={onExploreAdventures}
           >
             Explore Something New
             <span>→</span>
           </button>
-
         </section>
       ) : (
         <>
-          {promotedPatterns.length > 0 && (
-            <section className="promotedPatternsSectionV088D">
-              <div className="promotedPatternsIntroV088D">
+
+          <section className="bppProfileMainGrid">
+
+            <article className="bppProfileSection">
+
+              <div className="bppProfileSectionHeading">
                 <div>
-                  <span className="profileKickerV06">
-                    PATTERNS BECOMING CLEARER
+                  <span className="bppProfileKicker">
+                    WHAT WE'RE NOTICING
                   </span>
+
                   <h2>
-                    What different parts of your journey are beginning to tell us
+                    Strengths taking shape
                   </h2>
                 </div>
+
                 <p>
-                  These patterns have been seen across multiple independent
-                  experiences or perspectives. They can still strengthen,
-                  change, or fade as you grow.
-                </p>
-              </div>
-              <div className="promotedPatternsGridV088D">
-                {promotedPatterns.map((pattern) => (
-                  <PromotedPatternCard key={pattern.id} pattern={pattern} />
-                ))}
-              </div>
-            </section>
-          )}
-
-          <section className="profileOverviewGridV06">
-
-            <article className="profilePanelV06">
-              <div className="profilePanelHeadingV06">
-                <div>
-                  <span className="profileKickerV06">
-                    PATTERNS WE'RE NOTICING
-                  </span>
-
-                  <h2>
-                    How you tend to approach things
-                  </h2>
-                </div>
-
-                <span className="profileQuietNoteV06">
                   Patterns can strengthen, change,
                   or fade as you grow.
-                </span>
+                </p>
               </div>
 
               {visibleTraits.length > 0 ? (
-                <div className="profileTraitGridV06">
+                <div className="bppProfileTraitList">
                   {visibleTraits.map(
                     (trait) => (
-                      <TraitCard
+                      <TraitRow
                         key={trait.id}
                         trait={trait}
                       />
@@ -395,36 +322,37 @@ function GrowthProfileView({
                   )}
                 </div>
               ) : (
-                <div className="profileEmptyV06">
-                  Keep exploring to reveal
-                  more patterns.
+                <div className="bppProfileEmpty">
+                  Keep exploring to reveal more patterns.
                 </div>
               )}
+
             </article>
 
 
-            <article className="profilePanelV06">
-              <div className="profilePanelHeadingV06">
+            <article className="bppProfileSection">
+
+              <div className="bppProfileSectionHeading">
                 <div>
-                  <span className="profileKickerV06">
-                    CURIOSITY RIGHT NOW
+                  <span className="bppProfileKicker">
+                    WHAT SPARKS YOU
                   </span>
 
                   <h2>
-                    Areas catching your attention
+                    Curiosity right now
                   </h2>
                 </div>
 
-                <span className="profileQuietNoteV06">
+                <p>
                   Curiosity can move around.
-                </span>
+                </p>
               </div>
 
               {visibleDomains.length > 0 ? (
-                <div className="profileDomainListV06">
+                <div className="bppProfileDomainList">
                   {visibleDomains.map(
                     (domain) => (
-                      <DomainCard
+                      <DomainRow
                         key={domain.id}
                         domain={domain}
                       />
@@ -432,137 +360,130 @@ function GrowthProfileView({
                   )}
                 </div>
               ) : (
-                <div className="profileEmptyV06">
-                  More exploration will help
-                  us see where curiosity shows up.
+                <div className="bppProfileEmpty">
+                  More exploration will help us see
+                  where curiosity shows up.
                 </div>
               )}
+
             </article>
 
           </section>
 
 
-          <section className="profileEvidenceStripV06">
+          <section className="bppProfileEvidence">
 
-            <div className="profileEvidenceIntroV06">
-              <span className="profileKickerV06">
-                WHERE THE CLUES COME FROM
-              </span>
+            <div className="bppProfileSectionHeading">
+              <div>
+                <span className="bppProfileKicker">
+                  WHERE THE CLUES COME FROM
+                </span>
 
-              <h2>
-                Different perspectives,
-                one evolving picture
-              </h2>
+                <h2>
+                  We learn from more than one kind of moment
+                </h2>
+              </div>
+
+              <p>
+                Confidence grows when different experiences
+                begin pointing in similar directions.
+              </p>
             </div>
 
 
-            <div className="profileEvidenceSourcesV06">
+            <div className="bppProfileEvidenceList">
 
               <div
                 className={
                   profile
-                    ? 'profileEvidenceSourceV06 active'
-                    : 'profileEvidenceSourceV06'
+                    ? 'bppProfileEvidenceItem active'
+                    : 'bppProfileEvidenceItem'
                 }
               >
-                <span className="profileEvidenceSourceIconV06">
+                <span className="bppProfileEvidenceIcon">
                   🧒
                 </span>
 
                 <div>
-                  <strong>
-                    Kid Experience
-                  </strong>
-
+                  <strong>What you tell us</strong>
                   <p>
-                    Discovery answers,
-                    preferences, and reflections.
+                    Discovery answers, preferences,
+                    and reflections.
                   </p>
                 </div>
-              </div>
 
-
-              <div
-                className={
-                  parentPerspectiveComplete
-                    ? 'profileEvidenceSourceV06 active'
-                    : 'profileEvidenceSourceV06'
-                }
-              >
-                <span className="profileEvidenceSourceIconV06">
-                  👨‍👩‍👦
+                <span className="bppProfileEvidenceState">
+                  {profile ? '✓ Included' : 'Waiting'}
                 </span>
-
-                <div>
-                  <strong>
-                    Parent Observation
-                  </strong>
-
-                  <p>
-                    Patterns noticed in
-                    everyday life.
-                  </p>
-                </div>
               </div>
 
 
               <div
                 className={
                   completedExplorations.length > 0
-                    ? 'profileEvidenceSourceV06 active'
-                    : 'profileEvidenceSourceV06'
+                    ? 'bppProfileEvidenceItem active'
+                    : 'bppProfileEvidenceItem'
                 }
               >
-                <span className="profileEvidenceSourceIconV06">
+                <span className="bppProfileEvidenceIcon">
                   🚀
                 </span>
 
                 <div>
-                  <strong>
-                    Experience Evidence
-                  </strong>
-
+                  <strong>What you try</strong>
                   <p>
-                    What happens when you
-                    actually try something.
+                    What happens when you actually
+                    do an experience.
                   </p>
                 </div>
+
+                <span className="bppProfileEvidenceState">
+                  {completedExplorations.length > 0
+                    ? '✓ Included'
+                    : 'Waiting'}
+                </span>
               </div>
+
 
               <div
                 className={
-                  patternIntelligence?.patterns?.some(
-                    (pattern) =>
-                      pattern.sources?.includes('school_learning_behavior')
-                  )
-                    ? 'profileEvidenceSourceV06 active'
-                    : 'profileEvidenceSourceV06'
+                  parentPerspectiveComplete
+                    ? 'bppProfileEvidenceItem active'
+                    : 'bppProfileEvidenceItem'
                 }
               >
-                <span className="profileEvidenceSourceIconV06">📚</span>
+                <span className="bppProfileEvidenceIcon">
+                  👨‍👩‍👦
+                </span>
+
                 <div>
-                  <strong>School & Learning</strong>
+                  <strong>What others notice</strong>
                   <p>
-                    How you seek help, use resources, persist,
-                    and learn over time.
+                    Patterns noticed by a parent
+                    in everyday life.
                   </p>
                 </div>
+
+                <span className="bppProfileEvidenceState">
+                  {parentPerspectiveComplete
+                    ? '✓ Included'
+                    : 'Waiting'}
+                </span>
               </div>
 
             </div>
 
 
             {!profileHasMultipleSources && (
-              <div className="profileEvidenceNoticeV06">
+              <div className="bppProfileGrowingNote">
                 <span aria-hidden="true">
                   🌱
                 </span>
 
                 <p>
-                  We're still building the picture.
-                  Confidence grows when different
-                  experiences and perspectives begin
-                  reinforcing similar patterns.
+                  <strong>The picture is still growing.</strong>{' '}
+                  More kinds of evidence will help us
+                  understand which patterns keep showing up.
                 </p>
               </div>
             )}
@@ -571,24 +492,24 @@ function GrowthProfileView({
 
 
           {visiblePathways.length > 0 && (
-            <section className="profileNextGridV06">
+            <section className="bppProfileNext">
 
-              <div className="profileNextCopyV06">
-                <span className="profileKickerV06">
-                  IDEAS WORTH TRYING
+              <div className="bppProfileNextIntro">
+                <span className="bppProfileKicker">
+                  WHAT COULD YOU TRY NEXT?
                 </span>
 
                 <h2>
-                  Where might you explore next?
+                  Ideas worth exploring
                 </h2>
 
                 <p>
-                  These are directions for exploration,
+                  These are invitations to experiment,
                   not career predictions.
                 </p>
               </div>
 
-              <div className="profilePathwayGridV06">
+              <div className="bppProfilePathwayGrid">
                 {visiblePathways.map(
                   (pathway) => (
                     <PathwayCard
@@ -601,26 +522,27 @@ function GrowthProfileView({
 
             </section>
           )}
+
         </>
       )}
 
 
-      <section className="profileBottomBarV06">
+      <section className="bppProfileKeepGrowing">
 
         <div>
-          <span className="profileKickerV06">
+          <span className="bppProfileKicker">
             KEEP GROWING
           </span>
 
           <h2>
-            The best way to understand
-            yourself is to keep trying things.
+            The best way to understand yourself
+            is to keep trying things.
           </h2>
         </div>
 
         <button
           type="button"
-          className="profilePrimaryV06"
+          className="bppProfilePrimary"
           onClick={onExploreAdventures}
         >
           Explore Something New
@@ -630,12 +552,12 @@ function GrowthProfileView({
       </section>
 
 
-      <details className="profileDetailsV06">
+      <details className="bppProfileDetails">
         <summary>
           Profile details
         </summary>
 
-        <div className="profileStatsV06">
+        <div className="bppProfileStats">
 
           <div>
             <strong>

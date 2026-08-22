@@ -1,11 +1,13 @@
 // ============================================================
 // Career & Growth
-// MVP v0.6 — Phase 0 — Explore
+// MVP v0.8.10B-2 — Option B++ Explore
 //
-// Kid-facing Explore workspace.
-// Keeps recommendation logic, adventure state, evidence and
-// persistence outside this presentation component.
+// Presentation-only Explore consolidation.
+// Recommendation logic, adventure state, evidence and persistence
+// remain outside this component.
 // ============================================================
+
+import './AdventuresHub.css'
 
 function AdventuresHub({
   childName,
@@ -36,6 +38,9 @@ function AdventuresHub({
       ...recommendation,
     }))
 
+  const bestMatch = pickedForYou[0]
+  const moreForYou = pickedForYou.slice(1)
+
   const exploreMore = catalog.filter(
     (item) => !recommendedIds.has(item.id)
   )
@@ -46,7 +51,7 @@ function AdventuresHub({
     completedExplorations.includes(id)
 
   return (
-    <section className="exploreV06">
+    <section className="exploreV06 exploreBppV0810">
 
       <div className="exploreTopbarV06">
         <button
@@ -61,165 +66,160 @@ function AdventuresHub({
           <span className="exploreChildAvatarV06">
             {safeName.charAt(0).toUpperCase()}
           </span>
-
           <span>{safeName}</span>
         </div>
       </div>
 
-
-      <header className="exploreHeroV06">
-        <div className="exploreHeroCopyV06">
-          <span className="exploreKickerV06">
-            EXPLORE
-          </span>
-
-          <h1>
-            What catches your curiosity?
-          </h1>
-
+      <header className="bppExploreIntro">
+        <div>
+          <span className="exploreKickerV06">EXPLORE</span>
+          <h1>What sounds fun to try?</h1>
           <p>
-            You don't have to know if you'll love it.
-            Pick something that makes you think,
-            “I want to try that.”
+            Follow your curiosity. Trying something is how you
+            discover what feels interesting to you.
           </p>
         </div>
 
-        <div
-          className="exploreHeroSceneV06"
-          aria-hidden="true"
-        >
-          <span className="sceneSparkV06 sceneSparkOneV06">
-            ✦
-          </span>
-
-          <span className="sceneSparkV06 sceneSparkTwoV06">
-            ✨
-          </span>
-
-          <div className="sceneBubbleV06">
-            <strong>Try it.</strong>
-            <span>Notice what feels fun.</span>
-          </div>
-
-          <div className="sceneRobotV06">
-            🤖
-          </div>
+        <div className="bppExploreSpark" aria-hidden="true">
+          <span>✨</span>
+          <strong>Pick. Try. Notice.</strong>
         </div>
       </header>
 
-
-      {pickedForYou.length > 0 && (
-        <section className="exploreSectionV06">
-          <div className="exploreSectionHeadingV06">
-            <div>
-              <span className="exploreKickerV06">
-                PICKED FOR YOU
-              </span>
-
-              <h2>
-                Good places to start
-              </h2>
-            </div>
-
-            <span className="exploreHeadingNoteV06">
-              Based on clues we've learned about you.
-            </span>
+      {bestMatch && (
+        <section className="bppBestSection">
+          <div className="bppSectionLabel">
+            <span className="exploreKickerV06">PICKED FOR YOU</span>
+            <span>Based on clues we've learned about you</span>
           </div>
 
-          <div className="pickedGridV06">
-            {pickedForYou.map((item, index) => (
-              <article
-                className={`pickedCardV06 pickedTheme${getThemeClass(item.id)}`}
-                key={item.id}
-              >
-                <div className="pickedVisualV06">
-                  <div className="pickedEmojiV06">
-                    {item.emoji || '✨'}
-                  </div>
+          <article
+            className={`bppBestMatch bppTheme${getThemeClass(bestMatch.id)}`}
+          >
+            <div className="bppBestVisual" aria-hidden="true">
+              <span className="bppBestBadge">BEST MATCH</span>
+              <div className="bppBestEmoji">
+                {bestMatch.emoji || '✨'}
+              </div>
+              <span className="bppBestDecor">
+                {getDecorEmoji(bestMatch.id)}
+              </span>
+            </div>
 
-                  <span className="pickedBadgeV06">
-                    {index === 0 ? 'BEST MATCH' : 'FOR YOU'}
-                  </span>
+            <div className="bppBestContent">
+              <div>
+                <span className="bppTinyLabel">A GOOD PLACE TO START</span>
+                <h2>{bestMatch.title}</h2>
+                <p>
+                  {bestMatch.description ||
+                    bestMatch.intro ||
+                    'Try something new and see what you notice about yourself.'}
+                </p>
+              </div>
 
-                  <span
-                    className="pickedDecorV06"
-                    aria-hidden="true"
-                  >
-                    {getDecorEmoji(item.id)}
-                  </span>
+              {bestMatch.reasons?.length > 0 && (
+                <div className="bppWhy">
+                  <span aria-hidden="true">✨</span>
+                  <p>
+                    <strong>Why this?</strong>{' '}
+                    {bestMatch.reasons[0]}
+                  </p>
+                </div>
+              )}
+
+              <ExperienceAction
+                id={bestMatch.id}
+                canStart={canStart(bestMatch.id)}
+                completed={isCompleted(bestMatch.id)}
+                onStartAdventure={onStartAdventure}
+                primary
+              />
+            </div>
+          </article>
+        </section>
+      )}
+
+      {moreForYou.length > 0 && (
+        <section className="bppExploreSection">
+          <div className="bppSimpleHeading">
+            <div>
+              <span className="exploreKickerV06">MORE FOR YOU</span>
+              <h2>Another idea you might like</h2>
+            </div>
+          </div>
+
+          <div className="bppSuggestionList">
+            {moreForYou.map((item) => (
+              <article className="bppSuggestionRow" key={item.id}>
+                <div
+                  className={`bppRowIcon bppTheme${getThemeClass(item.id)}`}
+                  aria-hidden="true"
+                >
+                  {item.emoji || '✨'}
                 </div>
 
-                <div className="pickedContentV06">
-                  <div>
+                <div className="bppRowCopy">
+                  <div className="bppRowTitle">
                     <h3>{item.title}</h3>
-
-                    <p>
-                      {item.description ||
-                        item.intro ||
-                        'Try something new and see what you notice about yourself.'}
-                    </p>
+                    {isCompleted(item.id) && (
+                      <span className="bppTried">Tried</span>
+                    )}
                   </div>
+
+                  <p>
+                    {item.description ||
+                      item.intro ||
+                      'A new experience that may fit your interests.'}
+                  </p>
 
                   {item.reasons?.length > 0 && (
-                    <div className="exploreReasonV06">
-                      <span aria-hidden="true">✨</span>
-                      <p>{item.reasons[0]}</p>
-                    </div>
+                    <small>{item.reasons[0]}</small>
                   )}
-
-                  <ExperienceAction
-                    id={item.id}
-                    canStart={canStart(item.id)}
-                    completed={isCompleted(item.id)}
-                    onStartAdventure={onStartAdventure}
-                  />
                 </div>
+
+                <ExperienceAction
+                  id={item.id}
+                  canStart={canStart(item.id)}
+                  completed={isCompleted(item.id)}
+                  onStartAdventure={onStartAdventure}
+                  compact
+                />
               </article>
             ))}
           </div>
         </section>
       )}
 
-
-      <section className="exploreSectionV06 exploreMoreV06">
-        <div className="exploreSectionHeadingV06">
+      <section className="bppExploreSection bppBrowseSection">
+        <div className="bppSimpleHeading">
           <div>
-            <span className="exploreKickerV06">
-              EXPLORE MORE
-            </span>
-
-            <h2>
-              Choose your own direction
-            </h2>
+            <span className="exploreKickerV06">EXPLORE MORE</span>
+            <h2>Choose your own direction</h2>
           </div>
 
-          <span className="exploreHeadingNoteV06">
-            Recommendations are ideas — your curiosity gets a vote too.
-          </span>
+          <p>
+            Recommendations are only ideas. Your curiosity gets a vote too.
+          </p>
         </div>
 
         {exploreMore.length > 0 ? (
-          <div className="exploreCatalogGridV06">
+          <div className="bppBrowseGrid">
             {exploreMore.map((item) => (
-              <article
-                className="catalogCardV06"
-                key={item.id}
-              >
-                <div className={`catalogIconV06 catalogTheme${getThemeClass(item.id)}`}>
+              <article className="bppBrowseItem" key={item.id}>
+                <div
+                  className={`bppBrowseIcon bppTheme${getThemeClass(item.id)}`}
+                  aria-hidden="true"
+                >
                   {item.emoji || '🔎'}
                 </div>
 
-                <div className="catalogContentV06">
-                  <div className="catalogTitleRowV06">
+                <div className="bppBrowseCopy">
+                  <div className="bppRowTitle">
                     <h3>{item.title}</h3>
-
                     {isCompleted(item.id) && (
-                      <span className="triedBadgeV06">
-                        Tried
-                      </span>
+                      <span className="bppTried">Tried</span>
                     )}
                   </div>
-
                   <p>
                     {item.description ||
                       item.intro ||
@@ -238,32 +238,24 @@ function AdventuresHub({
             ))}
           </div>
         ) : (
-          <div className="exploreEmptyV06">
-            <span>🌱</span>
-
+          <div className="bppExploreEmpty">
+            <span aria-hidden="true">🌱</span>
             <div>
-              <strong>
-                More experiences are growing.
-              </strong>
-
-              <p>
-                Try one of the ideas above for now.
-              </p>
+              <strong>More experiences are growing.</strong>
+              <p>Try one of the ideas above for now.</p>
             </div>
           </div>
         )}
       </section>
 
-
-      <div className="exploreReassuranceV06">
+      <aside className="bppExploreReassurance">
         <span aria-hidden="true">🧭</span>
-
         <p>
-          <strong>You're not choosing a career.</strong>
-          {' '}
-          You're trying things and discovering more about yourself.
+          <strong>You're not choosing a career.</strong>{' '}
+          You're trying things, noticing what feels interesting,
+          and learning more about yourself.
         </p>
-      </div>
+      </aside>
 
     </section>
   )
@@ -276,14 +268,15 @@ function ExperienceAction({
   completed,
   onStartAdventure,
   compact = false,
+  primary = false,
 }) {
   if (!canStart) {
     return (
       <button
         type="button"
-        className={`exploreActionV06 exploreActionDisabledV06 ${
-          compact ? 'exploreActionCompactV06' : ''
-        }`}
+        className={`bppExploreAction bppExploreActionDisabled ${
+          compact ? 'compact' : ''
+        } ${primary ? 'primary' : ''}`}
         disabled
       >
         Coming soon
@@ -294,12 +287,12 @@ function ExperienceAction({
   return (
     <button
       type="button"
-      className={`exploreActionV06 ${
-        compact ? 'exploreActionCompactV06' : ''
-      }`}
+      className={`bppExploreAction ${
+        compact ? 'compact' : ''
+      } ${primary ? 'primary' : ''}`}
       onClick={() => onStartAdventure(id)}
     >
-      {completed ? 'Explore Again' : 'Explore This'}
+      {completed ? 'Explore Again' : 'Let’s Try It'}
       <span>→</span>
     </button>
   )
@@ -312,7 +305,6 @@ function getThemeClass(id = '') {
   if (id.includes('story') || id.includes('creative')) return 'Creative'
   if (id.includes('nature') || id.includes('animal')) return 'Nature'
   if (id.includes('science') || id.includes('space')) return 'Science'
-
   return 'Default'
 }
 
@@ -323,7 +315,6 @@ function getDecorEmoji(id = '') {
   if (id.includes('story') || id.includes('creative')) return '✏️'
   if (id.includes('nature') || id.includes('animal')) return '🍃'
   if (id.includes('science') || id.includes('space')) return '🔭'
-
   return '✦'
 }
 

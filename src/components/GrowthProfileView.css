@@ -1,0 +1,587 @@
+/* ============================================================
+   Career & Growth — MVP v0.8.10B-3
+   Option B++ Growth Profile
+   ============================================================ */
+
+.bppProfile {
+  --profile-purple: #6757e8;
+  --profile-purple-dark: #5544d4;
+  --profile-ink: #18213a;
+  --profile-muted: #6d7488;
+  --profile-line: #e7e9f1;
+  --profile-soft: #f8f9fc;
+  --profile-purple-soft: #f1efff;
+  --profile-blue-soft: #eef7ff;
+  --profile-yellow-soft: #fff7df;
+  --profile-green-soft: #eef9f3;
+  --profile-pink-soft: #fff1f4;
+
+  width: min(1040px, calc(100% - 44px));
+  margin: 0 auto;
+  padding: 18px 0 34px;
+  color: var(--profile-ink);
+}
+
+.bppProfile button {
+  font: inherit;
+}
+
+.bppProfileTopbar {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.bppProfileBack {
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  color: #697188;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.bppProfileBack:hover {
+  color: var(--profile-purple);
+}
+
+.bppProfileMode {
+  padding: 5px 9px;
+  border: 1px solid var(--profile-line);
+  border-radius: 999px;
+  background: #fff;
+  color: #71778a;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.bppProfileKicker {
+  display: block;
+  color: #7469d9;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.bppProfileHero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 25px 2px 24px;
+  border-bottom: 1px solid var(--profile-line);
+}
+
+.bppProfileHero > div:first-child {
+  max-width: 740px;
+}
+
+.bppProfileHero h1 {
+  margin: 6px 0 0;
+  color: var(--profile-ink);
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.07;
+  letter-spacing: -.04em;
+}
+
+.bppProfileHero p {
+  max-width: 690px;
+  margin: 9px 0 0;
+  color: var(--profile-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.bppProfileHeroMark {
+  min-width: 112px;
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  padding: 15px 18px;
+  border-radius: 16px;
+  background: var(--profile-purple-soft);
+  color: #665cb8;
+}
+
+.bppProfileHeroMark span {
+  font-size: 27px;
+}
+
+.bppProfileHeroMark strong {
+  font-size: 10px;
+}
+
+.bppProfileStarting {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid var(--profile-line);
+  border-radius: 15px;
+  background: #fff;
+}
+
+.bppProfileStartingIcon {
+  width: 45px;
+  height: 45px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--profile-green-soft);
+  font-size: 22px;
+}
+
+.bppProfileStarting h2 {
+  margin: 4px 0 3px;
+  font-size: 18px;
+}
+
+.bppProfileStarting p {
+  margin: 0;
+  color: var(--profile-muted);
+  font-size: 12px;
+}
+
+.bppProfileMainGrid {
+  display: grid;
+  grid-template-columns: 1.08fr .92fr;
+  gap: 28px;
+  margin-top: 28px;
+}
+
+.bppProfileSection {
+  min-width: 0;
+}
+
+.bppProfileSectionHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 10px;
+}
+
+.bppProfileSectionHeading h2 {
+  margin: 4px 0 0;
+  color: var(--profile-ink);
+  font-size: 18px;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+
+.bppProfileSectionHeading > p {
+  max-width: 250px;
+  margin: 0;
+  color: #8a8fa0;
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.bppProfileTraitList,
+.bppProfileDomainList {
+  border-top: 1px solid var(--profile-line);
+}
+
+.bppProfileTraitRow,
+.bppProfileDomainRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 11px;
+  align-items: flex-start;
+  padding: 13px 2px;
+  border-bottom: 1px solid var(--profile-line);
+}
+
+.bppProfileTraitIcon,
+.bppProfileDomainIcon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--profile-purple-soft);
+  font-size: 20px;
+}
+
+.bppProfileDomainIcon {
+  background: var(--profile-yellow-soft);
+}
+
+.bppProfileTraitCopy {
+  min-width: 0;
+}
+
+.bppProfileRowTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bppProfileRowTitle h3 {
+  margin: 0;
+  color: var(--profile-ink);
+  font-size: 14px;
+}
+
+.bppProfileInterpretation {
+  margin: 3px 0 0;
+  color: #5f667a;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.bppProfileTraitCopy small {
+  display: block;
+  margin-top: 3px;
+  color: #8a8fa0;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.bppProfileConfidence {
+  flex: 0 0 auto;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: #f4f5f8;
+  color: #777d8e;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.bppProfileConfidence-strong {
+  background: var(--profile-green-soft);
+  color: #44755a;
+}
+
+.bppProfileConfidence-developing {
+  background: var(--profile-blue-soft);
+  color: #4d6f91;
+}
+
+.bppProfileConfidence-emerging {
+  background: var(--profile-yellow-soft);
+  color: #806d39;
+}
+
+.bppProfileEvidence {
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid var(--profile-line);
+}
+
+.bppProfileEvidenceList {
+  border-top: 1px solid var(--profile-line);
+}
+
+.bppProfileEvidenceItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 2px;
+  border-bottom: 1px solid var(--profile-line);
+  opacity: .55;
+}
+
+.bppProfileEvidenceItem.active {
+  opacity: 1;
+}
+
+.bppProfileEvidenceIcon {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--profile-soft);
+  font-size: 18px;
+}
+
+.bppProfileEvidenceItem strong {
+  display: block;
+  color: var(--profile-ink);
+  font-size: 12px;
+}
+
+.bppProfileEvidenceItem p {
+  margin: 2px 0 0;
+  color: var(--profile-muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.bppProfileEvidenceState {
+  color: #777d8e;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.bppProfileEvidenceItem.active
+.bppProfileEvidenceState {
+  color: #4c795d;
+}
+
+.bppProfileGrowingNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 11px;
+  border-radius: 10px;
+  background: var(--profile-green-soft);
+}
+
+.bppProfileGrowingNote p {
+  margin: 0;
+  color: #667269;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.bppProfileNext {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--profile-line);
+}
+
+.bppProfileNextIntro h2 {
+  margin: 4px 0 4px;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.bppProfileNextIntro p {
+  margin: 0;
+  color: var(--profile-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.bppProfilePathwayGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.bppProfilePathway {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid var(--profile-line);
+  border-radius: 13px;
+  background: #fff;
+}
+
+.bppProfilePathwayIcon {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 39px;
+  border-radius: 11px;
+  background: var(--profile-yellow-soft);
+  font-size: 20px;
+}
+
+.bppProfilePathway h3 {
+  margin: 3px 0 3px;
+  font-size: 13px;
+}
+
+.bppProfilePathway p {
+  margin: 0;
+  color: var(--profile-muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.bppProfileKeepGrowing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 28px;
+  padding: 18px 20px;
+  border-radius: 15px;
+  background:
+    linear-gradient(
+      125deg,
+      #f0eeff,
+      #eef7ff
+    );
+}
+
+.bppProfileKeepGrowing h2 {
+  margin: 4px 0 0;
+  color: var(--profile-ink);
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.bppProfilePrimary {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--profile-purple);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.bppProfilePrimary:hover {
+  background: var(--profile-purple-dark);
+}
+
+.bppProfileDetails {
+  margin-top: 10px;
+  padding: 9px 10px;
+  border: 1px solid var(--profile-line);
+  border-radius: 9px;
+  background: #fbfbfd;
+}
+
+.bppProfileDetails summary {
+  cursor: pointer;
+  color: #777d8e;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.bppProfileStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.bppProfileStats div {
+  padding: 9px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.bppProfileStats strong,
+.bppProfileStats span {
+  display: block;
+}
+
+.bppProfileStats strong {
+  color: var(--profile-purple);
+  font-size: 14px;
+}
+
+.bppProfileStats span {
+  margin-top: 2px;
+  color: #8c91a1;
+  font-size: 9px;
+}
+
+.bppProfileEmpty {
+  padding: 13px 2px;
+  border-top: 1px solid var(--profile-line);
+  color: #858b9c;
+  font-size: 11px;
+}
+
+@media (max-width: 780px) {
+  .bppProfileMainGrid,
+  .bppProfileNext {
+    grid-template-columns: 1fr;
+  }
+
+  .bppProfileSectionHeading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .bppProfileSectionHeading > p {
+    max-width: 620px;
+    text-align: left;
+  }
+}
+
+@media (max-width: 600px) {
+  .bppProfile {
+    width: min(100% - 20px, 560px);
+    padding-top: 12px;
+  }
+
+  .bppProfileMode,
+  .bppProfileHeroMark {
+    display: none;
+  }
+
+  .bppProfileHero {
+    padding-top: 17px;
+  }
+
+  .bppProfileHero h1 {
+    font-size: 29px;
+  }
+
+  .bppProfileStarting,
+  .bppProfileKeepGrowing {
+    align-items: flex-start;
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .bppProfileStartingIcon {
+    margin-bottom: 2px;
+  }
+
+  .bppProfilePathwayGrid,
+  .bppProfileStats {
+    grid-template-columns: 1fr;
+  }
+
+  .bppProfileKeepGrowing .bppProfilePrimary,
+  .bppProfileStarting .bppProfilePrimary {
+    width: 100%;
+  }
+
+  .bppProfileEvidenceItem {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .bppProfileEvidenceState {
+    grid-column: 2;
+  }
+
+  .bppProfileRowTitle {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+
+/* MVP v0.8.10B-5 — B++ consistency refinements */
+.bppProfile {
+  width: min(1040px, calc(100% - 44px));
+}
+.bppProfilePrimary {
+  min-height: 36px;
+  border-radius: 9px;
+}

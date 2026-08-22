@@ -1537,3 +1537,1765 @@
 
   justify-self: end;
 }
+
+/* ============================================================
+   Career & Growth — MVP v0.8.10B-1A
+   Option B++ — Home UI/UX consolidation
+   Presentation-only layer. Existing Journey/intelligence styles
+   above remain intact for 8.10B-1B.
+   ============================================================ */
+
+.growthHomeV06 {
+  --bpp-purple: #6655e8;
+  --bpp-purple-dark: #5442d6;
+  --bpp-purple-soft: #f1efff;
+  --bpp-blue-soft: #eef7ff;
+  --bpp-yellow-soft: #fff7df;
+  --bpp-green-soft: #eef9f3;
+  --bpp-pink-soft: #fff1f4;
+  --bpp-ink: #18213a;
+  --bpp-muted: #697188;
+  --bpp-line: #e7e9f2;
+  --bpp-surface: #ffffff;
+
+  background:
+    radial-gradient(circle at 12% 4%, rgba(255, 242, 207, .45), transparent 24rem),
+    radial-gradient(circle at 88% 10%, rgba(226, 238, 255, .6), transparent 26rem),
+    #fbfcff;
+  color: var(--bpp-ink);
+}
+
+.growthWorkspaceV06 {
+  width: min(1080px, calc(100% - 44px));
+  padding-top: 26px;
+}
+
+.bppHomeHeroV0810 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 22px;
+  padding: 2px 2px 0;
+}
+
+.bppGreetingV0810 h1 {
+  margin: 5px 0 5px;
+  font-size: clamp(29px, 3.7vw, 39px);
+  line-height: 1.04;
+  letter-spacing: -.04em;
+  color: var(--bpp-ink);
+}
+
+.bppGreetingV0810 p {
+  margin: 0;
+  color: var(--bpp-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.bppEyebrowV0810 {
+  display: block;
+  color: #7a7498;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .105em;
+  text-transform: uppercase;
+}
+
+.bppProfilePulseV0810,
+.bppActionRowV0810,
+.bppRecentItemV0810,
+.bppTextLinkV0810 {
+  font: inherit;
+  cursor: pointer;
+}
+
+.bppProfilePulseV0810 {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 225px;
+  padding: 10px 12px;
+  border: 1px solid #e8e5f7;
+  border-radius: 15px;
+  background: rgba(255,255,255,.8);
+  color: var(--bpp-ink);
+  text-align: left;
+  box-shadow: 0 8px 26px rgba(61, 50, 116, .045);
+}
+
+.bppProfilePulseIconV0810 {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--bpp-purple-soft);
+}
+
+.bppProfilePulseV0810 small,
+.bppProfilePulseV0810 strong {
+  display: block;
+}
+
+.bppProfilePulseV0810 small {
+  color: var(--bpp-muted);
+  font-size: 10px;
+}
+
+.bppProfilePulseV0810 strong {
+  margin-top: 1px;
+  font-size: 12px;
+}
+
+.bppHomeFocusV0810 {
+  padding: 20px;
+  border: 1px solid #e8e5f6;
+  border-radius: 20px;
+  background: linear-gradient(120deg, #fbfaff, #f5f2ff 72%, #eef8ff);
+  box-shadow: 0 14px 38px rgba(68, 55, 127, .055);
+}
+
+.bppSectionHeadingV0810 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.bppSectionHeadingV0810 h2 {
+  margin: 4px 0 0;
+  color: var(--bpp-ink);
+  font-size: 18px;
+  line-height: 1.2;
+  letter-spacing: -.022em;
+}
+
+.bppSectionHeadingCompactV0810 h2 {
+  font-size: 15px;
+}
+
+.bppTextLinkV0810 {
+  flex: 0 0 auto;
+  padding: 3px 0;
+  border: 0;
+  background: transparent;
+  color: var(--bpp-purple);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.bppTextLinkV0810:hover { text-decoration: underline; }
+
+.bppCurrentActivityV0810 {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  margin-top: 15px;
+  padding: 16px;
+  border: 1px solid rgba(222, 219, 242, .88);
+  border-radius: 16px;
+  background: rgba(255,255,255,.92);
+}
+
+.bppCurrentActivityIconV0810 {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #eeebff, #f8f7ff);
+  font-size: 27px;
+  box-shadow: inset 0 0 0 1px rgba(112,92,232,.06);
+}
+
+.bppActivityTypeV0810 {
+  color: #77718f;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.bppCurrentActivityCopyV0810 h3 {
+  margin: 2px 0 3px;
+  color: var(--bpp-ink);
+  font-size: 17px;
+  letter-spacing: -.018em;
+}
+
+.bppCurrentActivityCopyV0810 p {
+  max-width: 610px;
+  margin: 0;
+  color: var(--bpp-muted);
+  font-size: 12px;
+  line-height: 1.42;
+}
+
+.bppProgressRowV0810 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 10px;
+}
+
+.bppProgressTrackV0810 {
+  width: min(310px, 70%);
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e9e7f2;
+}
+
+.bppProgressTrackV0810 span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7765ef, #5da7df);
+}
+
+.bppProgressRowV0810 strong {
+  color: #726b92;
+  font-size: 10px;
+}
+
+.bppPrimaryButtonV0810 {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--bpp-purple);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(102,85,232,.16);
+}
+
+.bppPrimaryButtonV0810:hover { background: var(--bpp-purple-dark); }
+
+.bppHomeNextV0810 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.bppNextColumnV0810 { min-width: 0; }
+
+.bppActionRowV0810 {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  margin-top: 10px;
+  padding: 11px 12px;
+  border: 1px solid #eee5d0;
+  border-radius: 14px;
+  background: linear-gradient(100deg, #fffaf0, #fffdf8);
+  color: var(--bpp-ink);
+  text-align: left;
+}
+
+.bppActionRowPickedV0810 {
+  border-color: #e5e0f7;
+  background: linear-gradient(100deg, #f8f6ff, #fcfbff);
+}
+
+.bppActionRowV0810:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(57, 48, 105, .055);
+}
+
+.bppActionIconV0810 {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 18px;
+}
+
+.bppActionIconWarmV0810 { background: #fff0c6; }
+.bppActionIconPurpleV0810 { background: #ece8ff; }
+
+.bppActionRowV0810 strong,
+.bppActionRowV0810 small {
+  display: block;
+}
+
+.bppActionRowV0810 strong { font-size: 12px; }
+.bppActionRowV0810 small {
+  margin-top: 2px;
+  color: var(--bpp-muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.bppRecentlyV0810 {
+  margin-top: 24px;
+  padding-top: 2px;
+}
+
+.bppRecentStripV0810 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 10px;
+}
+
+.bppRecentItemV0810 {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid var(--bpp-line);
+  border-radius: 13px;
+  background: rgba(255,255,255,.82);
+  color: var(--bpp-ink);
+  text-align: left;
+}
+
+.bppRecentIconV0810 {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--bpp-blue-soft);
+  font-size: 16px;
+}
+
+.bppRecentItemV0810 strong,
+.bppRecentItemV0810 small { display: block; }
+.bppRecentItemV0810 strong { font-size: 11px; }
+.bppRecentItemV0810 small {
+  margin-top: 2px;
+  color: var(--bpp-muted);
+  font-size: 9px;
+}
+
+.bppCompleteDotV0810 {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e9f8ee;
+  color: #3f9a5f;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.bppHomeLowerGridV0810 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+  gap: 18px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #ececf3;
+}
+
+.bppProfilePreviewV0810,
+.bppStudentVoiceV0810 {
+  min-width: 0;
+}
+
+.bppTraitLineV0810 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.bppTraitLineV0810 > span:not(.bppQuietMessageV0810) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border: 1px solid #e7e5f0;
+  border-radius: 999px;
+  background: #fff;
+  color: #555d72;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.bppTraitLineV0810 b { font-size: 13px; }
+
+.bppStudentVoiceV0810 h2 {
+  margin: 4px 0 10px;
+  font-size: 15px;
+  color: var(--bpp-ink);
+}
+
+.bppIdeaFormV0810 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 4px 4px 11px;
+  border: 1px solid #e2e4ee;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.bppIdeaFormV0810 input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--bpp-ink);
+  font-size: 12px;
+}
+
+.bppIdeaFormV0810 button {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--bpp-purple);
+  color: #fff;
+  cursor: pointer;
+}
+
+.bppIdeaFormV0810 button:disabled { opacity: .32; cursor: default; }
+
+.bppLatestIdeaV0810 {
+  margin: 8px 0 0;
+  color: #626b80;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.bppLatestIdeaV0810 span { font-weight: 800; }
+
+.bppResearchShelfV0810 {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #ececf3;
+}
+
+/* The research engine keeps all existing behavior; visually subordinate it
+   on Home so it does not compete with the child's current activity. */
+.bppResearchShelfV0810 > .experienceResearchPanel,
+.bppResearchShelfV0810 > [class*="experienceResearch"] {
+  margin-top: 10px;
+}
+
+.bppQuietMessageV0810 {
+  color: var(--bpp-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+@media (max-width: 820px) {
+  .bppHomeHeroV0810,
+  .bppSectionHeadingV0810 {
+    align-items: flex-start;
+  }
+
+  .bppProfilePulseV0810 { display: none; }
+
+  .bppHomeNextV0810,
+  .bppHomeLowerGridV0810 {
+    grid-template-columns: 1fr;
+  }
+
+  .bppRecentStripV0810 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .growthWorkspaceV06 {
+    width: min(100% - 24px, 1080px);
+    padding-top: 18px;
+  }
+
+  .bppGreetingV0810 h1 { font-size: 29px; }
+
+  .bppHomeFocusV0810 { padding: 15px; }
+
+  .bppCurrentActivityV0810 {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .bppCurrentActivityV0810 .bppPrimaryButtonV0810 {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .bppCurrentActivityIconV0810 {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* ============================================================
+   Career & Growth — MVP v0.8.10B-1B
+   OPTION B++ — MY JOURNEY HIERARCHY
+
+   Intent:
+   - one dominant current-work area
+   - lightweight path navigation
+   - quieter intelligence / tracker surfaces
+   - compact completed history
+   - preserve all existing journey behavior
+   ============================================================ */
+
+.journeyV06 {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.journeyV06 > * {
+  order: 10;
+}
+
+.journeyHeaderV06 {
+  order: 1;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 8px 2px 4px;
+  margin: 0;
+  border: 0;
+  background: transparent;
+}
+
+.journeyHeaderV06 h1 {
+  max-width: 720px;
+  margin: 5px 0 5px;
+  font-size: clamp(27px, 3.2vw, 36px);
+  line-height: 1.08;
+  letter-spacing: -.035em;
+}
+
+.journeyHeaderV06 p {
+  max-width: 660px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.journeyStatsV06 {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.journeyStatsV06 > div {
+  min-width: 86px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: #f2f6f2;
+  text-align: center;
+}
+
+.journeyStatsV06 strong {
+  font-size: 17px;
+}
+
+.journeyStatsV06 span {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* Path choices become compact tabs instead of three large cards. */
+.bppJourneyPathTabsV0810,
+.unifiedJourneyPathsV08 {
+  order: 2;
+  display: flex;
+  gap: 7px;
+  margin: 0;
+  padding: 5px;
+  border: 1px solid #e3e8e3;
+  border-radius: 13px;
+  background: #f7f9f7;
+}
+
+.unifiedJourneyPathCardV08 {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 7px 12px;
+  border: 0 !important;
+  border-radius: 9px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: center;
+}
+
+.unifiedJourneyPathCardV08:hover {
+  background: rgba(255,255,255,.72) !important;
+}
+
+.unifiedJourneyPathCardV08.active {
+  background: #fff !important;
+  box-shadow: 0 2px 8px rgba(35, 63, 43, .07) !important;
+}
+
+.unifiedJourneyPathIconV08 {
+  width: auto;
+  height: auto;
+  font-size: 16px;
+  background: transparent;
+}
+
+.unifiedJourneyPathBodyV08 {
+  flex: 0 1 auto;
+}
+
+.unifiedJourneyPathTitleRowV08 {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.unifiedJourneyPathTitleRowV08 strong {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.unifiedJourneyPathTitleRowV08 > span {
+  min-width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #edf3ee;
+  color: var(--green-dark);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.unifiedJourneyPathBodyV08 small {
+  display: none;
+}
+
+/* School add-item workspace is supportive, not the hero. */
+.learningWorkspaceV08 {
+  order: 3;
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid #e4e9e4;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.learningWorkspaceHeaderV08 {
+  align-items: center;
+  gap: 20px;
+}
+
+.learningWorkspaceHeaderV08 h2 {
+  margin: 3px 0 2px;
+  font-size: 18px;
+}
+
+.learningWorkspaceHeaderV08 p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.learningWorkspaceHeaderV08 .growthPrimaryButtonV06 {
+  min-height: 36px;
+  padding: 0 13px;
+  font-size: 12px;
+}
+
+/* Current work owns the page. */
+.journeySectionV06:not(.journeyCompletedSectionV07) {
+  order: 4;
+  margin: 2px 0 0;
+}
+
+.journeySectionHeadingV06 {
+  margin-bottom: 9px;
+}
+
+.journeySectionHeadingV06 h2 {
+  margin: 3px 0 0;
+  font-size: 20px;
+  letter-spacing: -.02em;
+}
+
+.journeyListV06 {
+  display: grid;
+  gap: 9px;
+}
+
+.bppJourneyPrimaryItemV0810 {
+  position: relative;
+  border: 1px solid #dbe6dd !important;
+  border-radius: 16px !important;
+  background: #fff !important;
+  box-shadow: 0 8px 24px rgba(37, 74, 48, .06) !important;
+}
+
+.bppJourneyPrimaryItemV0810::before {
+  content: 'NOW';
+  position: absolute;
+  top: 13px;
+  right: 14px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: #eaf5ec;
+  color: #39714c;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .08em;
+}
+
+.bppJourneySecondaryItemV0810 {
+  border-color: #e7ebe7 !important;
+  border-radius: 13px !important;
+  background: #fbfcfb !important;
+  box-shadow: none !important;
+}
+
+.learningItemCardV08,
+.journeyCardV06 {
+  padding: 16px !important;
+}
+
+.learningItemTopV08 {
+  gap: 12px;
+}
+
+.learningItemMainV08 h3,
+.journeyCardTitleRowV06 h3 {
+  margin-top: 4px;
+  font-size: 17px;
+}
+
+.learningItemMainV08 > p,
+.journeyCardBodyV06 > p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.learningItemMetaV08 {
+  gap: 5px;
+}
+
+.learningItemMetaV08 span {
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #f0f4f0;
+  font-size: 9px;
+}
+
+/* Learning state is metadata, not a separate feature card. */
+.learningCurrentStateV089A {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 7px;
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.learningCurrentStateV089A > span {
+  font-size: 8px;
+  letter-spacing: .08em;
+  color: var(--faint);
+}
+
+.learningCurrentStateV089A > strong {
+  color: #417052;
+  font-size: 11px;
+}
+
+.learningCurrentStateV089A > strong::before {
+  content: '✓ ';
+}
+
+.learningCurrentStateV089A > small {
+  flex-basis: 100%;
+  font-size: 9px;
+  color: var(--faint);
+}
+
+.learningStatusActionsV08,
+.journeyProgressActionsV06 {
+  margin-top: 10px;
+  gap: 5px;
+}
+
+.learningStatusActionsV08 button,
+.journeyProgressActionsV06 button {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 10px;
+}
+
+/* Next-step intelligence is useful but visually secondary. */
+.learningNextStepsV089C {
+  order: 5;
+  margin: 0;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 14px;
+  background: #f5f8f5;
+}
+
+.learningNextStepsHeaderV089C h2 {
+  margin: 3px 0;
+  font-size: 18px;
+}
+
+.learningNextStepsHeaderV089C p,
+.learningNextStepsGuardrailV089C {
+  font-size: 11px;
+}
+
+.learningNextStepsGridV089C {
+  gap: 8px;
+}
+
+.learningNextStepCardV089C {
+  padding: 12px !important;
+  border-radius: 11px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+/* Tracker/progression become quiet supporting context. */
+.learningTrackerV089A,
+.learningProgressionV089B {
+  order: 6;
+  margin: 0;
+  padding: 13px 15px;
+  border: 1px solid #e8ece8;
+  border-radius: 13px;
+  background: #fbfcfb;
+  box-shadow: none;
+}
+
+.learningProgressionV089B {
+  order: 7;
+}
+
+.learningTrackerHeaderV089A h2,
+.learningProgressionHeaderV089B h2 {
+  margin: 3px 0;
+  font-size: 16px;
+}
+
+.learningTrackerHeaderV089A p,
+.learningProgressionHeaderV089B p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.learningTrackerBucketsV089A {
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.learningTrackerBucketV089A {
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.learningTrackerBucketV089A strong {
+  font-size: 17px;
+}
+
+.learningProgressionGridV089B {
+  gap: 8px;
+}
+
+.learningProgressionCardV089B {
+  padding: 11px !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+/* History should read like history — compact and quiet. */
+.journeyCompletedSectionV07 {
+  order: 8;
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+.journeyCompletedHeaderV07 {
+  align-items: end;
+  margin-bottom: 9px;
+}
+
+.journeyCompletedHeaderV07 h2 {
+  margin: 3px 0 2px;
+  font-size: 18px;
+}
+
+.journeyCompletedHeaderV07 p {
+  margin: 0;
+  max-width: 620px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.journeyCompletedCountV07 {
+  padding: 6px 9px;
+  border-radius: 9px;
+  background: #f4f6f4;
+}
+
+.journeyCompletedGridV06 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.journeyCompletedCardV06 {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px !important;
+  border: 1px solid #e8ece8 !important;
+  border-radius: 11px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+.journeyCompletedIconV07 {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  font-size: 15px;
+}
+
+.journeyCompletedBodyV07 h3 {
+  margin: 3px 0;
+  font-size: 13px;
+}
+
+.journeyCompletedBadgeV07,
+.journeyCompletedResearchBadgeV07 {
+  font-size: 8px;
+}
+
+/* Pattern intelligence remains available for validation, but it no longer
+   competes with the child's immediate Journey. */
+.patternIntelligenceV088A {
+  order: 90;
+  margin-top: 8px;
+  padding: 13px 15px;
+  border: 1px dashed #dce3dc;
+  border-radius: 12px;
+  background: #fafbfa;
+  box-shadow: none;
+  opacity: .86;
+}
+
+.patternIntelligenceHeaderV088A {
+  align-items: center;
+}
+
+.patternIntelligenceHeaderV088A h3 {
+  margin: 3px 0;
+  font-size: 14px;
+}
+
+.patternIntelligenceHeaderV088A p {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.patternModeV088A {
+  font-size: 8px;
+}
+
+.patternCardsV088A {
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.patternCardV088A {
+  padding: 9px !important;
+  border-radius: 9px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+.patternPromotionSummaryV088C {
+  margin-top: 8px;
+  padding: 9px;
+  border-radius: 9px;
+}
+
+/* Keep detailed forms readable when expanded. */
+.learningFormV08,
+.learningHelpIntentV08,
+.journeyReflectionV06,
+.learningHelpReadyV08,
+.learningRecommendationsV086 {
+  border-radius: 12px !important;
+}
+
+@media (max-width: 760px) {
+  .journeyHeaderV06 {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .bppJourneyPathTabsV0810,
+  .unifiedJourneyPathsV08 {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .unifiedJourneyPathCardV08 {
+    flex: 0 0 auto;
+  }
+
+  .journeyCompletedGridV06 {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ============================================================
+   Career & Growth — MVP v0.8.10B-5
+   B++ END-TO-END CONSISTENCY PASS
+   CSS-only refinements. No functional behavior changes.
+   ============================================================ */
+
+/* Align Journey's older green remnants with the B++ product language
+   while retaining green for true success/complete states. */
+.journeyV06 .journeyHeaderV06 h1,
+.journeyV06 .journeySectionHeadingV06 h2,
+.journeyV06 .learningWorkspaceHeaderV08 h2 {
+  color: var(--bpp-ink);
+}
+
+.journeyV06 .unifiedJourneyPathsV08,
+.journeyV06 .bppJourneyPathTabsV0810 {
+  border-color: var(--bpp-line);
+  background: #f8f8fc;
+}
+
+.journeyV06 .unifiedJourneyPathCardV08.active {
+  box-shadow: 0 2px 8px rgba(63, 52, 125, .07) !important;
+}
+
+.journeyV06 .unifiedJourneyPathTitleRowV08 > span {
+  background: var(--bpp-purple-soft);
+  color: var(--bpp-purple-dark);
+}
+
+.journeyV06 .learningWorkspaceV08 {
+  border-color: var(--bpp-line);
+}
+
+.journeyV06 .learningWorkspaceHeaderV08 .growthPrimaryButtonV06,
+.journeyV06 .growthPrimaryButtonV06 {
+  border-radius: 9px;
+  background: var(--bpp-purple);
+  color: #fff;
+}
+
+.journeyV06 .learningWorkspaceHeaderV08 .growthPrimaryButtonV06:hover,
+.journeyV06 .growthPrimaryButtonV06:hover {
+  background: var(--bpp-purple-dark);
+}
+
+.journeyV06 .bppJourneyPrimaryItemV0810 {
+  border-color: #ddd8f7 !important;
+  box-shadow: 0 8px 24px rgba(74, 59, 153, .055) !important;
+}
+
+.journeyV06 .bppJourneyPrimaryItemV0810::before {
+  background: var(--bpp-purple-soft);
+  color: var(--bpp-purple-dark);
+}
+
+.journeyV06 .bppJourneySecondaryItemV0810 {
+  border-color: var(--bpp-line) !important;
+  background: #fbfbfd !important;
+}
+
+.journeyV06 .learningNextStepsV089C {
+  background: #f7f7fc;
+}
+
+.journeyV06 .learningTrackerV089A,
+.journeyV06 .learningProgressionV089B,
+.journeyV06 .patternIntelligenceV088A {
+  border-color: var(--bpp-line);
+  background: #fbfbfd;
+}
+
+/* Standard B++ page density and action rhythm. */
+.bppPrimaryButtonV0810,
+.journeyV06 .growthPrimaryButtonV06 {
+  min-height: 36px;
+  border-radius: 9px;
+}
+
+.bppHomeHeroV0810,
+.journeyHeaderV06 {
+  padding-top: 4px;
+}
+
+@media (max-width: 600px) {
+  .growthWorkspaceV06 {
+    width: min(100% - 20px, 560px);
+    padding-top: 16px;
+  }
+
+  .bppHomeFocusV0810 {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .bppCurrentActivityV0810 {
+    padding: 13px;
+  }
+
+  .journeyV06 {
+    gap: 14px;
+  }
+}
+
+
+/* ============================================================
+   Career & Growth — MVP v0.8.10B-6A
+   OPTION B++ VISUAL FIDELITY — HOME
+   ============================================================ */
+
+.growthHomeV06 {
+  --bpp-purple: #684ff3;
+  --bpp-purple-dark: #553bd9;
+  --bpp-purple-soft: #f0edff;
+  --bpp-ink: #111a39;
+  --bpp-muted: #69718a;
+  --bpp-line: #e7e9f2;
+
+  min-height: auto;
+  background: transparent;
+}
+
+.growthAppHeaderV06 {
+  display: none;
+}
+
+.growthWorkspaceV06 {
+  width: min(980px, 100%);
+  margin: 0 auto;
+  padding: 18px 0 30px;
+}
+
+.bppHomeHeroFidelityV0810 {
+  position: relative;
+
+  min-height: 118px;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  align-items: center;
+
+  overflow: hidden;
+
+  padding: 14px 20px;
+
+  border: 1px solid var(--bpp-line);
+  border-radius: 18px 18px 0 0;
+
+  background:
+    radial-gradient(
+      circle at 82% 18%,
+      rgba(215, 236, 255, .9),
+      transparent 22%
+    ),
+    linear-gradient(
+      120deg,
+      #ffffff 0%,
+      #fffdf7 64%,
+      #f2fbff 100%
+    );
+
+  box-shadow:
+    0 8px 28px
+    rgba(31, 39, 76, .035);
+}
+
+.bppHomeHeroFidelityV0810 .bppGreetingV0810 {
+  padding: 0;
+}
+
+.bppHomeHeroFidelityV0810 .bppGreetingV0810 h1 {
+  margin: 0;
+
+  color: var(--bpp-ink);
+
+  font-size: clamp(25px, 3vw, 34px);
+  line-height: 1.05;
+  letter-spacing: -.035em;
+}
+
+.bppHomeHeroFidelityV0810 .bppGreetingV0810 p {
+  max-width: 470px;
+
+  margin: 7px 0 0;
+
+  color: #59627c;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.bppHomeSceneV0810 {
+  position: relative;
+
+  height: 102px;
+}
+
+.bppHomeKidV0810 {
+  position: absolute;
+  right: 82px;
+  bottom: -17px;
+
+  width: 92px;
+  height: 92px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 42% 42% 30% 30%;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fff2dc,
+      #eaf8ef
+    );
+
+  font-size: 58px;
+
+  filter:
+    drop-shadow(
+      0 10px 11px
+      rgba(48, 70, 87, .08)
+    );
+}
+
+.bppHomeStarV0810 {
+  position: absolute;
+  right: 23px;
+  bottom: -10px;
+
+  font-size: 36px;
+
+  transform: rotate(8deg);
+}
+
+.bppHomeCloudV0810 {
+  position: absolute;
+  opacity: .6;
+  font-size: 24px;
+}
+
+.bppHomeCloudOneV0810 {
+  left: 4px;
+  top: 3px;
+}
+
+.bppHomeCloudTwoV0810 {
+  right: 6px;
+  top: 9px;
+}
+
+.bppHomeSparkOneV0810,
+.bppHomeSparkTwoV0810 {
+  position: absolute;
+
+  color: #80c4ec;
+}
+
+.bppHomeSparkOneV0810 {
+  left: 78px;
+  top: 7px;
+}
+
+.bppHomeSparkTwoV0810 {
+  right: 160px;
+  top: 22px;
+}
+
+.bppHomeFocusFidelityV0810 {
+  margin-top: 0;
+
+  padding: 17px 18px 15px;
+
+  border: 1px solid var(--bpp-line);
+  border-top: 0;
+  border-radius: 0 0 18px 18px;
+
+  background: #fff;
+
+  box-shadow:
+    0 10px 28px
+    rgba(31, 39, 76, .035);
+}
+
+.bppHomeCardHeadingV0810 {
+  margin-bottom: 8px;
+}
+
+.bppMoreButtonV0810 {
+  width: 30px;
+  height: 28px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+  color: #7a8194;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.bppCurrentActivityFidelityV0810 {
+  position: relative;
+
+  min-height: 146px;
+
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 240px;
+  align-items: center;
+  gap: 14px;
+
+  overflow: hidden;
+
+  padding: 14px 14px 14px 16px;
+
+  border: 0;
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      115deg,
+      #f2efff 0%,
+      #f8f7ff 55%,
+      #fffaf2 100%
+    );
+}
+
+.bppCurrentActivityFidelityV0810
+.bppCurrentActivityIconV0810 {
+  width: 52px;
+  height: 52px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #7658ff,
+      #9c7aff
+    );
+
+  box-shadow:
+    0 7px 16px
+    rgba(88, 64, 195, .17);
+
+  font-size: 29px;
+}
+
+.bppCurrentActivityFidelityV0810
+.bppCurrentActivityCopyV0810 {
+  padding: 0;
+}
+
+.bppCurrentActivityFidelityV0810
+.bppCurrentActivityCopyV0810 h3 {
+  margin: 0;
+
+  color: var(--bpp-ink);
+
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.bppCurrentActivityFidelityV0810
+.bppActivityTypeV0810 {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #626b84;
+
+  font-size: 10px;
+}
+
+.bppLearningStateV0810 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin: 12px 0 0 !important;
+
+  color: #44516f !important;
+
+  font-size: 10px !important;
+  font-weight: 700;
+}
+
+.bppLearningStateV0810 span {
+  color: #2bbb5d;
+  font-size: 10px;
+}
+
+.bppCurrentActivityFidelityV0810
+.bppPrimaryButtonV0810 {
+  min-height: 34px;
+
+  margin-top: 12px;
+  padding: 7px 14px;
+
+  border-radius: 9px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7557f8,
+      #6848eb
+    );
+
+  box-shadow:
+    0 6px 14px
+    rgba(92, 64, 216, .17);
+}
+
+.bppCurrentIllustrationV0810 {
+  position: relative;
+
+  align-self: stretch;
+
+  min-width: 220px;
+}
+
+.bppDeskKidV0810 {
+  position: absolute;
+  right: 77px;
+  top: 2px;
+
+  font-size: 63px;
+
+  z-index: 2;
+}
+
+.bppNotebookV0810 {
+  position: absolute;
+  right: 21px;
+  bottom: -11px;
+
+  font-size: 78px;
+
+  transform: rotate(4deg);
+
+  z-index: 3;
+}
+
+.bppPencilV0810 {
+  position: absolute;
+  right: 6px;
+  bottom: 13px;
+
+  font-size: 39px;
+
+  transform: rotate(-22deg);
+
+  z-index: 4;
+}
+
+.bppHomeNextFidelityV0810 {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, .78fr);
+
+  gap: 18px;
+
+  margin-top: 16px;
+}
+
+.bppHomeNextFidelityV0810
+.bppSectionHeadingV0810 h2,
+.bppRecentlyFidelityV0810
+.bppSectionHeadingV0810 h2 {
+  color: var(--bpp-ink);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.bppHomeActionStackV0810 {
+  display: grid;
+  gap: 6px;
+}
+
+.bppHomeNextFidelityV0810
+.bppActionRowV0810 {
+  min-height: 58px;
+
+  padding: 8px 10px;
+
+  border: 1px solid var(--bpp-line);
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      120deg,
+      #fffdf7,
+      #fff
+    );
+}
+
+.bppHomeNextFidelityV0810
+.bppActionRowPickedV0810 {
+  background:
+    linear-gradient(
+      120deg,
+      #f5f2ff,
+      #fbfaff
+    );
+}
+
+.bppActionIconBlueV0810 {
+  background: #eaf7ff;
+}
+
+.bppHomeNextFidelityV0810
+.bppActionRowV0810 strong {
+  font-size: 11px;
+}
+
+.bppHomeNextFidelityV0810
+.bppActionRowV0810 small {
+  margin-top: 2px;
+  font-size: 8px;
+}
+
+.bppRecentlyFidelityV0810 {
+  margin-top: 14px;
+}
+
+.bppRecentlyFidelityV0810
+.bppRecentStripV0810 {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+.bppRecentlyFidelityV0810
+.bppRecentItemV0810 {
+  min-height: 66px;
+
+  padding: 9px 10px;
+
+  border: 1px solid var(--bpp-line);
+  border-radius: 11px;
+
+  background: #fff;
+}
+
+.bppRecentlyFidelityV0810
+.bppRecentItemV0810 strong {
+  font-size: 10px;
+}
+
+.bppRecentlyFidelityV0810
+.bppRecentItemV0810 small {
+  font-size: 8px;
+}
+
+.bppHomeMoreToolsV0810 {
+  margin-top: 16px;
+
+  padding: 10px 12px;
+
+  border: 1px solid var(--bpp-line);
+  border-radius: 11px;
+
+  background: rgba(255,255,255,.72);
+}
+
+.bppHomeMoreToolsV0810 > summary {
+  cursor: pointer;
+
+  color: #68708a;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.bppHomeMoreToolsV0810[open] > summary {
+  margin-bottom: 12px;
+}
+
+.bppHomeMoreToolsV0810
+.bppHomeLowerGridV0810 {
+  margin-top: 0;
+}
+
+.bppHomeMoreToolsV0810
+.bppResearchShelfV0810 {
+  margin-top: 12px;
+}
+
+@media (max-width: 920px) {
+  .growthWorkspaceV06 {
+    width: min(100%, 760px);
+  }
+
+  .bppHomeHeroFidelityV0810 {
+    grid-template-columns: 1fr 210px;
+  }
+
+  .bppCurrentActivityFidelityV0810 {
+    grid-template-columns:
+      58px minmax(0, 1fr) 180px;
+  }
+
+  .bppCurrentIllustrationV0810 {
+    min-width: 170px;
+  }
+
+  .bppNotebookV0810 {
+    font-size: 63px;
+  }
+
+  .bppDeskKidV0810 {
+    right: 63px;
+    font-size: 52px;
+  }
+}
+
+@media (max-width: 700px) {
+  .growthWorkspaceV06 {
+    width: min(100% - 24px, 620px);
+    padding-top: 12px;
+  }
+
+  .bppHomeHeroFidelityV0810 {
+    grid-template-columns: 1fr;
+
+    min-height: auto;
+    padding: 18px;
+
+    border-radius: 16px;
+  }
+
+  .bppHomeSceneV0810 {
+    display: none;
+  }
+
+  .bppHomeFocusFidelityV0810 {
+    margin-top: 10px;
+
+    border-top: 1px solid var(--bpp-line);
+    border-radius: 16px;
+  }
+
+  .bppCurrentActivityFidelityV0810 {
+    grid-template-columns: 48px minmax(0, 1fr);
+
+    min-height: 132px;
+  }
+
+  .bppCurrentActivityFidelityV0810
+  .bppCurrentActivityIconV0810 {
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+  }
+
+  .bppCurrentIllustrationV0810 {
+    position: absolute;
+    right: 4px;
+    bottom: 0;
+
+    width: 120px;
+    min-width: 120px;
+
+    opacity: .18;
+  }
+
+  .bppCurrentActivityFidelityV0810
+  .bppCurrentActivityCopyV0810 {
+    position: relative;
+    z-index: 3;
+  }
+
+  .bppHomeNextFidelityV0810 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .bppRecentlyFidelityV0810
+  .bppRecentStripV0810 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .growthWorkspaceV06 {
+    width: min(100% - 20px, 520px);
+    padding-bottom: 18px;
+  }
+
+  .bppHomeHeroFidelityV0810
+  .bppGreetingV0810 h1 {
+    font-size: 26px;
+  }
+
+  .bppHomeHeroFidelityV0810
+  .bppGreetingV0810 p {
+    font-size: 11px;
+  }
+
+  .bppCurrentActivityFidelityV0810 {
+    padding: 12px;
+  }
+}

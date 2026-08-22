@@ -2,19 +2,16 @@ import {
   useState,
 } from 'react'
 
+import './ParentPerspectiveFlow.css'
+
 
 // ============================================================
 // Career & Growth
-// MVP v0.6 — Phase 0 — Parent Perspective
+// MVP v0.8.10B-4 — Option B++ Parent View
 //
-// Parent Observation:
-// - Adds a parent's observations as evidence.
-//
-// Parent Goals:
-// - Shape future recommendations.
-// - Do NOT directly become child traits or strengths.
-//
-// This component remains presentation/local-form-state only.
+// Presentation/local-form-state only.
+// Parent observations, goals, experience observations,
+// evidence and persistence remain outside this component.
 // ============================================================
 
 function ParentPerspectiveFlow({
@@ -72,15 +69,11 @@ function ParentPerspectiveFlow({
 
   const renderParentGoalCard =
     () => (
-      <section className="parentGoalV06">
+      <section className="bppParentSection">
 
-        <div className="parentPanelHeadingV06">
-          <div className="parentPanelIconV06">
-            🎯
-          </div>
-
+        <div className="bppParentSectionHead">
           <div>
-            <span className="parentKickerV06">
+            <span className="bppParentKicker">
               PARENT GOALS
             </span>
 
@@ -95,10 +88,17 @@ function ParentPerspectiveFlow({
               about who {childName} is today.
             </p>
           </div>
+
+          <span
+            className="bppParentSectionIcon"
+            aria-hidden="true"
+          >
+            🎯
+          </span>
         </div>
 
         <form
-          className="parentGoalFormV06"
+          className="bppParentGoalForm"
           onSubmit={handleParentGoalSubmit}
         >
           <input
@@ -116,14 +116,14 @@ function ParentPerspectiveFlow({
 
           <button
             type="submit"
-            className="parentPrimaryV06"
+            className="bppParentPrimary"
             disabled={!parentGoal.trim()}
           >
             Add Goal
           </button>
         </form>
 
-        <div className="parentGoalStartersV06">
+        <div className="bppParentStarters">
           <span>Starting points</span>
 
           <button
@@ -172,15 +172,15 @@ function ParentPerspectiveFlow({
         </div>
 
         {activeParentIntents.length > 0 && (
-          <div className="parentGoalListV06">
-            <span className="parentKickerV06">
+          <div className="bppParentGoalList">
+            <span className="bppParentKicker">
               ACTIVE GOALS
             </span>
 
             {activeParentIntents.map(
               (intent) => (
                 <div
-                  className="parentGoalItemV06"
+                  className="bppParentGoalItem"
                   key={intent.id}
                 >
                   <span aria-hidden="true">
@@ -194,10 +194,8 @@ function ParentPerspectiveFlow({
           </div>
         )}
 
-        <div className="parentGoalNoteV06">
-          <span aria-hidden="true">
-            i
-          </span>
+        <div className="bppParentNote">
+          <span aria-hidden="true">i</span>
 
           <p>
             Goals influence recommendations.
@@ -212,15 +210,11 @@ function ParentPerspectiveFlow({
 
   const renderExperienceObservations =
     () => (
-      <section className="parentExperienceV06">
+      <section className="bppParentSection">
 
-        <div className="parentPanelHeadingV06">
-          <div className="parentPanelIconV06">
-            🧭
-          </div>
-
+        <div className="bppParentSectionHead">
           <div>
-            <span className="parentKickerV06">
+            <span className="bppParentKicker">
               EXPERIENCE OBSERVATIONS
             </span>
 
@@ -235,10 +229,17 @@ function ParentPerspectiveFlow({
               whenever it is convenient for you.
             </p>
           </div>
+
+          <span
+            className="bppParentSectionIcon"
+            aria-hidden="true"
+          >
+            🧭
+          </span>
         </div>
 
         {experienceObservations.length === 0 ? (
-          <div className="parentExperienceEmptyV06">
+          <div className="bppParentEmpty">
             <span aria-hidden="true">
               🌱
             </span>
@@ -256,73 +257,61 @@ function ParentPerspectiveFlow({
             </div>
           </div>
         ) : (
-          <div className="parentExperienceListV06">
+          <div className="bppParentExperienceList">
             {experienceObservations.map(
               (experience) => (
                 <article
-                  className="parentExperienceItemV06"
+                  className="bppParentExperienceRow"
                   key={experience.id}
                 >
-                  <div className="parentExperienceIdentityV06">
-                    <span className="parentExperienceEmojiV06">
-                      {experience.emoji || '✨'}
+                  <span className="bppParentExperienceEmoji">
+                    {experience.emoji || '✨'}
+                  </span>
+
+                  <div className="bppParentExperienceCopy">
+                    <strong>
+                      {experience.title}
+                    </strong>
+
+                    <span>
+                      Completed experience
                     </span>
-
-                    <div>
-                      <strong>
-                        {experience.title}
-                      </strong>
-
-                      <span>
-                        Completed experience
-                      </span>
-
-                      {experience.description && (
-                        <p className="parentExperienceDescriptionV06">
-                          {experience.description}
-                        </p>
-                      )}
-                    </div>
                   </div>
 
-                  <div className="parentExperienceStatusV06">
-                    <span
-                      className={
-                        experience.observationAdded
-                          ? 'parentExperienceBadgeV06 complete'
-                          : 'parentExperienceBadgeV06'
-                      }
-                    >
-                      {experience.observationAdded
-                        ? '✓ Observation added'
-                        : 'Observation not added'}
-                    </span>
+                  <span
+                    className={
+                      experience.observationAdded
+                        ? 'bppParentStatus complete'
+                        : 'bppParentStatus'
+                    }
+                  >
+                    {experience.observationAdded
+                      ? '✓ Observation added'
+                      : 'Not added'}
+                  </span>
 
-                    <button
-                      type="button"
-                      className="parentExperienceActionV06"
-                      onClick={() =>
-                        onAddExperienceObservation?.(
-                          experience.id
-                        )
-                      }
-                    >
-                      {experience.observationAdded
-                        ? 'Update Observation'
-                        : 'Add Observation'}
-                      <span>→</span>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="bppParentSecondary"
+                    onClick={() =>
+                      onAddExperienceObservation?.(
+                        experience.id
+                      )
+                    }
+                  >
+                    {experience.observationAdded
+                      ? 'Update Observation'
+                      : 'Add Observation'}
+                    <span>→</span>
+                  </button>
                 </article>
               )
             )}
           </div>
         )}
 
-        <div className="parentGoalNoteV06">
-          <span aria-hidden="true">
-            i
-          </span>
+        <div className="bppParentNote">
+          <span aria-hidden="true">i</span>
 
           <p>
             Only add an observation if you actually
@@ -337,95 +326,91 @@ function ParentPerspectiveFlow({
 
   if (mode === 'intro') {
     return (
-      <section className="parentV06">
+      <section className="bppParent">
 
-        <div className="parentTopbarV06">
+        <div className="bppParentTopbar">
           <button
             type="button"
-            className="parentBackV06"
+            className="bppParentBack"
             onClick={onBackToChildSpace}
           >
             ← Back to {childName}'s Space
           </button>
 
-          <span className="parentModePillV06">
-            Parent view
+          <span className="bppParentMode">
+            Parent View
           </span>
         </div>
 
-        <header className="parentHeroV06">
+        <header className="bppParentHero">
           <div>
-            <span className="parentKickerV06">
+            <span className="bppParentKicker">
               PARENT PERSPECTIVE
             </span>
 
             <h1>
-              Add what you've noticed
-              about {childName}.
+              Help us understand the
+              moments you see.
             </h1>
 
             <p>
-              You see everyday patterns,
-              interests, and challenges that
-              a questionnaire may never capture.
+              You notice everyday patterns,
+              interests, challenges, and growth
+              that a questionnaire may never capture.
             </p>
           </div>
 
           <div
-            className="parentHeroMarkV06"
+            className="bppParentHeroMark"
             aria-hidden="true"
           >
             <span>👀</span>
-            <small>Observe patterns</small>
+            <strong>Another perspective</strong>
           </div>
         </header>
 
-        <div className="parentIntroGridV06 parentIntroGridV06Expanded">
+        <div className="bppParentIntro">
 
-          <section className="parentObservationV06">
-            <div className="parentPanelHeadingV06">
-              <div className="parentPanelIconV06">
-                ◌
-              </div>
+          <section className="bppParentObservationLead">
 
-              <div>
-                <span className="parentKickerV06">
-                  OBSERVATIONS
-                </span>
+            <div>
+              <span className="bppParentKicker">
+                EVERYDAY OBSERVATIONS
+              </span>
 
-                <h2>
-                  Share your perspective
-                </h2>
+              <h2>
+                Share what you've noticed
+                about {childName}
+              </h2>
 
-                <p>
-                  Six short questions about
-                  patterns you've noticed in
-                  everyday life.
-                </p>
-              </div>
+              <p>
+                Six short questions help us add
+                your perspective to the picture.
+              </p>
             </div>
 
-            <div className="parentPrincipleV06">
+            <div className="bppParentPrinciple">
               <strong>
                 One perspective, not the whole story.
               </strong>
 
               <p>
-                Your observations add another source
-                of evidence. They do not replace what
+                Your observations add evidence.
+                They do not replace what
                 {` ${childName} `}tells us through
-                Discovery and experiences.
+                Discovery, learning, and experiences.
               </p>
             </div>
 
             <button
               type="button"
-              className="parentPrimaryV06"
+              className="bppParentPrimary"
               onClick={onBegin}
             >
               Add My Perspective
               <span>→</span>
             </button>
+
           </section>
 
           {renderExperienceObservations()}
@@ -438,6 +423,7 @@ function ParentPerspectiveFlow({
     )
   }
 
+
   if (
     mode === 'questions' &&
     currentQuestion
@@ -448,26 +434,26 @@ function ParentPerspectiveFlow({
       100
 
     return (
-      <section className="parentV06">
+      <section className="bppParent">
 
-        <div className="parentTopbarV06">
+        <div className="bppParentTopbar">
           <button
             type="button"
-            className="parentBackV06"
+            className="bppParentBack"
             onClick={onQuestionBack}
           >
             ← Back
           </button>
 
-          <span className="parentModePillV06">
-            Parent observation
+          <span className="bppParentMode">
+            Parent Observation
           </span>
         </div>
 
-        <div className="parentQuestionLayoutV06">
+        <div className="bppParentQuestionLayout">
 
-          <aside className="parentQuestionContextV06">
-            <span className="parentKickerV06">
+          <aside className="bppParentContext">
+            <span className="bppParentKicker">
               PARENT PERSPECTIVE
             </span>
 
@@ -482,25 +468,29 @@ function ParentPerspectiveFlow({
               should be.
             </p>
 
-            <div className="parentContextRuleV06">
-              <span>Observation</span>
-              <strong>What you notice</strong>
+            <div className="bppParentContextRows">
+              <div>
+                <span>Observation</span>
+                <strong>What you notice</strong>
+              </div>
 
-              <span>Goal</span>
-              <strong>What you hope to develop</strong>
+              <div>
+                <span>Goal</span>
+                <strong>What you hope to develop</strong>
+              </div>
             </div>
 
-            <div className="parentContextNoteV06">
+            <div className="bppParentContextNote">
               Your answers add context.
               They don't define {childName}.
             </div>
           </aside>
 
-          <main className="parentQuestionMainV06">
+          <main className="bppParentQuestionMain">
 
-            <div className="parentProgressRowV06">
+            <div className="bppParentProgressHead">
               <div>
-                <span className="parentKickerV06">
+                <span className="bppParentKicker">
                   YOUR OBSERVATION
                 </span>
 
@@ -516,7 +506,7 @@ function ParentPerspectiveFlow({
               </span>
             </div>
 
-            <div className="parentProgressTrackV06">
+            <div className="bppParentProgressTrack">
               <div
                 style={{
                   width:
@@ -525,7 +515,7 @@ function ParentPerspectiveFlow({
               />
             </div>
 
-            <article className="parentQuestionCardV06">
+            <article className="bppParentQuestionCard">
               <h1>
                 {currentQuestion.question}
               </h1>
@@ -535,29 +525,29 @@ function ParentPerspectiveFlow({
                 matches what you've observed.
               </p>
 
-              <div className="parentAnswersV06">
+              <div className="bppParentAnswers">
                 {currentQuestion.answers.map(
                   (answer, index) => (
                     <button
                       type="button"
                       key={answer.id}
-                      className="parentAnswerV06"
+                      className="bppParentAnswer"
                       onClick={() =>
                         onAnswer(answer)
                       }
                     >
-                      <span className="parentAnswerLetterV06">
+                      <span className="bppParentAnswerLetter">
                         {String.fromCharCode(
                           65 + index
                         )}
                       </span>
 
-                      <span className="parentAnswerTextV06">
+                      <span className="bppParentAnswerText">
                         {answer.label}
                       </span>
 
                       <span
-                        className="parentAnswerArrowV06"
+                        className="bppParentAnswerArrow"
                         aria-hidden="true"
                       >
                         →
@@ -576,25 +566,26 @@ function ParentPerspectiveFlow({
     )
   }
 
+
   if (mode === 'complete') {
     return (
-      <section className="parentV06">
+      <section className="bppParent">
 
-        <div className="parentTopbarV06">
+        <div className="bppParentTopbar">
           <span />
 
-          <span className="parentModePillV06">
-            Parent view
+          <span className="bppParentMode">
+            Parent View
           </span>
         </div>
 
-        <header className="parentCompleteV06">
-          <div className="parentCompleteIconV06">
+        <header className="bppParentCompleteHero">
+          <div className="bppParentCompleteIcon">
             ✓
           </div>
 
           <div>
-            <span className="parentKickerV06">
+            <span className="bppParentKicker">
               PERSPECTIVE ADDED
             </span>
 
@@ -611,26 +602,26 @@ function ParentPerspectiveFlow({
           </div>
         </header>
 
-        <div className="parentCompleteGridV06">
+        <div className="bppParentCompleteBody">
 
           <div>
-            <div className="parentCompletePrincipleV06">
+            <div className="bppParentPrinciple">
               <strong>
                 Better patterns emerge when
                 perspectives overlap.
               </strong>
 
               <p>
-                Child Discovery, parent
-                observations, experiences,
-                and reflections can reinforce
-                or challenge one another over time.
+                Child Discovery, parent observations,
+                experiences, learning, and reflections
+                can reinforce or challenge one another
+                over time.
               </p>
             </div>
 
             <button
               type="button"
-              className="parentPrimaryV06"
+              className="bppParentPrimary"
               onClick={onBackToChildSpace}
             >
               Back to {childName}'s Space
@@ -645,6 +636,7 @@ function ParentPerspectiveFlow({
       </section>
     )
   }
+
 
   return null
 }
