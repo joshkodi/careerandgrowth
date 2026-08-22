@@ -719,3 +719,16 @@
   min-height: 36px;
   border-radius: 9px;
 }
+
+
+/* ===== MVP v0.8.10B FINAL — PARENT POLISH ===== */
+.bppParentHero { padding-top:19px; }
+.bppParentHero h1,.bppParentCompleteHero h1 { letter-spacing:-.045em; }
+.bppParentHeroMark {
+  border:1px solid #e4e1f4;
+  background:linear-gradient(145deg,#f2f0ff,#f6f9fc);
+}
+.bppParentExperienceRow,.bppParentAnswer { transition:background .14s ease; }
+.bppParentExperienceRow:hover,.bppParentAnswer:hover { background:#fafaff; }
+.bppParentPrinciple { border-radius:0 9px 9px 0; }
+.bppParentPrimary { box-shadow:0 5px 13px rgba(105,88,232,.14); }

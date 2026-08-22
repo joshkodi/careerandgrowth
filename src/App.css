@@ -8551,3 +8551,59 @@ span:last-child {
     width: min(100% - 20px, 540px);
   }
 }
+
+
+/* ===== MVP v0.8.10B FINAL — B++ VISUAL POLISH ===== */
+:root {
+  --bpp-final-bg:#f7f7fb;
+  --bpp-final-purple:#6958e8;
+  --bpp-final-purple-dark:#5544d4;
+  --bpp-final-purple-soft:#f1efff;
+}
+.bppWorkspaceShellV0810 {
+  background:
+    radial-gradient(circle at 78% 5%,rgba(236,232,255,.62),transparent 25rem),
+    var(--bpp-final-bg);
+}
+.bppWorkspaceRailV0810 {
+  border-right:1px solid #ececf3;
+  background:rgba(255,255,255,.94);
+  box-shadow:10px 0 30px rgba(42,37,79,.025);
+}
+.bppWorkspaceNavButtonV0810 {
+  min-height:42px;
+  border-radius:11px;
+  transition:background .16s ease,color .16s ease,transform .16s ease;
+}
+.bppWorkspaceNavButtonV0810:hover { transform:translateX(2px); }
+.bppWorkspaceNavButtonV0810.active {
+  background:var(--bpp-final-purple-soft);
+  color:var(--bpp-final-purple-dark);
+}
+.bppWorkspaceRailEncouragementV0810 {
+  border:1px solid #e5e1fa;
+  background:linear-gradient(145deg,#f4f1ff,#f7fbff);
+  box-shadow:0 8px 22px rgba(66,55,128,.045);
+}
+.bppWorkspaceCanvasV0810 > * {
+  animation:bppFinalPageIn .18s ease-out both;
+}
+@keyframes bppFinalPageIn {
+  from { opacity:.72; transform:translateY(3px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.bppWorkspaceCanvasV0810 button:focus-visible,
+.bppWorkspaceCanvasV0810 input:focus-visible,
+.bppWorkspaceRailV0810 button:focus-visible {
+  outline:3px solid rgba(105,88,232,.18);
+  outline-offset:2px;
+}
+@media (max-width:560px) {
+  .bppWorkspaceShellV0810 { padding-bottom:70px; }
+  .bppWorkspaceMobileNavV0810 {
+    border-top:1px solid #e8e8ef;
+    background:rgba(255,255,255,.96);
+    box-shadow:0 -10px 30px rgba(37,32,70,.06);
+    backdrop-filter:blur(12px);
+  }
+}

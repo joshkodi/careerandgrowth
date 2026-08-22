@@ -585,3 +585,30 @@
   min-height: 36px;
   border-radius: 9px;
 }
+
+
+/* ===== MVP v0.8.10B FINAL — PROFILE POLISH ===== */
+.bppProfileHero { padding-top:19px; }
+.bppProfileHero h1 { letter-spacing:-.045em; }
+.bppProfileHeroMark {
+  border:1px solid #e4e0fa;
+  background:linear-gradient(145deg,#f1efff,#f5f9ff);
+}
+.bppProfileTraitRow,.bppProfileDomainRow,.bppProfileEvidenceItem {
+  transition:background .14s ease;
+}
+.bppProfileTraitRow:hover,.bppProfileDomainRow:hover,.bppProfileEvidenceItem:hover {
+  background:rgba(248,248,252,.75);
+}
+.bppProfilePathway {
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
+}
+.bppProfilePathway:hover {
+  transform:translateY(-2px);
+  border-color:#ddd8f7;
+  box-shadow:0 9px 22px rgba(61,51,116,.055);
+}
+.bppProfileKeepGrowing {
+  border:1px solid #e4e2f4;
+  box-shadow:0 10px 28px rgba(61,51,116,.045);
+}

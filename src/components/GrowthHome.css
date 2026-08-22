@@ -3299,3 +3299,30 @@
     padding: 12px;
   }
 }
+
+
+/* ===== MVP v0.8.10B FINAL — HOME POLISH ===== */
+.bppHomeHeroV0810 { padding-top:6px; padding-bottom:18px; }
+.bppHomeHeroV0810 h1 { letter-spacing:-.045em; }
+.bppHomeHeroV0810 > p { max-width:590px; color:#777d90; }
+.bppHomeFocusV0810 {
+  overflow:hidden;
+  border:1px solid #e5e2f7;
+  border-radius:20px;
+  background:linear-gradient(120deg,#f4f1ff 0%,#f8f6ff 54%,#eef7ff 100%);
+  box-shadow:0 16px 38px rgba(70,57,139,.075);
+}
+.bppCurrentActivityV0810 {
+  border-color:rgba(255,255,255,.85);
+  background:rgba(255,255,255,.78);
+  box-shadow:0 8px 24px rgba(54,45,105,.045);
+}
+.bppHomeTileV0810,.bppRecentCardV0810 {
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
+}
+.bppHomeTileV0810:hover,.bppRecentCardV0810:hover {
+  transform:translateY(-2px);
+  border-color:#ddd8f7;
+  box-shadow:0 9px 22px rgba(61,51,116,.06);
+}
+.bppHomeMoreV0810 { border-color:#ececf2; background:rgba(255,255,255,.58); }
