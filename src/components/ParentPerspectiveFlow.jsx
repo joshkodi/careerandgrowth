@@ -1,644 +1,248 @@
-import {
-  useState,
-} from 'react'
-
-import './ParentPerspectiveFlow.css'
-
-
 // ============================================================
-// Career & Growth
-// MVP v0.8.10B-4 — Option B++ Parent View
+// SynapStride
+// MVP v0.9 — Parent View
 //
-// Presentation/local-form-state only.
-// Parent observations, goals, experience observations,
-// evidence and persistence remain outside this component.
+// Parent View answers:
+// "How is my child growing, and how can I help?"
+//
+// Presentation-only. Parent answers, evidence generation,
+// persistence and profile intelligence remain owned by App.jsx.
 // ============================================================
 
 function ParentPerspectiveFlow({
-  mode,
-  childName,
-  currentQuestion,
+  childProfile,
+  questions,
   currentQuestionIndex,
-  totalQuestions,
-  parentIntents = [],
-  experienceObservations = [],
-  onBackToChildSpace,
-  onBegin,
-  onQuestionBack,
+  currentQuestion,
+  onBack,
   onAnswer,
-  onSaveParentIntent,
-  onAddExperienceObservation,
+  onFinish,
 }) {
-  const [parentGoal, setParentGoal] =
-    useState('')
+  const childName =
+    childProfile?.name?.trim() || 'your child'
 
-  const activeParentIntents =
-    [...parentIntents]
-      .filter(
-        (intent) =>
-          intent.status === 'active'
-      )
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt) -
-          new Date(a.createdAt)
-      )
+  const totalQuestions = questions?.length || 0
+  const currentNumber = currentQuestionIndex + 1
+  const progressPercentage = totalQuestions
+    ? (currentNumber / totalQuestions) * 100
+    : 0
 
-  const handleParentGoalSubmit =
-    (event) => {
-      event.preventDefault()
-
-      const cleanedGoal =
-        parentGoal.trim()
-
-      if (!cleanedGoal) {
-        return
-      }
-
-      onSaveParentIntent?.(
-        cleanedGoal
-      )
-
-      setParentGoal('')
-    }
-
-  const chooseGoalStarter =
-    (goal) => {
-      setParentGoal(goal)
-    }
-
-  const renderParentGoalCard =
-    () => (
-      <section className="bppParentSection">
-
-        <div className="bppParentSectionHead">
+  if (!currentQuestion || !totalQuestions) {
+    return (
+      <section className="synParentV09">
+        <header className="synParentHeroV09">
           <div>
-            <span className="bppParentKicker">
-              PARENT GOALS
+            <span className="synParentEyebrowV09">
+              PARENT VIEW
             </span>
 
-            <h2>
-              What would you like to help
-              {` ${childName} `}develop?
-            </h2>
+            <h1>
+              Add another perspective on {childName}.
+            </h1>
 
             <p>
-              Goals guide future recommendations.
-              They are different from observations
-              about who {childName} is today.
+              Your everyday observations help SynapStride understand
+              patterns that may not show up in a questionnaire or a single activity.
             </p>
           </div>
 
-          <span
-            className="bppParentSectionIcon"
-            aria-hidden="true"
-          >
-            🎯
-          </span>
-        </div>
+          <div className="synParentHeroMarkV09" aria-hidden="true">
+            <span>👨‍👩‍👦</span>
+            <strong>Another point of view</strong>
+          </div>
+        </header>
 
-        <form
-          className="bppParentGoalForm"
-          onSubmit={handleParentGoalSubmit}
-        >
-          <input
-            type="text"
-            value={parentGoal}
-            onChange={(event) =>
-              setParentGoal(
-                event.target.value
-              )
-            }
-            placeholder={
-              `I'd like ${childName} to...`
-            }
-          />
+        <section className="synParentEmptyV09">
+          <span>✓</span>
 
-          <button
-            type="submit"
-            className="bppParentPrimary"
-            disabled={!parentGoal.trim()}
-          >
-            Add Goal
-          </button>
-        </form>
-
-        <div className="bppParentStarters">
-          <span>Starting points</span>
-
-          <button
-            type="button"
-            onClick={() =>
-              chooseGoalStarter(
-                `I'd like ${childName} to build more confidence`
-              )
-            }
-          >
-            Confidence
-          </button>
-
-          <button
-            type="button"
-            onClick={() =>
-              chooseGoalStarter(
-                `I'd like ${childName} to improve communication skills`
-              )
-            }
-          >
-            Communication
-          </button>
-
-          <button
-            type="button"
-            onClick={() =>
-              chooseGoalStarter(
-                `I'd like ${childName} to explore more STEM activities`
-              )
-            }
-          >
-            STEM exposure
-          </button>
-
-          <button
-            type="button"
-            onClick={() =>
-              chooseGoalStarter(
-                `I'd like ${childName} to become more independent`
-              )
-            }
-          >
-            Independence
-          </button>
-        </div>
-
-        {activeParentIntents.length > 0 && (
-          <div className="bppParentGoalList">
-            <span className="bppParentKicker">
-              ACTIVE GOALS
+          <div>
+            <span className="synParentEyebrowV09">
+              PERSPECTIVE COMPLETE
             </span>
 
-            {activeParentIntents.map(
-              (intent) => (
-                <div
-                  className="bppParentGoalItem"
-                  key={intent.id}
-                >
-                  <span aria-hidden="true">
-                    🎯
-                  </span>
+            <h2>Thanks for sharing what you notice.</h2>
 
-                  <p>{intent.text}</p>
-                </div>
-              )
-            )}
+            <p>
+              SynapStride will use these observations as one source of context
+              alongside what {childName} says and does.
+            </p>
           </div>
-        )}
 
-        <div className="bppParentNote">
-          <span aria-hidden="true">i</span>
+          <button
+            type="button"
+            className="synParentActionV09"
+            onClick={onFinish}
+          >
+            Back to Home
+            <span>→</span>
+          </button>
+        </section>
+      </section>
+    )
+  }
+
+  return (
+    <section className="synParentV09">
+
+      <header className="synParentHeroV09">
+        <div>
+          <span className="synParentEyebrowV09">
+            PARENT VIEW
+          </span>
+
+          <h1>
+            What are you noticing about {childName}?
+          </h1>
 
           <p>
-            Goals influence recommendations.
-            They do not automatically become
-            strengths, traits, or abilities in
-            {` ${childName}'s `}Growth Profile.
+            You see moments SynapStride can't — what holds attention,
+            what creates energy, what causes frustration, and what keeps
+            coming back in everyday life.
           </p>
         </div>
 
-      </section>
-    )
+        <div className="synParentHeroMarkV09" aria-hidden="true">
+          <span>👨‍👩‍👦</span>
+          <strong>Your observations matter</strong>
+        </div>
+      </header>
 
-  const renderExperienceObservations =
-    () => (
-      <section className="bppParentSection">
 
-        <div className="bppParentSectionHead">
-          <div>
-            <span className="bppParentKicker">
-              EXPERIENCE OBSERVATIONS
-            </span>
-
-            <h2>
-              Add what you noticed during
-              {` ${childName}'s `}experiences
-            </h2>
-
-            <p>
-              These observations are tied to a
-              specific Adventure and can be added
-              whenever it is convenient for you.
-            </p>
-          </div>
-
-          <span
-            className="bppParentSectionIcon"
-            aria-hidden="true"
-          >
-            🧭
+      <section className="synParentProgressV09">
+        <div>
+          <span className="synParentEyebrowV09">
+            PARENT PERSPECTIVE
           </span>
+
+          <strong>
+            {currentNumber} of {totalQuestions}
+          </strong>
         </div>
 
-        {experienceObservations.length === 0 ? (
-          <div className="bppParentEmpty">
-            <span aria-hidden="true">
-              🌱
-            </span>
+        <div className="synParentProgressTrackV09">
+          <div
+            className="synParentProgressBarV09"
+            style={{
+              width: `${progressPercentage}%`,
+            }}
+          />
+        </div>
+      </section>
+
+
+      <div className="synParentLayoutV09">
+
+        <aside className="synParentContextV09">
+          <div className="synParentContextIconV09">
+            🔎
+          </div>
+
+          <span className="synParentEyebrowV09">
+            WHAT HELPS
+          </span>
+
+          <h2>
+            Share what you actually notice — not what you think the answer should be.
+          </h2>
+
+          <p>
+            Parent observations are useful because they add context from
+            real life. They do not override {childName}'s own voice.
+          </p>
+
+          <div className="synParentPrinciplesV09">
+            <div>
+              <span>1</span>
+              <p>Think about recent, everyday examples.</p>
+            </div>
 
             <div>
-              <strong>
-                No completed experiences yet
-              </strong>
+              <span>2</span>
+              <p>Patterns matter more than one perfect moment.</p>
+            </div>
 
-              <p>
-                When {childName} completes a Guided
-                Adventure, it will appear here for
-                optional parent observation.
-              </p>
+            <div>
+              <span>3</span>
+              <p>There is no “best” answer for a child.</p>
             </div>
           </div>
-        ) : (
-          <div className="bppParentExperienceList">
-            {experienceObservations.map(
-              (experience) => (
-                <article
-                  className="bppParentExperienceRow"
-                  key={experience.id}
+
+          <div className="synParentEvidenceNoteV09">
+            <span>PARENT → PROFILE</span>
+
+            <p>
+              Your observations become one perspective in {childName}'s
+              evolving Profile — alongside Discover and Journey.
+            </p>
+          </div>
+        </aside>
+
+
+        <main className="synParentQuestionV09">
+          <div className="synParentQuestionMetaV09">
+            <span className="synParentQuestionNumberV09">
+              {String(currentNumber).padStart(2, '0')}
+            </span>
+
+            <span>
+              Your observation
+            </span>
+          </div>
+
+          <h2>
+            {currentQuestion.question}
+          </h2>
+
+          <p className="synParentQuestionHelpV09">
+            Choose the answer that best matches what you've been seeing lately.
+          </p>
+
+
+          <div className="synParentAnswersV09">
+            {currentQuestion.answers.map(
+              (answer, index) => (
+                <button
+                  type="button"
+                  key={answer.id}
+                  className="synParentAnswerV09"
+                  onClick={() => onAnswer(answer)}
                 >
-                  <span className="bppParentExperienceEmoji">
-                    {experience.emoji || '✨'}
+                  <span className="synParentAnswerLetterV09">
+                    {String.fromCharCode(65 + index)}
                   </span>
 
-                  <div className="bppParentExperienceCopy">
-                    <strong>
-                      {experience.title}
-                    </strong>
-
-                    <span>
-                      Completed experience
-                    </span>
-                  </div>
+                  <span>
+                    {answer.label}
+                  </span>
 
                   <span
-                    className={
-                      experience.observationAdded
-                        ? 'bppParentStatus complete'
-                        : 'bppParentStatus'
-                    }
+                    className="synParentAnswerArrowV09"
+                    aria-hidden="true"
                   >
-                    {experience.observationAdded
-                      ? '✓ Observation added'
-                      : 'Not added'}
+                    →
                   </span>
-
-                  <button
-                    type="button"
-                    className="bppParentSecondary"
-                    onClick={() =>
-                      onAddExperienceObservation?.(
-                        experience.id
-                      )
-                    }
-                  >
-                    {experience.observationAdded
-                      ? 'Update Observation'
-                      : 'Add Observation'}
-                    <span>→</span>
-                  </button>
-                </article>
+                </button>
               )
             )}
           </div>
-        )}
+        </main>
 
-        <div className="bppParentNote">
-          <span aria-hidden="true">i</span>
+      </div>
 
-          <p>
-            Only add an observation if you actually
-            saw enough of the experience to comment.
-            Skipping an experience is completely fine.
-          </p>
-        </div>
 
-      </section>
-    )
+      <footer className="synParentFooterV09">
+        <span aria-hidden="true">🤝</span>
 
+        <p>
+          <strong>One child, multiple perspectives.</strong>
+          {' '}
+          SynapStride looks for patterns across the child's voice,
+          real experiences, reflections, and parent observations.
+        </p>
+      </footer>
 
-  if (mode === 'intro') {
-    return (
-      <section className="bppParent">
-
-        <div className="bppParentTopbar">
-          <button
-            type="button"
-            className="bppParentBack"
-            onClick={onBackToChildSpace}
-          >
-            ← Back to {childName}'s Space
-          </button>
-
-          <span className="bppParentMode">
-            Parent View
-          </span>
-        </div>
-
-        <header className="bppParentHero">
-          <div>
-            <span className="bppParentKicker">
-              PARENT PERSPECTIVE
-            </span>
-
-            <h1>
-              Help us understand the
-              moments you see.
-            </h1>
-
-            <p>
-              You notice everyday patterns,
-              interests, challenges, and growth
-              that a questionnaire may never capture.
-            </p>
-          </div>
-
-          <div
-            className="bppParentHeroMark"
-            aria-hidden="true"
-          >
-            <span>👀</span>
-            <strong>Another perspective</strong>
-          </div>
-        </header>
-
-        <div className="bppParentIntro">
-
-          <section className="bppParentObservationLead">
-
-            <div>
-              <span className="bppParentKicker">
-                EVERYDAY OBSERVATIONS
-              </span>
-
-              <h2>
-                Share what you've noticed
-                about {childName}
-              </h2>
-
-              <p>
-                Six short questions help us add
-                your perspective to the picture.
-              </p>
-            </div>
-
-            <div className="bppParentPrinciple">
-              <strong>
-                One perspective, not the whole story.
-              </strong>
-
-              <p>
-                Your observations add evidence.
-                They do not replace what
-                {` ${childName} `}tells us through
-                Discovery, learning, and experiences.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              className="bppParentPrimary"
-              onClick={onBegin}
-            >
-              Add My Perspective
-              <span>→</span>
-            </button>
-
-          </section>
-
-          {renderExperienceObservations()}
-
-          {renderParentGoalCard()}
-
-        </div>
-
-      </section>
-    )
-  }
-
-
-  if (
-    mode === 'questions' &&
-    currentQuestion
-  ) {
-    const progressPercentage =
-      ((currentQuestionIndex + 1) /
-        totalQuestions) *
-      100
-
-    return (
-      <section className="bppParent">
-
-        <div className="bppParentTopbar">
-          <button
-            type="button"
-            className="bppParentBack"
-            onClick={onQuestionBack}
-          >
-            ← Back
-          </button>
-
-          <span className="bppParentMode">
-            Parent Observation
-          </span>
-        </div>
-
-        <div className="bppParentQuestionLayout">
-
-          <aside className="bppParentContext">
-            <span className="bppParentKicker">
-              PARENT PERSPECTIVE
-            </span>
-
-            <h2>
-              What have you noticed?
-            </h2>
-
-            <p>
-              Think about patterns you've
-              actually seen over time rather
-              than what you hope the answer
-              should be.
-            </p>
-
-            <div className="bppParentContextRows">
-              <div>
-                <span>Observation</span>
-                <strong>What you notice</strong>
-              </div>
-
-              <div>
-                <span>Goal</span>
-                <strong>What you hope to develop</strong>
-              </div>
-            </div>
-
-            <div className="bppParentContextNote">
-              Your answers add context.
-              They don't define {childName}.
-            </div>
-          </aside>
-
-          <main className="bppParentQuestionMain">
-
-            <div className="bppParentProgressHead">
-              <div>
-                <span className="bppParentKicker">
-                  YOUR OBSERVATION
-                </span>
-
-                <strong>
-                  Question {currentQuestionIndex + 1}
-                  {' '}of{' '}
-                  {totalQuestions}
-                </strong>
-              </div>
-
-              <span>
-                {Math.round(progressPercentage)}%
-              </span>
-            </div>
-
-            <div className="bppParentProgressTrack">
-              <div
-                style={{
-                  width:
-                    `${progressPercentage}%`,
-                }}
-              />
-            </div>
-
-            <article className="bppParentQuestionCard">
-              <h1>
-                {currentQuestion.question}
-              </h1>
-
-              <p>
-                Choose the answer that best
-                matches what you've observed.
-              </p>
-
-              <div className="bppParentAnswers">
-                {currentQuestion.answers.map(
-                  (answer, index) => (
-                    <button
-                      type="button"
-                      key={answer.id}
-                      className="bppParentAnswer"
-                      onClick={() =>
-                        onAnswer(answer)
-                      }
-                    >
-                      <span className="bppParentAnswerLetter">
-                        {String.fromCharCode(
-                          65 + index
-                        )}
-                      </span>
-
-                      <span className="bppParentAnswerText">
-                        {answer.label}
-                      </span>
-
-                      <span
-                        className="bppParentAnswerArrow"
-                        aria-hidden="true"
-                      >
-                        →
-                      </span>
-                    </button>
-                  )
-                )}
-              </div>
-            </article>
-
-          </main>
-
-        </div>
-
-      </section>
-    )
-  }
-
-
-  if (mode === 'complete') {
-    return (
-      <section className="bppParent">
-
-        <div className="bppParentTopbar">
-          <span />
-
-          <span className="bppParentMode">
-            Parent View
-          </span>
-        </div>
-
-        <header className="bppParentCompleteHero">
-          <div className="bppParentCompleteIcon">
-            ✓
-          </div>
-
-          <div>
-            <span className="bppParentKicker">
-              PERSPECTIVE ADDED
-            </span>
-
-            <h1>
-              Thanks for sharing what
-              you've noticed.
-            </h1>
-
-            <p>
-              Your observations are now one
-              part of {childName}'s evolving
-              Growth Intelligence.
-            </p>
-          </div>
-        </header>
-
-        <div className="bppParentCompleteBody">
-
-          <div>
-            <div className="bppParentPrinciple">
-              <strong>
-                Better patterns emerge when
-                perspectives overlap.
-              </strong>
-
-              <p>
-                Child Discovery, parent observations,
-                experiences, learning, and reflections
-                can reinforce or challenge one another
-                over time.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              className="bppParentPrimary"
-              onClick={onBackToChildSpace}
-            >
-              Back to {childName}'s Space
-              <span>→</span>
-            </button>
-          </div>
-
-          {renderParentGoalCard()}
-
-        </div>
-
-      </section>
-    )
-  }
-
-
-  return null
+    </section>
+  )
 }
 
 

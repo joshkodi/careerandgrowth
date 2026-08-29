@@ -4,6 +4,8 @@ import {
 } from 'react'
 
 import './App.css'
+import './SynapStrideV0102.css'
+import synapStrideMark from './assets/synapstride-mark.png'
 
 import { explorations } from './data/explorations'
 
@@ -19,7 +21,6 @@ import GrowthHome from './components/GrowthHome'
 import DiscoveryFlow from './components/DiscoveryFlow'
 import GrowthProfileView from './components/GrowthProfileView'
 import ParentPerspectiveFlow from './components/ParentPerspectiveFlow'
-import AdventuresHub from './components/AdventuresHub'
 import AdventureFlow from './components/AdventureFlow'
 import PostAdventureParentObservation from './components/PostAdventureParentObservation'
 import GrowthIntelligenceInspector from './components/developer/GrowthIntelligenceInspector'
@@ -159,7 +160,7 @@ const readStoredAppState = () => {
       : null
   } catch (error) {
     console.error(
-      'Unable to restore Career & Growth app state.',
+      'Unable to restore SynapStride app state.',
       error
     )
 
@@ -178,6 +179,11 @@ const storedAppState =
 
 function App() {
 
+  useEffect(() => {
+    document.title = 'SynapStride'
+  }, [])
+
+
   const [screen, setScreen] =
     useState(
       storedAppState
@@ -193,6 +199,12 @@ function App() {
           )
         : 'landing'
     )
+
+  const [
+    myGrowthSection,
+    setMyGrowthSection,
+  ] = useState('overview')
+
 
   const [
     childProfile,
@@ -478,6 +490,10 @@ function App() {
   const {
     journeyItems,
 
+    growthActivities,
+    calendarActivities,
+    upcomingGrowthActivities,
+
     completedJourneyInsight,
 
     restoreJourney,
@@ -496,6 +512,12 @@ function App() {
     handleLearningResourceFeedback,
     handleLearningSupportOutcome,
 
+    handleSaveGrowthOpportunity,
+    handleUpdateGrowthActivity,
+    handleGrowthActivityStatus,
+    handleScheduleGrowthActivity,
+    handleGrowthActivityReflection,
+
     handleCompleteJourney:
       handleCompleteJourneyBase,
 
@@ -503,6 +525,36 @@ function App() {
 
     resetJourney,
   } = journey
+
+
+  // ==========================================================
+  // MVP v0.9 — GENERIC JOURNEY ITEM UPDATE BRIDGE
+  // ==========================================================
+
+  const handleUpdateJourneyItem =
+    (journeyId, updates = {}) => {
+      const currentItem =
+        journeyItems.find(
+          (item) => item.id === journeyId
+        )
+
+      if (!currentItem || !updates || typeof updates !== 'object') {
+        return null
+      }
+
+      const updatedItem = {
+        ...currentItem,
+        ...updates,
+        id: currentItem.id,
+        childId: currentItem.childId,
+        updatedAt: new Date().toISOString(),
+      }
+
+      saveJourneyItem(updatedItem)
+      restoreJourney()
+
+      return updatedItem
+    }
 
 
   // ==========================================================
@@ -1092,7 +1144,7 @@ function App() {
   const resetTestData = () => {
     const confirmed =
       window.confirm(
-        'Reset all Career & Growth test data?\n\nThis will remove the current child, Discovery responses, Parent Perspective, Adventures, Growth Intents, Journey items, and all stored Growth Intelligence evidence.'
+        'Reset all SynapStride test data?\n\nThis will remove the current child, Discovery responses, Parent Perspective, Adventures, Growth Intents, Journey items, and all stored Growth Intelligence evidence.'
       )
 
     if (!confirmed) {
@@ -1160,6 +1212,13 @@ function App() {
   }
 
 
+  const openMyGrowthSection =
+    (section = 'overview') => {
+      setMyGrowthSection(section === 'experiences' ? 'activities' : section)
+      setScreen('journey')
+    }
+
+
   // ==========================================================
   // PARENT EXPERIENCE OBSERVATION BRIDGE
   // ==========================================================
@@ -1215,8 +1274,15 @@ function App() {
   // ==========================================================
 
   const useGrowthShell =
-    screen === 'childSpace' ||
-    screen === 'journey'
+    [
+      'childSpace',
+      'journey',
+      'discovery',
+      'growthProfile',
+      'parentPerspectiveIntro',
+      'parentPerspective',
+      'parentPerspectiveComplete',
+    ].includes(screen)
 
   return (
     <main
@@ -1231,7 +1297,7 @@ function App() {
         <section className="hero">
 
           <p className="eyebrow">
-            Career & Growth
+            SynapStride
           </p>
 
           <h1>
@@ -1418,10 +1484,15 @@ function App() {
             ).length
           }
           onHome={goToChildSpace}
-          onJourney={goToJourney}
-          onExplore={() =>
-            setScreen('adventures')
+          onJourney={() =>
+            openMyGrowthSection('overview')
           }
+          activeGrowthSection={myGrowthSection}
+          onGrowthSection={openMyGrowthSection}
+          onExplore={() =>
+            openMyGrowthSection('activities')
+          }
+          onDiscover={startDiscovery}
           onProfile={() =>
             setScreen('growthProfile')
           }
@@ -1446,6 +1517,22 @@ function App() {
 
             completedExplorations={
               completedExplorations
+            }
+
+            exploreRecommendations={
+              recommendations
+            }
+
+            exploreCatalog={
+              Object.values(explorations)
+            }
+
+            onSaveGrowthOpportunity={
+              handleSaveGrowthOpportunity
+            }
+
+            onStartAdventure={
+              startExploration
             }
 
             evidenceEventCount={
@@ -1491,6 +1578,34 @@ function App() {
               journeyItems
             }
 
+            growthActivities={
+              growthActivities
+            }
+
+            calendarActivities={
+              calendarActivities
+            }
+
+            upcomingGrowthActivities={
+              upcomingGrowthActivities
+            }
+
+            onGrowthActivityStatus={
+              handleGrowthActivityStatus
+            }
+
+            onUpdateGrowthActivity={
+              handleUpdateGrowthActivity
+            }
+
+            onScheduleGrowthActivity={
+              handleScheduleGrowthActivity
+            }
+
+            onGrowthActivityReflection={
+              handleGrowthActivityReflection
+            }
+
             completedJourneyInsight={
               completedJourneyInsight
             }
@@ -1511,8 +1626,12 @@ function App() {
               goToChildSpace
             }
 
-            onJourney={
-              goToJourney
+            onJourney={() =>
+              openMyGrowthSection('overview')
+            }
+
+            requestedGrowthView={
+              myGrowthSection
             }
 
             onJourneyProgress={
@@ -1529,6 +1648,10 @@ function App() {
 
             onLearningItemStatus={
               handleLearningItemStatus
+            }
+
+            onUpdateJourneyItem={
+              handleUpdateJourneyItem
             }
 
             onLearningHelpRequest={
@@ -1548,9 +1671,7 @@ function App() {
             }
 
             onExplore={() =>
-              setScreen(
-                'adventures'
-              )
+              openMyGrowthSection('activities')
             }
 
             onGrowthProfile={() =>
@@ -1569,31 +1690,40 @@ function App() {
 
       {screen ===
         'discovery' && (
-        <DiscoveryFlow
-          childProfile={
-            childProfile
+        <BppWorkspaceShell
+          activeSection="discover"
+          childProfile={childProfile}
+          activeJourneyCount={
+            journeyItems.filter(
+              (item) => item.status !== 'completed'
+            ).length
           }
-
-          questions={
-            questions
+          onHome={goToChildSpace}
+          onJourney={() =>
+            openMyGrowthSection('overview')
           }
-
-          currentQuestionIndex={
-            currentQuestionIndex
+          activeGrowthSection={myGrowthSection}
+          onGrowthSection={openMyGrowthSection}
+          onExplore={() =>
+            openMyGrowthSection('activities')
           }
-
-          currentQuestion={
-            currentQuestion
+          onDiscover={startDiscovery}
+          onProfile={() =>
+            setScreen('growthProfile')
           }
-
-          onBack={
-            handleDiscoveryBack
+          onParent={() =>
+            setScreen('parentPerspectiveIntro')
           }
-
-          onAnswer={
-            handleAnswer
-          }
-        />
+        >
+          <DiscoveryFlow
+            childProfile={childProfile}
+            questions={questions}
+            currentQuestionIndex={currentQuestionIndex}
+            currentQuestion={currentQuestion}
+            onBack={handleDiscoveryBack}
+            onAnswer={handleAnswer}
+          />
+        </BppWorkspaceShell>
       )}
 
 
@@ -1657,10 +1787,15 @@ function App() {
             ).length
           }
           onHome={goToChildSpace}
-          onJourney={goToJourney}
-          onExplore={() =>
-            setScreen('adventures')
+          onJourney={() =>
+            openMyGrowthSection('overview')
           }
+          activeGrowthSection={myGrowthSection}
+          onGrowthSection={openMyGrowthSection}
+          onExplore={() =>
+            openMyGrowthSection('activities')
+          }
+          onDiscover={startDiscovery}
           onProfile={() =>
             setScreen('growthProfile')
           }
@@ -1703,15 +1838,21 @@ function App() {
                     completedExplorations={
                       completedExplorations
                     }
+
+                    growthActivities={
+                      growthActivities
+                    }
+
+                    onSaveGrowthOpportunity={
+                      handleSaveGrowthOpportunity
+                    }
           
                     onBack={
                       goToChildSpace
                     }
           
                     onExploreAdventures={() =>
-                      setScreen(
-                        'adventures'
-                      )
+                      openMyGrowthSection('activities')
                     }
           
                     developerInspector={
@@ -1767,10 +1908,15 @@ function App() {
             ).length
           }
           onHome={goToChildSpace}
-          onJourney={goToJourney}
-          onExplore={() =>
-            setScreen('adventures')
+          onJourney={() =>
+            openMyGrowthSection('overview')
           }
+          activeGrowthSection={myGrowthSection}
+          onGrowthSection={openMyGrowthSection}
+          onExplore={() =>
+            openMyGrowthSection('activities')
+          }
+          onDiscover={startDiscovery}
           onProfile={() =>
             setScreen('growthProfile')
           }
@@ -1844,10 +1990,15 @@ function App() {
             ).length
           }
           onHome={goToChildSpace}
-          onJourney={goToJourney}
-          onExplore={() =>
-            setScreen('adventures')
+          onJourney={() =>
+            openMyGrowthSection('overview')
           }
+          activeGrowthSection={myGrowthSection}
+          onGrowthSection={openMyGrowthSection}
+          onExplore={() =>
+            openMyGrowthSection('activities')
+          }
+          onDiscover={startDiscovery}
           onProfile={() =>
             setScreen('growthProfile')
           }
@@ -1921,10 +2072,15 @@ function App() {
             ).length
           }
           onHome={goToChildSpace}
-          onJourney={goToJourney}
-          onExplore={() =>
-            setScreen('adventures')
+          onJourney={() =>
+            openMyGrowthSection('overview')
           }
+          activeGrowthSection={myGrowthSection}
+          onGrowthSection={openMyGrowthSection}
+          onExplore={() =>
+            openMyGrowthSection('activities')
+          }
+          onDiscover={startDiscovery}
           onProfile={() =>
             setScreen('growthProfile')
           }
@@ -1988,57 +2144,6 @@ function App() {
 
 
       {screen ===
-        'adventures' && (
-        <BppWorkspaceShell
-          activeSection="explore"
-          childProfile={childProfile}
-          activeJourneyCount={
-            journeyItems.filter(
-              (item) => item.status !== 'completed'
-            ).length
-          }
-          onHome={goToChildSpace}
-          onJourney={goToJourney}
-          onExplore={() =>
-            setScreen('adventures')
-          }
-          onProfile={() =>
-            setScreen('growthProfile')
-          }
-          onParent={() =>
-            setScreen('parentPerspectiveIntro')
-          }
-        >
-          <AdventuresHub
-                    childName={
-                      childProfile.name.trim()
-                    }
-          
-                    recommendations={
-                      recommendations
-                    }
-          
-                    catalog={
-                      Object.values(explorations)
-                    }
-          
-                    completedExplorations={
-                      completedExplorations
-                    }
-          
-                    onBack={
-                      goToChildSpace
-                    }
-          
-                    onStartAdventure={
-                      startExploration
-                    }
-                  />
-        </BppWorkspaceShell>
-      )}
-
-
-      {screen ===
         'exploration' && (
         <AdventureFlow
           exploration={
@@ -2054,9 +2159,7 @@ function App() {
           }
 
           onBack={() =>
-            setScreen(
-              'adventures'
-            )
+            openMyGrowthSection('activities')
           }
 
           onBeginMission={
@@ -2286,16 +2389,19 @@ function App() {
 
 
 // ============================================================
-// MVP v0.8.10B-6A — OPTION B++ WORKSPACE SHELL
+// MVP v0.9 — FIRST CUSTOMER WORKSPACE SHELL
 // ============================================================
 
 function BppWorkspaceShell({
   activeSection,
   childProfile,
   activeJourneyCount = 0,
+  activeGrowthSection = 'overview',
   onHome,
   onJourney,
+  onGrowthSection,
   onExplore,
+  onDiscover,
   onProfile,
   onParent,
   children,
@@ -2303,6 +2409,9 @@ function BppWorkspaceShell({
   const childName =
     childProfile?.name?.trim() ||
     'Explorer'
+
+  const childInitial =
+    childName.charAt(0).toUpperCase()
 
   const navItems = [
     {
@@ -2313,56 +2422,122 @@ function BppWorkspaceShell({
     },
     {
       id: 'journey',
-      label: 'Journey',
-      icon: '♬',
+      label: 'My Growth',
+      icon: '↗',
       onClick: onJourney,
       count: activeJourneyCount,
     },
     {
-      id: 'explore',
-      label: 'Explore',
-      icon: '◉',
-      onClick: onExplore,
+      id: 'discover',
+      label: 'Discover',
+      icon: '◎',
+      onClick: onDiscover,
     },
+  ]
+
+  const utilityItems = [
     {
       id: 'profile',
-      label: 'Profile',
-      icon: '♙',
+      label: 'My Profile',
+      icon: '◌',
       onClick: onProfile,
     },
     {
       id: 'parent',
-      label: 'Parent',
+      label: 'Parent View',
       icon: '♧',
       onClick: onParent,
     },
   ]
 
   return (
-    <div className="bppWorkspaceShellV0810">
-
-      <aside className="bppSidebarV0810">
-
+    <div className="cgShellV09">
+      <aside className="cgSidebarV09">
         <button
           type="button"
-          className="bppSidebarBrandV0810"
+          className="cgBrandV09"
           onClick={onHome}
         >
-          <span className="bppSidebarRocketV0810">
-            🚀
-          </span>
-
+          <span className="cgBrandMarkV09 cgBrandMarkV0102"><img src={synapStrideMark} alt="" /></span>
           <span>
-            <strong>Career & Growth</strong>
-            <small>Discover. Learn. Grow.</small>
+            <strong>SynapStride</strong>
+            <small>Discover · Explore · Grow</small>
           </span>
         </button>
 
         <nav
-          className="bppSidebarNavV0810"
-          aria-label="Growth Space"
+          className="cgPrimaryNavV09"
+          aria-label="SynapStride"
         >
           {navItems.map((item) => (
+            <div
+              className={
+                item.id === 'journey'
+                  ? 'cgNavGroupV092'
+                  : 'cgNavGroupV092 single'
+              }
+              key={item.id}
+            >
+              <button
+                type="button"
+                className={
+                  activeSection === item.id
+                    ? 'active'
+                    : ''
+                }
+                onClick={item.onClick}
+              >
+                <span className="cgNavIconV09">
+                  {item.icon}
+                </span>
+                <span>{item.label}</span>
+                {item.count > 0 && (
+                  <small>{item.count}</small>
+                )}
+                {item.id === 'journey' && (
+                  <b className="cgNavChevronV092">
+                    {activeSection === 'journey' ? '⌃' : '⌄'}
+                  </b>
+                )}
+              </button>
+
+              {item.id === 'journey' &&
+                activeSection === 'journey' && (
+                <div className="cgGrowthSubnavV092">
+                  {[
+                    ['overview', 'Overview'],
+                    ['school', 'School & Learning'],
+                    ['activities', 'Interests & Activities'],
+                  ].map(([id, label]) => (
+                    <button
+                      type="button"
+                      key={id}
+                      className={
+                        activeGrowthSection === id
+                          ? 'active'
+                          : ''
+                      }
+                      onClick={() =>
+                        onGrowthSection?.(id)
+                      }
+                    >
+                      <span />
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </nav>
+
+        <div className="cgSidebarDividerV09" />
+
+        <nav
+          className="cgUtilityNavV09"
+          aria-label="Profile and parent"
+        >
+          {utilityItems.map((item) => (
             <button
               type="button"
               key={item.id}
@@ -2373,55 +2548,58 @@ function BppWorkspaceShell({
               }
               onClick={item.onClick}
             >
-              <span className="bppSidebarNavIconV0810">
+              <span className="cgNavIconV09">
                 {item.icon}
               </span>
-
               <span>{item.label}</span>
-
-              {item.count > 0 && (
-                <small>{item.count}</small>
-              )}
             </button>
           ))}
         </nav>
 
-        <div className="bppSidebarBottomV0810">
+        <div className="cgSidebarFooterV09">
+          <div className="cgChildChipV09">
+            <span>{childInitial}</span>
+            <div>
+              <strong>{childName}</strong>
+              <small>My Growth Space</small>
+            </div>
+          </div>
+
+          <p>
+            Keep exploring. Every real experience adds another clue.
+          </p>
+        </div>
+      </aside>
+
+      <div className="cgCanvasV09">
+        <header className="cgMobileHeaderV09">
+          <button
+            type="button"
+            className="cgMobileBrandV09"
+            onClick={onHome}
+          >
+            <span className="cgMobileBrandMarkV0102">
+              <img src={synapStrideMark} alt="" />
+            </span>
+            <strong>SynapStride</strong>
+          </button>
 
           <button
             type="button"
-            className="bppSidebarSettingsV0810"
-            disabled
-            title="Settings will be added later"
+            className="cgMobileProfileV09"
+            onClick={onProfile}
+            aria-label={`Open ${childName}'s profile`}
           >
-            <span>⚙</span>
-            Settings
+            {childInitial}
           </button>
+        </header>
 
-          <div className="bppSidebarEncouragementV0810">
-            <span aria-hidden="true">⭐</span>
-
-            <strong>
-              You’re doing great, {childName}!
-            </strong>
-
-            <p>
-              Keep exploring, keep learning,
-              keep growing! ✨
-            </p>
-          </div>
-
-        </div>
-
-      </aside>
-
-      <div className="bppWorkspaceCanvasV0810">
         {children}
       </div>
 
       <nav
-        className="bppMobileNavV0810"
-        aria-label="Mobile Growth Space"
+        className="cgMobileNavV09"
+        aria-label="Mobile SynapStride"
       >
         {navItems.map((item) => (
           <button
@@ -2439,7 +2617,6 @@ function BppWorkspaceShell({
           </button>
         ))}
       </nav>
-
     </div>
   )
 }

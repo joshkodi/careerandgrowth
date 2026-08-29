@@ -1,0 +1,151 @@
+/* ============================================================
+   SynapStride MVP v0.9 — Assignment Completion Lifecycle / Drop 13
+   ============================================================ */
+
+.synAssignmentCompletedStateV0913 {
+  padding: 0;
+  overflow: hidden;
+  border-color: #bee0c8;
+  background: linear-gradient(145deg, #f3fbf5, #ffffff);
+}
+
+.synAssignmentCompletedConfirmationV0913 {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+
+.synAssignmentCompletedCheckV0913 {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #269b50;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  box-shadow: 0 6px 14px rgba(38, 155, 80, .15);
+}
+
+.synAssignmentCompletedCopyV0913 h3 {
+  margin: 3px 0 3px;
+  color: #1d3f2a;
+  font-size: 14px;
+}
+
+.synAssignmentCompletedCopyV0913 p {
+  max-width: 650px;
+  margin: 0;
+  color: #65746a;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.synAssignmentCompletedActionsV0913 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.synAssignmentCompletedActionsV0913 button {
+  min-height: 33px;
+  padding: 6px 10px;
+  border: 1px solid #cfdad2;
+  border-radius: 8px;
+  background: #fff;
+  color: #4b5f52;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 850;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.synAssignmentCompletedActionsV0913 button.primary {
+  border-color: #278b4a;
+  background: #278b4a;
+  color: #fff;
+}
+
+.synAssignmentCompletedActionsV0913 button:hover {
+  transform: translateY(-1px);
+}
+
+.synCompletedHistoryPanelV0913 {
+  display: flex;
+  align-items: center;
+  min-height: 190px;
+  background:
+    radial-gradient(circle at 85% 10%, rgba(223, 246, 229, .75), transparent 34%),
+    #fff;
+}
+
+.synCompletedHistoryInnerV0913 {
+  max-width: 540px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+.synCompletedHistoryIconV0913 {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 43px;
+  border-radius: 13px;
+  background: #e5f6e9;
+  color: #258347;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.synCompletedHistoryInnerV0913 h3 {
+  margin: 3px 0 4px;
+  color: #213b2a;
+  font-size: 15px;
+}
+
+.synCompletedHistoryInnerV0913 p {
+  margin: 0;
+  color: #6f7b73;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+@media (max-width: 800px) {
+  .synAssignmentCompletedConfirmationV0913 {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .synAssignmentCompletedActionsV0913 {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 560px) {
+  .synAssignmentCompletedConfirmationV0913 {
+    grid-template-columns: 1fr;
+  }
+
+  .synAssignmentCompletedCheckV0913 {
+    width: 40px;
+    height: 40px;
+  }
+
+  .synAssignmentCompletedActionsV0913 {
+    grid-column: auto;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .synAssignmentCompletedActionsV0913 button {
+    width: 100%;
+  }
+}

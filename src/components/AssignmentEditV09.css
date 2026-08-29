@@ -1,0 +1,201 @@
+/* SynapStride MVP v0.9 — Edit Assignment UI Fix / Drop 22 */
+
+.synAssignmentDetailHeaderActionsV0921 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.synAssignmentDetailHeaderActionsV0921 button.edit {
+  border-color: #b8d4c1;
+  background: #f5fbf7;
+  color: #2c7b4a;
+}
+
+.synAssignmentEditPanelV0921 {
+  margin: 0 0 18px;
+  padding: 22px 24px;
+  border: 1px solid #d9e5dd;
+  border-radius: 16px;
+  background: #fbfcfb;
+}
+
+.synAssignmentEditHeadingV0921 {
+  margin-bottom: 18px;
+}
+
+.synAssignmentEditHeadingV0921 h3 {
+  margin: 4px 0 5px;
+  color: #172238;
+  font-size: 21px;
+  line-height: 1.2;
+}
+
+.synAssignmentEditHeadingV0921 p {
+  margin: 0;
+  color: #718078;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Explicit grid/form isolation so older global form rules cannot collapse fields. */
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px 18px !important;
+  align-items: start !important;
+}
+
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 > label {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 7px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: inherit !important;
+  text-align: left !important;
+}
+
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 > label.wide {
+  grid-column: 1 / -1 !important;
+}
+
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 > label > span {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #4f5d56 !important;
+  font-size: 12px !important;
+  font-weight: 750 !important;
+  line-height: 1.25 !important;
+  text-align: left !important;
+}
+
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 input,
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 select,
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 textarea {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  border: 1px solid #d2ddd6 !important;
+  border-radius: 10px !important;
+  background: #ffffff !important;
+  color: #27354c !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 input,
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 select {
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 12px !important;
+}
+
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 select {
+  appearance: auto;
+}
+
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 textarea {
+  min-height: 112px !important;
+  padding: 11px 12px !important;
+  resize: vertical !important;
+}
+
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 input:focus,
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 select:focus,
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 textarea:focus {
+  border-color: #59a574 !important;
+  box-shadow: 0 0 0 3px rgba(67, 148, 94, 0.10) !important;
+}
+
+.synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 label > select + input {
+  margin-top: 8px !important;
+}
+
+.synAssignmentEditActionsV0921 {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-top: 18px !important;
+}
+
+.synAssignmentEditActionsV0921 button {
+  min-width: 112px;
+  min-height: 42px;
+  padding: 9px 16px;
+  border: 1px solid #cfdad3;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #4e5b54;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.synAssignmentEditActionsV0921 button.primary {
+  border-color: #16844a;
+  background: #16844a;
+  color: #ffffff;
+}
+
+.synAssignmentEditActionsV0921 button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.synAssignmentEditActionsV0921 button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.synAssignmentEditNoteV0921 {
+  display: block;
+  margin-top: 12px;
+  color: #89958e;
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .synAssignmentDetailHeaderActionsV0921 {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .synAssignmentEditPanelV0921 {
+    padding: 18px;
+  }
+
+  .synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .synAssignmentEditPanelV0921 .synAssignmentEditGridV0921 > label.wide {
+    grid-column: auto !important;
+  }
+
+  .synAssignmentEditActionsV0921 {
+    align-items: stretch !important;
+    flex-direction: column-reverse !important;
+  }
+
+  .synAssignmentEditActionsV0921 button {
+    width: 100%;
+  }
+
+  .synAssignmentEditNoteV0921 {
+    text-align: left;
+  }
+}

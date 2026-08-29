@@ -1,566 +1,414 @@
 // src/data/learningResourceCatalog.js
 
-// ============================================================
-// Career & Growth — MVP v0.8 — Phase 8.7A
-// Curated Learning & Growth Resource Catalog
-//
-// First production-shaped provider dataset.
-// Entries below point to real external educational resources.
-//
-// IMPORTANT:
-// - Catalog metadata is intentionally conservative.
-// - Age ranges are broad MVP matching ranges, not provider claims.
-// - Resources remain subject to Resource Evaluation before display.
-// ============================================================
+import {
+  schoolSubjectIds,
+} from '../intelligence/schoolLearningTaxonomy'
 
-export const learningResourceCatalogVersion = '0.8.7A'
+export const learningResourceCatalogVersion =
+  '0.9.20-seed-1'
 
-export const learningResourceCatalog = [
+// MVP seed catalog.
+// These are real external resources from trusted providers.
+// The catalog is intentionally small and curated; later external
+// discovery adapters can add candidates into the same schema.
+
+export const learningResourceCatalog = Object.freeze([
   {
-    id: 'khan_add_fractions_unlike_denominators_practice',
-
+    id: 'khan_math_add_fractions_unlike_video',
     provider: 'Khan Academy',
-
-    title:
-      'Add fractions with unlike denominators',
-
-    description:
-      'Practice adding fractions that have different denominators.',
-
-    resourceType:
-      'practice',
-
-    url:
-      'https://www.khanacademy.org/math/cc-fifth-grade-math/imp-fractions-3/imp-adding-and-subtracting-fractions-with-unlike-denominators/e/adding_fractions',
-
-    ageRange: {
-      min: 9,
-      max: 14,
-    },
-
-    subjects: [
-      'math',
-    ],
-
-    topics: [
-      'fractions',
-      'adding fractions',
-      'unlike denominators',
-      'different denominators',
-      'common denominator',
-    ],
-
-    skills: [
-      'practice',
-      'fractions',
-      'adding fractions',
-    ],
-
-    tags: [
-      'math',
-      'fractions',
-      'practice',
-      'unlike denominators',
-    ],
-
-    format: [
-      'practice',
-      'interactive',
-    ],
-
-    estimatedTime:
-      '10–20 min',
-
-    materials: [],
-
-    prerequisites: [
-      'basic fraction understanding',
-    ],
-
-    supervision:
-      'independent_or_parent_supported',
-
-    sourceMetadata: {
-      curated:
-        true,
-
-      credibilityVerified:
-        true,
-
-      safetyVerified:
-        true,
-
-      catalogVersion:
-        learningResourceCatalogVersion,
-    },
+    title: 'Adding fractions with unlike denominators',
+    url: 'https://www.khanacademy.org/math/in-class-8-math-foundation/x5ee0e3519fe698ad%3Afractions/x5ee0e3519fe698ad%3Aadding-and-subtracting-fractions/v/adding-small-fractions-with-unlike-denominators',
+    description: 'A worked video explanation showing how to find a common denominator and add fractions with different denominators.',
+    resourceType: 'video',
+    subjectId: schoolSubjectIds.MATH,
+    topics: ['fractions', 'adding fractions', 'unlike denominators', 'common denominator'],
+    skills: ['fractions', 'common denominator', 'unlike denominators'],
+    gradeRange: { min: 5, max: 8 },
+    helpModes: ['understand', 'example', 'get_unstuck'],
+    estimatedTime: '5–8 min',
+    qualityTier: 1,
+    credibilityVerified: true,
   },
-
   {
-    id: 'khan_understand_fractions',
-
+    id: 'khan_math_add_fractions_unlike_practice',
     provider: 'Khan Academy',
-
-    title:
-      'Understand fractions',
-
-    description:
-      'A broader arithmetic unit for understanding fractions, equivalent fractions, and fraction operations.',
-
-    resourceType:
-      'lesson',
-
-    url:
-      'https://www.khanacademy.org/math/arithmetic/fraction-arithmetic',
-
-    ageRange: {
-      min: 8,
-      max: 14,
-    },
-
-    subjects: [
-      'math',
-    ],
-
-    topics: [
-      'fractions',
-      'equivalent fractions',
-      'adding fractions',
-      'subtracting fractions',
-    ],
-
-    skills: [
-      'understand',
-      'review',
-      'fractions',
-    ],
-
-    tags: [
-      'math',
-      'fractions',
-      'lesson',
-      'review',
-    ],
-
-    format: [
-      'lesson',
-      'video',
-      'practice',
-    ],
-
-    estimatedTime:
-      '15–30 min',
-
-    materials: [],
-
-    prerequisites: [],
-
-    supervision:
-      'independent_or_parent_supported',
-
-    sourceMetadata: {
-      curated:
-        true,
-
-      credibilityVerified:
-        true,
-
-      safetyVerified:
-        true,
-
-      catalogVersion:
-        learningResourceCatalogVersion,
-    },
+    title: 'Add fractions with unlike denominators',
+    url: 'https://www.khanacademy.org/math/arithmetic/addition-subtraction-fractions/e/adding_fractions',
+    description: 'Practice problems for adding fractions with unlike denominators.',
+    resourceType: 'practice',
+    subjectId: schoolSubjectIds.MATH,
+    topics: ['fractions', 'adding fractions', 'unlike denominators'],
+    skills: ['fractions', 'common denominator', 'unlike denominators'],
+    gradeRange: { min: 5, max: 8 },
+    helpModes: ['practice', 'review'],
+    estimatedTime: '10–15 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+  {
+    id: 'khan_math_fraction_unit',
+    provider: 'Khan Academy',
+    title: 'Add and subtract fractions',
+    url: 'https://www.khanacademy.org/kmap/numbers-and-operations-f/adding-subtracting-fractions',
+    description: 'A full learning path covering common denominators, visual models, examples, practice, quizzes, and word problems.',
+    resourceType: 'lesson',
+    subjectId: schoolSubjectIds.MATH,
+    topics: ['fractions', 'adding fractions', 'subtracting fractions', 'common denominators'],
+    skills: ['fractions', 'common denominator'],
+    gradeRange: { min: 4, max: 7 },
+    helpModes: ['understand', 'example', 'practice', 'review'],
+    estimatedTime: '15–30 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+  {
+    id: 'phet_fraction_matcher',
+    provider: 'PhET',
+    title: 'Fraction Matcher',
+    url: 'https://phet.colorado.edu/en/simulations/fraction-matcher',
+    description: 'Interactive fraction matching activity that helps children connect visual and numerical representations.',
+    resourceType: 'interactive',
+    subjectId: schoolSubjectIds.MATH,
+    topics: ['fractions', 'equivalent fractions', 'fraction models'],
+    skills: ['fractions'],
+    gradeRange: { min: 3, max: 7 },
+    helpModes: ['understand', 'practice', 'get_unstuck'],
+    estimatedTime: '10–20 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+  {
+    id: 'phet_fraction_intro',
+    provider: 'PhET',
+    title: 'Fractions: Intro',
+    url: 'https://phet.colorado.edu/en/simulations/fractions-intro',
+    description: 'Visual interactive exploration of fractions, shapes, number lines, and equivalence.',
+    resourceType: 'interactive',
+    subjectId: schoolSubjectIds.MATH,
+    topics: ['fractions', 'fraction models', 'equivalent fractions'],
+    skills: ['fractions'],
+    gradeRange: { min: 3, max: 7 },
+    helpModes: ['understand', 'get_unstuck', 'enrich'],
+    estimatedTime: '10–20 min',
+    qualityTier: 1,
+    credibilityVerified: true,
   },
 
   {
-    id: 'phet_fractions_intro',
-
-    provider:
-      'PhET Interactive Simulations',
-
-    title:
-      'Fractions: Intro',
-
-    description:
-      'Explore fractions using interactive visual objects and fraction games.',
-
-    resourceType:
-      'interactive',
-
-    url:
-      'https://phet.colorado.edu/en/simulations/fractions-intro',
-
-    ageRange: {
-      min: 8,
-      max: 14,
-    },
-
-    subjects: [
-      'math',
-    ],
-
-    topics: [
-      'fractions',
-      'fraction sense',
-      'equivalent fractions',
-      'visual fractions',
-    ],
-
-    skills: [
-      'understand',
-      'visual learning',
-      'fractions',
-    ],
-
-    tags: [
-      'math',
-      'fractions',
-      'interactive',
-      'visual',
-    ],
-
-    format: [
-      'interactive',
-      'simulation',
-    ],
-
-    estimatedTime:
-      '10–20 min',
-
-    materials: [],
-
-    prerequisites: [],
-
-    supervision:
-      'independent_or_parent_supported',
-
-    sourceMetadata: {
-      curated:
-        true,
-
-      credibilityVerified:
-        true,
-
-      safetyVerified:
-        true,
-
-      catalogVersion:
-        learningResourceCatalogVersion,
-    },
+    id: 'commonlit_library',
+    provider: 'CommonLit',
+    title: 'CommonLit Digital Library',
+    url: 'https://www.commonlit.org/en/library',
+    description: 'Reading passages and literacy resources across genres, topics, and grade levels.',
+    resourceType: 'reference',
+    subjectId: schoolSubjectIds.ENGLISH_LANGUAGE_ARTS,
+    topics: ['reading', 'reading comprehension', 'literature', 'informational text'],
+    skills: ['reading comprehension', 'vocabulary'],
+    gradeRange: { min: 3, max: 12 },
+    helpModes: ['understand', 'practice', 'review', 'research'],
+    estimatedTime: '10–30 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+  {
+    id: 'khan_grammar',
+    provider: 'Khan Academy',
+    title: 'Grammar',
+    url: 'https://www.khanacademy.org/humanities/grammar',
+    description: 'Grammar lessons and exercises covering parts of speech, syntax, punctuation, and usage.',
+    resourceType: 'lesson',
+    subjectId: schoolSubjectIds.ENGLISH_LANGUAGE_ARTS,
+    topics: ['grammar', 'parts of speech', 'punctuation', 'syntax'],
+    skills: ['grammar'],
+    gradeRange: { min: 5, max: 12 },
+    helpModes: ['understand', 'practice', 'review'],
+    estimatedTime: '10–20 min',
+    qualityTier: 1,
+    credibilityVerified: true,
   },
 
   {
-    id: 'phet_build_a_fraction',
-
-    provider:
-      'PhET Interactive Simulations',
-
-    title:
-      'Build a Fraction',
-
-    description:
-      'Build fractions from shapes and numbers and explore them through an interactive fractions lab.',
-
-    resourceType:
-      'interactive',
-
-    url:
-      'https://phet.colorado.edu/en/simulations/build-a-fraction',
-
-    ageRange: {
-      min: 8,
-      max: 14,
-    },
-
-    subjects: [
-      'math',
-    ],
-
-    topics: [
-      'fractions',
-      'fraction sense',
-      'equivalent fractions',
-      'mixed numbers',
-    ],
-
-    skills: [
-      'understand',
-      'practice',
-      'fractions',
-    ],
-
-    tags: [
-      'math',
-      'fractions',
-      'interactive',
-      'practice',
-    ],
-
-    format: [
-      'interactive',
-      'simulation',
-    ],
-
-    estimatedTime:
-      '10–20 min',
-
-    materials: [],
-
-    prerequisites: [],
-
-    supervision:
-      'independent_or_parent_supported',
-
-    sourceMetadata: {
-      curated:
-        true,
-
-      credibilityVerified:
-        true,
-
-      safetyVerified:
-        true,
-
-      catalogVersion:
-        learningResourceCatalogVersion,
-    },
+    id: 'phet_states_matter',
+    provider: 'PhET',
+    title: 'States of Matter: Basics',
+    url: 'https://phet.colorado.edu/en/simulations/states-of-matter-basics',
+    description: 'Interactive simulation for exploring solids, liquids, gases, temperature, and particle behavior.',
+    resourceType: 'interactive',
+    subjectId: schoolSubjectIds.SCIENCE,
+    topics: ['matter', 'states of matter', 'particles', 'temperature'],
+    skills: ['states of matter'],
+    gradeRange: { min: 4, max: 9 },
+    helpModes: ['understand', 'example', 'get_unstuck', 'enrich'],
+    estimatedTime: '10–20 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+  {
+    id: 'phet_forces_motion',
+    provider: 'PhET',
+    title: 'Forces and Motion: Basics',
+    url: 'https://phet.colorado.edu/en/simulations/forces-and-motion-basics',
+    description: 'Interactive exploration of force, motion, friction, acceleration, and balanced forces.',
+    resourceType: 'interactive',
+    subjectId: schoolSubjectIds.SCIENCE,
+    topics: ['force', 'motion', 'friction', 'acceleration'],
+    skills: ['forces and motion'],
+    gradeRange: { min: 5, max: 10 },
+    helpModes: ['understand', 'example', 'get_unstuck', 'enrich'],
+    estimatedTime: '10–20 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+  {
+    id: 'khan_biology',
+    provider: 'Khan Academy',
+    title: 'Biology',
+    url: 'https://www.khanacademy.org/science/biology',
+    description: 'Biology lessons covering cells, genetics, evolution, ecology, and more.',
+    resourceType: 'course',
+    subjectId: schoolSubjectIds.SCIENCE,
+    topics: ['biology', 'cells', 'genetics', 'ecology', 'evolution'],
+    skills: ['cells', 'cell structure', 'ecosystems'],
+    gradeRange: { min: 7, max: 12 },
+    helpModes: ['understand', 'example', 'review', 'research', 'enrich'],
+    estimatedTime: '15–30 min',
+    qualityTier: 1,
+    credibilityVerified: true,
   },
 
   {
-    id: 'ck12_adding_fractions',
-
-    provider: 'CK-12',
-
-    title:
-      'Adding Fractions (Like and Unlike Denominators)',
-
-    description:
-      'A structured lesson explaining how to add fractions and why denominators must match first.',
-
-    resourceType:
-      'lesson',
-
-    url:
-      'https://flexbooks.ck12.org/cbook/ck-12-cbse-maths-class-6/section/5.4/primary/lesson/adding-fractions/',
-
-    ageRange: {
-      min: 9,
-      max: 14,
-    },
-
-    subjects: [
-      'math',
-    ],
-
-    topics: [
-      'fractions',
-      'adding fractions',
-      'like denominators',
-      'unlike denominators',
-      'common denominator',
-    ],
-
-    skills: [
-      'understand',
-      'review',
-      'adding fractions',
-    ],
-
-    tags: [
-      'math',
-      'fractions',
-      'lesson',
-      'unlike denominators',
-    ],
-
-    format: [
-      'lesson',
-      'reading',
-    ],
-
-    estimatedTime:
-      '10–20 min',
-
-    materials: [],
-
-    prerequisites: [
-      'basic fraction understanding',
-    ],
-
-    supervision:
-      'independent_or_parent_supported',
-
-    sourceMetadata: {
-      curated:
-        true,
-
-      credibilityVerified:
-        true,
-
-      safetyVerified:
-        true,
-
-      catalogVersion:
-        learningResourceCatalogVersion,
-    },
+    id: 'khan_ancient_rome_intro',
+    provider: 'Khan Academy',
+    title: 'Introduction to ancient Rome',
+    url: 'https://www.khanacademy.org/humanities/ancient-art-civilizations/roman/a/introduction-to-ancient-rome',
+    description: 'An introduction to ancient Rome, from the Roman Republic through the Roman Empire, with historical context and primary-source imagery.',
+    resourceType: 'article',
+    subjectId: schoolSubjectIds.SOCIAL_STUDIES_HISTORY,
+    topics: ['roman history', 'ancient rome', 'roman republic', 'roman empire'],
+    skills: ['roman history', 'ancient civilizations'],
+    gradeRange: { min: 6, max: 12 },
+    helpModes: ['understand', 'example', 'review', 'research'],
+    estimatedTime: '10–15 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+  {
+    id: 'khan_ancient_rome_overview_video',
+    provider: 'Khan Academy',
+    title: 'An Overview of Ancient Rome',
+    url: 'https://www.khanacademy.org/v/overview-of-the-roman-empire',
+    description: 'A guided video overview of the origins, expansion, and historical importance of ancient Rome.',
+    resourceType: 'video',
+    subjectId: schoolSubjectIds.SOCIAL_STUDIES_HISTORY,
+    topics: ['roman history', 'ancient rome', 'roman empire'],
+    skills: ['roman history', 'ancient civilizations'],
+    gradeRange: { min: 6, max: 12 },
+    helpModes: ['understand', 'example', 'get_unstuck', 'review'],
+    estimatedTime: '8–12 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+  {
+    id: 'khan_roman_republic',
+    provider: 'Khan Academy',
+    title: 'The Roman Republic',
+    url: 'https://www.khanacademy.org/humanities/ap-world-history/ap-ancient-medieval/ap-ancient-medieval/rise-of-rome/a/roman-republic',
+    description: 'A focused explanation of the Roman Republic, its institutions, expansion, citizenship, and transition toward empire.',
+    resourceType: 'article',
+    subjectId: schoolSubjectIds.SOCIAL_STUDIES_HISTORY,
+    topics: ['roman history', 'ancient rome', 'roman republic', 'rise of rome'],
+    skills: ['roman history', 'roman republic'],
+    gradeRange: { min: 7, max: 12 },
+    helpModes: ['understand', 'review', 'research'],
+    estimatedTime: '10–15 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+  {
+    id: 'khan_roman_empire',
+    provider: 'Khan Academy',
+    title: 'The Roman Empire',
+    url: 'https://en.khanacademy.org/humanities/world-history/x66f79d8a%3Aempires-and-belief-systems/x66f79d8a%3Arome-and-han-china-4-5/a/article-the-roman-empire-oer',
+    description: 'A focused reading on Roman expansion, society, the Pax Romana, religion, and the development of the Roman Empire.',
+    resourceType: 'article',
+    subjectId: schoolSubjectIds.SOCIAL_STUDIES_HISTORY,
+    topics: ['roman history', 'ancient rome', 'roman empire', 'pax romana'],
+    skills: ['roman history', 'roman empire'],
+    gradeRange: { min: 7, max: 12 },
+    helpModes: ['understand', 'review', 'research'],
+    estimatedTime: '10–15 min',
+    qualityTier: 1,
+    credibilityVerified: true,
   },
 
   {
-    id: 'mathsisfun_adding_fractions',
-
-    provider:
-      'Math Is Fun',
-
-    title:
-      'Adding Fractions',
-
-    description:
-      'A visual step-by-step explanation of adding fractions, including the need for common denominators.',
-
-    resourceType:
-      'tutorial',
-
-    url:
-      'https://www.mathsisfun.com/fractions_addition.html',
-
-    ageRange: {
-      min: 8,
-      max: 14,
-    },
-
-    subjects: [
-      'math',
-    ],
-
-    topics: [
-      'fractions',
-      'adding fractions',
-      'common denominator',
-      'equivalent fractions',
-    ],
-
-    skills: [
-      'understand',
-      'example',
-      'fractions',
-    ],
-
-    tags: [
-      'math',
-      'fractions',
-      'tutorial',
-      'visual',
-    ],
-
-    format: [
-      'tutorial',
-      'visual',
-      'reading',
-    ],
-
-    estimatedTime:
-      '10–15 min',
-
-    materials: [],
-
-    prerequisites: [],
-
-    supervision:
-      'independent_or_parent_supported',
-
-    sourceMetadata: {
-      curated:
-        true,
-
-      credibilityVerified:
-        true,
-
-      safetyVerified:
-        true,
-
-      catalogVersion:
-        learningResourceCatalogVersion,
-    },
+    id: 'khan_us_history',
+    provider: 'Khan Academy',
+    title: 'U.S. History',
+    url: 'https://www.khanacademy.org/humanities/us-history',
+    description: 'U.S. history lessons, primary-source context, and review material.',
+    resourceType: 'course',
+    subjectId: schoolSubjectIds.SOCIAL_STUDIES_HISTORY,
+    topics: ['us history', 'american history', 'constitution', 'civil war'],
+    skills: ['civics', 'constitution', 'civil war'],
+    gradeRange: { min: 7, max: 12 },
+    helpModes: ['understand', 'review', 'research', 'enrich'],
+    estimatedTime: '15–30 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+  {
+    id: 'smithsonian_learning_lab',
+    provider: 'Smithsonian Learning Lab',
+    title: 'Smithsonian Learning Lab',
+    url: 'https://learninglab.si.edu/',
+    description: 'Curated Smithsonian collections with primary sources, images, objects, texts, and multimedia.',
+    resourceType: 'reference',
+    subjectId: schoolSubjectIds.SOCIAL_STUDIES_HISTORY,
+    topics: ['history', 'civics', 'geography', 'primary sources', 'research'],
+    skills: ['research'],
+    gradeRange: { min: 4, max: 12 },
+    helpModes: ['research', 'understand', 'enrich'],
+    estimatedTime: '15–30 min',
+    qualityTier: 1,
+    credibilityVerified: true,
   },
 
   {
-    id: 'mathsisfun_fraction_addition_animation',
-
-    provider:
-      'Math Is Fun',
-
-    title:
-      'Adding Fractions Illustrated with Steps',
-
-    description:
-      'An illustrated explanation that shows the steps for adding fractions and making denominators the same.',
-
-    resourceType:
-      'interactive',
-
-    url:
-      'https://www.mathsisfun.com/numbers/fractions-addition-animation.html',
-
-    ageRange: {
-      min: 8,
-      max: 14,
-    },
-
-    subjects: [
-      'math',
-    ],
-
-    topics: [
-      'fractions',
-      'adding fractions',
-      'common denominator',
-      'visual fractions',
-    ],
-
-    skills: [
-      'understand',
-      'example',
-      'fractions',
-    ],
-
-    tags: [
-      'math',
-      'fractions',
-      'interactive',
-      'visual',
-    ],
-
-    format: [
-      'visual',
-      'interactive',
-    ],
-
-    estimatedTime:
-      '5–10 min',
-
-    materials: [],
-
-    prerequisites: [],
-
-    supervision:
-      'independent_or_parent_supported',
-
-    sourceMetadata: {
-      curated:
-        true,
-
-      credibilityVerified:
-        true,
-
-      safetyVerified:
-        true,
-
-      catalogVersion:
-        learningResourceCatalogVersion,
-    },
+    id: 'duolingo_languages',
+    provider: 'Duolingo',
+    title: 'Language practice',
+    url: 'https://www.duolingo.com/learn',
+    description: 'Short interactive lessons for vocabulary, grammar, listening, and language practice.',
+    resourceType: 'practice',
+    subjectId: schoolSubjectIds.WORLD_LANGUAGES,
+    topics: ['spanish', 'french', 'language', 'vocabulary', 'grammar'],
+    skills: ['vocabulary', 'grammar'],
+    gradeRange: { min: 4, max: 12 },
+    helpModes: ['practice', 'review', 'enrich'],
+    estimatedTime: '5–15 min',
+    qualityTier: 2,
+    credibilityVerified: true,
   },
-]
 
+  {
+    id: 'code_org_courses',
+    provider: 'Code.org',
+    title: 'Code.org courses',
+    url: 'https://studio.code.org/courses',
+    description: 'Structured computer science and coding courses for K–12 learners.',
+    resourceType: 'course',
+    subjectId: schoolSubjectIds.COMPUTER_SCIENCE_TECHNOLOGY,
+    topics: ['coding', 'computer science', 'programming'],
+    skills: ['coding', 'programming'],
+    gradeRange: { min: 1, max: 12 },
+    helpModes: ['understand', 'practice', 'enrich', 'get_unstuck'],
+    estimatedTime: '15–30 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+  {
+    id: 'khan_computing',
+    provider: 'Khan Academy',
+    title: 'Computing',
+    url: 'https://www.khanacademy.org/computing',
+    description: 'Computing lessons spanning programming, computer science, and digital concepts.',
+    resourceType: 'course',
+    subjectId: schoolSubjectIds.COMPUTER_SCIENCE_TECHNOLOGY,
+    topics: ['coding', 'programming', 'computer science'],
+    skills: ['coding', 'programming'],
+    gradeRange: { min: 6, max: 12 },
+    helpModes: ['understand', 'example', 'practice', 'enrich'],
+    estimatedTime: '15–30 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+
+  {
+    id: 'phet_stem_simulations',
+    provider: 'PhET',
+    title: 'PhET Interactive Simulations',
+    url: 'https://phet.colorado.edu/',
+    description: 'Interactive simulations across physics, chemistry, math, earth science, and related STEM topics.',
+    resourceType: 'interactive',
+    subjectId: schoolSubjectIds.ENGINEERING_STEM,
+    topics: ['stem', 'engineering', 'science', 'simulation', 'experiments'],
+    skills: ['problem solving'],
+    gradeRange: { min: 4, max: 12 },
+    helpModes: ['understand', 'get_unstuck', 'enrich'],
+    estimatedTime: '10–30 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+
+  {
+    id: 'smithsonian_art',
+    provider: 'Smithsonian Learning Lab',
+    title: 'Smithsonian art collections',
+    url: 'https://learninglab.si.edu/',
+    description: 'Museum objects, images, artist context, and curated collections for visual arts learning and research.',
+    resourceType: 'reference',
+    subjectId: schoolSubjectIds.ART,
+    topics: ['art', 'visual art', 'art history', 'artists'],
+    skills: ['research'],
+    gradeRange: { min: 4, max: 12 },
+    helpModes: ['research', 'understand', 'enrich'],
+    estimatedTime: '15–30 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+
+  {
+    id: 'musictheory_lessons',
+    provider: 'musicTheory.net',
+    title: 'Music theory lessons',
+    url: 'https://www.musictheory.net/lessons',
+    description: 'Interactive lessons covering notes, rhythm, intervals, scales, chords, and music theory fundamentals.',
+    resourceType: 'lesson',
+    subjectId: schoolSubjectIds.MUSIC,
+    topics: ['music theory', 'notes', 'rhythm', 'scales', 'chords'],
+    skills: ['music theory'],
+    gradeRange: { min: 5, max: 12 },
+    helpModes: ['understand', 'practice', 'review'],
+    estimatedTime: '10–20 min',
+    qualityTier: 2,
+    credibilityVerified: true,
+  },
+
+  {
+    id: 'kidshealth_kids',
+    provider: 'Nemours KidsHealth',
+    title: 'KidsHealth for Kids',
+    url: 'https://kidshealth.org/en/kids/',
+    description: 'Age-appropriate health information covering the body, feelings, nutrition, safety, and wellness.',
+    resourceType: 'reference',
+    subjectId: schoolSubjectIds.HEALTH,
+    topics: ['health', 'nutrition', 'body', 'wellness', 'safety'],
+    skills: [],
+    gradeRange: { min: 3, max: 8 },
+    helpModes: ['understand', 'research', 'review'],
+    estimatedTime: '5–15 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+
+  {
+    id: 'kidshealth_fitness',
+    provider: 'Nemours KidsHealth',
+    title: 'Fitness and activity information',
+    url: 'https://kidshealth.org/en/kids/',
+    description: 'Age-appropriate information about fitness, exercise, movement, and healthy habits.',
+    resourceType: 'reference',
+    subjectId: schoolSubjectIds.PHYSICAL_EDUCATION,
+    topics: ['fitness', 'exercise', 'physical activity', 'healthy habits'],
+    skills: [],
+    gradeRange: { min: 3, max: 8 },
+    helpModes: ['understand', 'research', 'review'],
+    estimatedTime: '5–15 min',
+    qualityTier: 1,
+    credibilityVerified: true,
+  },
+])
 
 export default {
   learningResourceCatalogVersion,

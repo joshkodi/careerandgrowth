@@ -1,173 +1,75 @@
-// src/components/GrowthProfileView.jsx
 // ============================================================
-// Career & Growth
-// MVP v0.8.10B-3 — Option B++ Profile
+// SynapStride
+// MVP v0.9 — Profile
 //
-// Presentation-only profile consolidation.
-// Intelligence, evidence, confidence and pathway logic are preserved.
+// Profile answers: "What are we learning about me?"
+// Presentation-only. Evidence, inference, scoring and persistence
+// remain owned by the intelligence layer and App.jsx.
 // ============================================================
 
-import './GrowthProfileView.css'
-
-function confidenceCopy(level) {
+function confidenceLabel(level) {
   switch (level) {
     case 'strong':
-      return 'We’re seeing this consistently'
-
+      return 'Showing up often'
     case 'developing':
-      return 'This pattern is becoming clearer'
-
+      return 'Getting clearer'
     case 'emerging':
-      return 'We’re beginning to notice this'
-
+      return 'Starting to show'
     default:
-      return 'Something worth exploring'
+      return 'Worth exploring'
   }
 }
 
 
-function getEvidenceCopy(item) {
-  const evidenceCount =
-    item?.evidenceCount || 0
-
-  const experienceCount =
-    item?.experienceCount || 0
-
-  const sourceTypeCount =
-    item?.sourceTypeCount || 0
+function evidenceSummaryCopy(item) {
+  const evidenceCount = item?.evidenceCount || 0
+  const experienceCount = item?.experienceCount || 0
+  const sourceTypeCount = item?.sourceTypeCount || 0
 
   if (!evidenceCount) {
-    return ''
+    return 'We need a little more experience before saying more.'
   }
 
-  if (
-    experienceCount > 1 &&
-    sourceTypeCount > 1
-  ) {
-    return `Supported by ${evidenceCount} observations across different experiences and perspectives.`
+  if (sourceTypeCount > 1 && experienceCount > 1) {
+    return `We’ve noticed this ${evidenceCount} times across different experiences and perspectives.`
   }
 
   if (sourceTypeCount > 1) {
-    return `Supported by ${evidenceCount} observations from more than one perspective.`
+    return `More than one kind of perspective is pointing in this direction.`
   }
 
   if (experienceCount > 1) {
-    return `Supported by ${evidenceCount} observations across multiple experiences.`
+    return `This has shown up across more than one experience.`
   }
 
-  return `Based on ${evidenceCount} early observations so far.`
+  return `This is based on ${evidenceCount} early clue${evidenceCount === 1 ? '' : 's'} so far.`
 }
 
 
-function ConfidenceBadge({
-  confidence,
-}) {
-  if (!confidence) {
-    return null
-  }
-
+function SignalCard({ item, type = 'trait' }) {
   return (
-    <span
-      className={`bppProfileConfidence bppProfileConfidence-${confidence.level}`}
-    >
-      {confidence.label}
-    </span>
-  )
-}
-
-
-function TraitRow({
-  trait,
-}) {
-  return (
-    <article className="bppProfileTraitRow">
-
-      <div className="bppProfileTraitIcon">
-        {trait.emoji || '✨'}
+    <article className="synProfileSignalV09">
+      <div
+        className={
+          type === 'domain'
+            ? 'synProfileSignalIconV09 domain'
+            : 'synProfileSignalIconV09'
+        }
+      >
+        {item.emoji || '✨'}
       </div>
 
-      <div className="bppProfileTraitCopy">
-        <div className="bppProfileRowTitle">
-          <h3>{trait.label}</h3>
+      <div className="synProfileSignalBodyV09">
+        <div className="synProfileSignalTopV09">
+          <h3>{item.label}</h3>
 
-          <ConfidenceBadge
-            confidence={
-              trait.confidence
-            }
-          />
+          <span className="synProfileStageV09">
+            {confidenceLabel(item.confidence?.level)}
+          </span>
         </div>
 
-        <p className="bppProfileInterpretation">
-          {confidenceCopy(
-            trait.confidence?.level
-          )}
-        </p>
-
-        <small>
-          {getEvidenceCopy(trait)}
-        </small>
+        <p>{evidenceSummaryCopy(item)}</p>
       </div>
-
-    </article>
-  )
-}
-
-
-function DomainRow({
-  domain,
-}) {
-  return (
-    <article className="bppProfileDomainRow">
-
-      <div className="bppProfileDomainIcon">
-        {domain.emoji || '🔎'}
-      </div>
-
-      <div className="bppProfileTraitCopy">
-        <div className="bppProfileRowTitle">
-          <h3>{domain.label}</h3>
-
-          <ConfidenceBadge
-            confidence={
-              domain.confidence
-            }
-          />
-        </div>
-
-        <small>
-          {getEvidenceCopy(domain)}
-        </small>
-      </div>
-
-    </article>
-  )
-}
-
-
-function PathwayCard({
-  pathway,
-}) {
-  return (
-    <article className="bppProfilePathway">
-
-      <div className="bppProfilePathwayIcon">
-        {pathway.emoji || '🌱'}
-      </div>
-
-      <div>
-        <span className="bppProfileKicker">
-          WORTH TRYING
-        </span>
-
-        <h3>{pathway.label}</h3>
-
-        <p>
-          A direction worth exploring through
-          more experiences — not a prediction
-          about your future.
-        </p>
-      </div>
-
     </article>
   )
 }
@@ -179,421 +81,290 @@ function GrowthProfileView({
   topTraits = [],
   topDomains = [],
   topPathways = [],
+  promotedPatterns = [],
   parentPerspectiveComplete = false,
   completedExplorations = [],
-  onBack,
   onExploreAdventures,
-  developerInspector = null,
 }) {
-  const evidenceSummary =
-    profile?.evidenceSummary || {}
-
-  const profileHasMultipleSources =
-    (
-      evidenceSummary.sourceTypeCount ||
-      0
-    ) > 1
+  const safeName = childName || 'Explorer'
+  const evidenceSummary = profile?.evidenceSummary || {}
 
   const hasProfileSignals =
     topTraits.length > 0 ||
-    topDomains.length > 0
+    topDomains.length > 0 ||
+    promotedPatterns.length > 0
 
-  const visibleTraits =
-    topTraits.slice(0, 4)
-
-  const visibleDomains =
-    topDomains.slice(0, 3)
-
-  const visiblePathways =
-    topPathways.slice(0, 2)
+  const discoveryActive = Boolean(profile)
+  const journeyActive = completedExplorations.length > 0
+  const parentActive = parentPerspectiveComplete
 
   return (
-    <section className="bppProfile">
+    <section className="synProfileV09">
 
-      <div className="bppProfileTopbar">
-        <button
-          type="button"
-          className="bppProfileBack"
-          onClick={onBack}
-        >
-          ← Back to {childName}'s Space
-        </button>
-
-        <span className="bppProfileMode">
-          My Profile
-        </span>
-      </div>
-
-
-      <header className="bppProfileHero">
-
+      <header className="synProfileHeroV09">
         <div>
-          <span className="bppProfileKicker">
-            MY GROWTH PROFILE
+          <span className="synProfileEyebrowV09">
+            PROFILE
           </span>
 
           <h1>
-            Here’s what we’re learning
-            about you, {childName}.
+            What are we learning about you, {safeName}?
           </h1>
 
           <p>
-            This is an evolving picture, not a label.
-            It grows as you answer questions, try things,
-            reflect, and get observations from people
-            who know you well.
+            Your Profile is an evolving picture — built from what you tell
+            SynapStride, what you choose to try, how you reflect, and what
+            people who know you notice over time.
           </p>
         </div>
 
-        <div
-          className="bppProfileHeroMark"
-          aria-hidden="true"
-        >
-          <span>✨</span>
-          <strong>Still growing</strong>
+        <div className="synProfileHeroMarkV09" aria-hidden="true">
+          <span>🌱</span>
+          <strong>Always evolving</strong>
         </div>
-
       </header>
 
 
+      <section className="synProfileSourceStripV09">
+        <div className={discoveryActive ? 'active' : ''}>
+          <span>🧭</span>
+          <strong>What you tell us</strong>
+          <small>Discover</small>
+        </div>
+
+        <div className={journeyActive ? 'active' : ''}>
+          <span>🚀</span>
+          <strong>What you try</strong>
+          <small>Journey</small>
+        </div>
+
+        <div className={parentActive ? 'active' : ''}>
+          <span>👨‍👩‍👦</span>
+          <strong>What parents notice</strong>
+          <small>Parent View</small>
+        </div>
+      </section>
+
+
       {!hasProfileSignals ? (
-        <section className="bppProfileStarting">
-          <div className="bppProfileStartingIcon">
-            🌱
-          </div>
+        <section className="synProfileEmptyV09">
+          <span>🌱</span>
 
           <div>
-            <span className="bppProfileKicker">
+            <span className="synProfileEyebrowV09">
               JUST GETTING STARTED
             </span>
 
-            <h2>
-              Your profile will grow as you explore.
-            </h2>
+            <h2>Your Profile will grow with you.</h2>
 
             <p>
-              Try experiences, share what you notice,
-              and keep telling us what interests you.
+              Tell us more in Discover, try something in Explore,
+              and reflect on what happens in Journey.
             </p>
           </div>
-
-          <button
-            type="button"
-            className="bppProfilePrimary"
-            onClick={onExploreAdventures}
-          >
-            Explore Something New
-            <span>→</span>
-          </button>
         </section>
       ) : (
         <>
-
-          <section className="bppProfileMainGrid">
-
-            <article className="bppProfileSection">
-
-              <div className="bppProfileSectionHeading">
-                <div>
-                  <span className="bppProfileKicker">
-                    WHAT WE'RE NOTICING
-                  </span>
-
-                  <h2>
-                    Strengths taking shape
-                  </h2>
-                </div>
-
-                <p>
-                  Patterns can strengthen, change,
-                  or fade as you grow.
-                </p>
-              </div>
-
-              {visibleTraits.length > 0 ? (
-                <div className="bppProfileTraitList">
-                  {visibleTraits.map(
-                    (trait) => (
-                      <TraitRow
-                        key={trait.id}
-                        trait={trait}
-                      />
-                    )
-                  )}
-                </div>
-              ) : (
-                <div className="bppProfileEmpty">
-                  Keep exploring to reveal more patterns.
-                </div>
-              )}
-
-            </article>
-
-
-            <article className="bppProfileSection">
-
-              <div className="bppProfileSectionHeading">
-                <div>
-                  <span className="bppProfileKicker">
-                    WHAT SPARKS YOU
-                  </span>
-
-                  <h2>
-                    Curiosity right now
-                  </h2>
-                </div>
-
-                <p>
-                  Curiosity can move around.
-                </p>
-              </div>
-
-              {visibleDomains.length > 0 ? (
-                <div className="bppProfileDomainList">
-                  {visibleDomains.map(
-                    (domain) => (
-                      <DomainRow
-                        key={domain.id}
-                        domain={domain}
-                      />
-                    )
-                  )}
-                </div>
-              ) : (
-                <div className="bppProfileEmpty">
-                  More exploration will help us see
-                  where curiosity shows up.
-                </div>
-              )}
-
-            </article>
-
-          </section>
-
-
-          <section className="bppProfileEvidence">
-
-            <div className="bppProfileSectionHeading">
+          <section className="synProfileSectionV09">
+            <div className="synProfileSectionHeadingV09">
               <div>
-                <span className="bppProfileKicker">
-                  WHERE THE CLUES COME FROM
+                <span className="synProfileEyebrowV09">
+                  WHAT WE’RE NOTICING
                 </span>
 
-                <h2>
-                  We learn from more than one kind of moment
-                </h2>
+                <h2>Ways you seem to approach the world</h2>
               </div>
 
               <p>
-                Confidence grows when different experiences
-                begin pointing in similar directions.
+                These are emerging patterns, not permanent labels.
+                They can strengthen, change, or fade as you grow.
               </p>
             </div>
 
-
-            <div className="bppProfileEvidenceList">
-
-              <div
-                className={
-                  profile
-                    ? 'bppProfileEvidenceItem active'
-                    : 'bppProfileEvidenceItem'
-                }
-              >
-                <span className="bppProfileEvidenceIcon">
-                  🧒
-                </span>
-
-                <div>
-                  <strong>What you tell us</strong>
-                  <p>
-                    Discovery answers, preferences,
-                    and reflections.
-                  </p>
-                </div>
-
-                <span className="bppProfileEvidenceState">
-                  {profile ? '✓ Included' : 'Waiting'}
-                </span>
+            {topTraits.length > 0 ? (
+              <div className="synProfileSignalGridV09">
+                {topTraits.slice(0, 4).map((trait) => (
+                  <SignalCard
+                    key={trait.id}
+                    item={trait}
+                  />
+                ))}
               </div>
-
-
-              <div
-                className={
-                  completedExplorations.length > 0
-                    ? 'bppProfileEvidenceItem active'
-                    : 'bppProfileEvidenceItem'
-                }
-              >
-                <span className="bppProfileEvidenceIcon">
-                  🚀
-                </span>
-
-                <div>
-                  <strong>What you try</strong>
-                  <p>
-                    What happens when you actually
-                    do an experience.
-                  </p>
-                </div>
-
-                <span className="bppProfileEvidenceState">
-                  {completedExplorations.length > 0
-                    ? '✓ Included'
-                    : 'Waiting'}
-                </span>
-              </div>
-
-
-              <div
-                className={
-                  parentPerspectiveComplete
-                    ? 'bppProfileEvidenceItem active'
-                    : 'bppProfileEvidenceItem'
-                }
-              >
-                <span className="bppProfileEvidenceIcon">
-                  👨‍👩‍👦
-                </span>
-
-                <div>
-                  <strong>What others notice</strong>
-                  <p>
-                    Patterns noticed by a parent
-                    in everyday life.
-                  </p>
-                </div>
-
-                <span className="bppProfileEvidenceState">
-                  {parentPerspectiveComplete
-                    ? '✓ Included'
-                    : 'Waiting'}
-                </span>
-              </div>
-
-            </div>
-
-
-            {!profileHasMultipleSources && (
-              <div className="bppProfileGrowingNote">
-                <span aria-hidden="true">
-                  🌱
-                </span>
-
-                <p>
-                  <strong>The picture is still growing.</strong>{' '}
-                  More kinds of evidence will help us
-                  understand which patterns keep showing up.
-                </p>
+            ) : (
+              <div className="synProfileQuietEmptyV09">
+                Keep exploring to reveal more patterns.
               </div>
             )}
-
           </section>
 
 
-          {visiblePathways.length > 0 && (
-            <section className="bppProfileNext">
-
-              <div className="bppProfileNextIntro">
-                <span className="bppProfileKicker">
-                  WHAT COULD YOU TRY NEXT?
+          <section className="synProfileSectionV09">
+            <div className="synProfileSectionHeadingV09">
+              <div>
+                <span className="synProfileEyebrowV09">
+                  WHAT SPARKS CURIOSITY
                 </span>
 
-                <h2>
-                  Ideas worth exploring
-                </h2>
-
-                <p>
-                  These are invitations to experiment,
-                  not career predictions.
-                </p>
+                <h2>Things that keep catching your attention</h2>
               </div>
 
-              <div className="bppProfilePathwayGrid">
-                {visiblePathways.map(
-                  (pathway) => (
-                    <PathwayCard
-                      key={pathway.id}
-                      pathway={pathway}
-                    />
-                  )
-                )}
+              <p>
+                Curiosity can move around. We pay attention to what
+                keeps pulling you back over time.
+              </p>
+            </div>
+
+            {topDomains.length > 0 ? (
+              <div className="synProfileDomainGridV09">
+                {topDomains.slice(0, 4).map((domain) => (
+                  <SignalCard
+                    key={domain.id}
+                    item={domain}
+                    type="domain"
+                  />
+                ))}
               </div>
-
-            </section>
-          )}
-
+            ) : (
+              <div className="synProfileQuietEmptyV09">
+                More experiences will help us see where your curiosity shows up.
+              </div>
+            )}
+          </section>
         </>
       )}
 
 
-      <section className="bppProfileKeepGrowing">
+      <section className="synProfileEvidenceV09">
+        <div className="synProfileSectionHeadingV09">
+          <div>
+            <span className="synProfileEyebrowV09">
+              WHY WE THINK THIS
+            </span>
 
+            <h2>Different clues build one picture</h2>
+          </div>
+
+          <p>
+            A pattern becomes more meaningful when different sources
+            begin pointing in a similar direction.
+          </p>
+        </div>
+
+        <div className="synProfileEvidenceCardsV09">
+          <article className={discoveryActive ? 'active' : ''}>
+            <span>🧭</span>
+            <div>
+              <strong>What you told us</strong>
+              <p>Your interests, preferences, and Discover answers.</p>
+            </div>
+          </article>
+
+          <article className={journeyActive ? 'active' : ''}>
+            <span>🚀</span>
+            <div>
+              <strong>What you actually tried</strong>
+              <p>Your choices, challenges, enjoyment, and reflections.</p>
+            </div>
+          </article>
+
+          <article className={parentActive ? 'active' : ''}>
+            <span>👨‍👩‍👦</span>
+            <div>
+              <strong>What parents noticed</strong>
+              <p>Another perspective from everyday life.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+
+      {topPathways.length > 0 && (
+        <section className="synProfileSectionV09">
+          <div className="synProfileSectionHeadingV09">
+            <div>
+              <span className="synProfileEyebrowV09">
+                WORTH EXPLORING
+              </span>
+
+              <h2>Directions that may be interesting to try</h2>
+            </div>
+
+            <p>
+              These are ideas for exploration — not predictions about your future.
+            </p>
+          </div>
+
+          <div className="synProfilePathwayGridV09">
+            {topPathways.slice(0, 2).map((pathway) => (
+              <article
+                className="synProfilePathwayV09"
+                key={pathway.id}
+              >
+                <div className="synProfilePathwayIconV09">
+                  {pathway.emoji || '✨'}
+                </div>
+
+                <div>
+                  <h3>{pathway.label}</h3>
+                  <p>
+                    Try a few experiences here and see what feels interesting,
+                    energizing, or worth learning more about.
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+
+      <section className="synProfileNextV09">
         <div>
-          <span className="bppProfileKicker">
-            KEEP GROWING
+          <span className="synProfileEyebrowV09">
+            KEEP DISCOVERING
           </span>
 
           <h2>
-            The best way to understand yourself
-            is to keep trying things.
+            The clearest picture comes from trying, noticing, and reflecting.
           </h2>
+
+          <p>
+            A new experience can strengthen what we’re seeing,
+            reveal something new, or change an earlier idea.
+          </p>
         </div>
 
         <button
           type="button"
-          className="bppProfilePrimary"
+          className="synProfileActionV09"
           onClick={onExploreAdventures}
         >
-          Explore Something New
+          Explore something new
           <span>→</span>
         </button>
-
       </section>
 
 
-      <details className="bppProfileDetails">
-        <summary>
-          Profile details
-        </summary>
+      <details className="synProfileDetailsV09">
+        <summary>How much information is shaping this Profile?</summary>
 
-        <div className="bppProfileStats">
-
+        <div className="synProfileStatsV09">
           <div>
-            <strong>
-              {evidenceSummary.eventCount || 0}
-            </strong>
-
-            <span>
-              evidence events
-            </span>
+            <strong>{evidenceSummary.eventCount || 0}</strong>
+            <span>clues collected</span>
           </div>
 
           <div>
-            <strong>
-              {evidenceSummary.experienceCount || 0}
-            </strong>
-
-            <span>
-              experiences
-            </span>
+            <strong>{evidenceSummary.experienceCount || 0}</strong>
+            <span>experiences represented</span>
           </div>
 
           <div>
-            <strong>
-              {evidenceSummary.sourceTypeCount || 0}
-            </strong>
-
-            <span>
-              evidence sources
-            </span>
+            <strong>{evidenceSummary.sourceTypeCount || 0}</strong>
+            <span>kinds of input</span>
           </div>
-
         </div>
       </details>
-
-
-      {developerInspector}
 
     </section>
   )

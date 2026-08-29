@@ -1,0 +1,238 @@
+/* ============================================================
+   SynapStride MVP v0.10.3 — Growth Calendar
+   Compact, kid-friendly month view + Coming Up + planning flow.
+   ============================================================ */
+
+.growthCalendarV0103 { display:grid; gap:18px; color:#17213b; }
+.gcHeaderV0103 { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; padding:22px 24px; border:1px solid #e4e8ef; border-radius:18px; background:linear-gradient(135deg,#f7f6ff,#fbfdff); }
+.gcHeaderV0103 h2 { margin:5px 0 7px; font-size:25px; letter-spacing:-.025em; }
+.gcHeaderV0103 p { max-width:720px; margin:0; color:#667089; font-size:13px; line-height:1.55; }
+.gcHeaderV0103 > button { flex:0 0 auto; border:1px solid #e0e4ec; border-radius:10px; background:#fff; padding:9px 12px; color:#536079; font-weight:750; cursor:pointer; }
+
+.gcSummaryV0103 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.gcSummaryV0103 > div { padding:13px 15px; border:1px solid #e5e9ef; border-radius:13px; background:#fff; }
+.gcSummaryV0103 strong { display:block; font-size:21px; line-height:1; }
+.gcSummaryV0103 span { display:block; margin-top:5px; color:#788197; font-size:11px; font-weight:650; }
+
+.gcLayoutV0103 { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(270px,.75fr); gap:16px; align-items:start; }
+.gcMonthCardV0103,.gcUpcomingV0103,.gcPlanV0103,.gcManageV0103 { border:1px solid #e2e7ef; border-radius:17px; background:#fff; box-shadow:0 8px 24px rgba(31,42,73,.035); }
+.gcMonthCardV0103 { padding:16px; overflow:hidden; }
+.gcMonthNavV0103 { display:grid; grid-template-columns:36px 1fr 36px; align-items:center; gap:10px; margin-bottom:12px; }
+.gcMonthNavV0103 strong { text-align:center; font-size:15px; }
+.gcMonthNavV0103 button { width:34px; height:34px; border:1px solid #e2e6ed; border-radius:9px; background:#fff; color:#535f79; font-size:20px; cursor:pointer; }
+.gcWeekdaysV0103,.gcGridV0103 { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); }
+.gcWeekdaysV0103 { border:1px solid #edf0f4; border-bottom:0; border-radius:11px 11px 0 0; overflow:hidden; background:#f8f9fc; }
+.gcWeekdaysV0103 span { padding:8px 4px; color:#798398; font-size:10px; font-weight:800; text-align:center; text-transform:uppercase; letter-spacing:.04em; }
+.gcGridV0103 { border-left:1px solid #edf0f4; border-top:1px solid #edf0f4; }
+.gcDayV0103 { min-height:92px; padding:7px; border-right:1px solid #edf0f4; border-bottom:1px solid #edf0f4; background:#fff; overflow:hidden; }
+.gcDayV0103.empty { background:#fafbfc; }
+.gcDayV0103.today { background:#f5f3ff; box-shadow:inset 0 0 0 1px #b9afff; }
+.gcDayNumberV0103 { display:grid; place-items:center; width:23px; height:23px; border-radius:50%; color:#58637a; font-size:10px; font-weight:800; }
+.gcDayV0103.today .gcDayNumberV0103 { background:#6c5ce7; color:#fff; }
+.gcDayEntriesV0103 { display:grid; gap:3px; margin-top:3px; }
+.gcDotEntryV0103 { display:block; overflow:hidden; padding:4px 5px; border-radius:6px; background:#eef6ff; color:#355679; font-size:9px; font-weight:700; line-height:1.2; text-overflow:ellipsis; white-space:nowrap; }
+.gcDotEntryV0103.school { background:#f0f8ed; color:#3d6d3b; }
+.gcDayEntriesV0103 small { color:#8a93a5; font-size:8px; }
+
+.gcUpcomingV0103 { padding:16px; }
+.gcSideHeadingV0103 h3 { margin:4px 0 13px; font-size:17px; }
+.gcUpcomingListV0103 { display:grid; gap:8px; }
+.gcUpcomingItemV0103 { display:grid; grid-template-columns:43px minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px; border:1px solid #edf0f4; border-radius:11px; background:#fbfcfe; }
+.gcUpcomingDateV0103 { display:grid; place-items:center; min-height:43px; border-radius:10px; background:#efeefe; color:#5c50be; }
+.gcUpcomingDateV0103 b { font-size:8px; text-transform:uppercase; }
+.gcUpcomingDateV0103 strong { font-size:17px; line-height:1; }
+.gcUpcomingItemV0103 > div small,.gcUpcomingItemV0103 > div strong,.gcUpcomingItemV0103 > div span { display:block; }
+.gcUpcomingItemV0103 > div small { color:#7f889b; font-size:9px; font-weight:750; text-transform:uppercase; }
+.gcUpcomingItemV0103 > div strong { margin-top:2px; font-size:12px; line-height:1.25; }
+.gcUpcomingItemV0103 > div span { margin-top:3px; color:#6d778c; font-size:10px; }
+.gcUpcomingItemV0103 > button { border:0; background:transparent; color:#6556d8; font-size:10px; font-weight:800; cursor:pointer; }
+.gcEmptyV0103 { padding:24px 10px; text-align:center; color:#758097; }
+.gcEmptyV0103 > span { display:block; font-size:26px; }
+.gcEmptyV0103 strong { display:block; margin-top:8px; color:#26324a; font-size:13px; }
+.gcEmptyV0103 p { margin:5px auto 0; max-width:220px; font-size:11px; line-height:1.45; }
+
+.gcPlanV0103,.gcManageV0103 { padding:18px; }
+.gcSectionTitleV0103 { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:12px; }
+.gcSectionTitleV0103 h3 { margin:3px 0 0; font-size:17px; }
+.gcSectionTitleV0103 > button { border:0; background:transparent; color:#6356d9; font-size:11px; font-weight:800; cursor:pointer; }
+.gcPlanGridV0103 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.gcPlanGridV0103 article { display:grid; grid-template-columns:40px minmax(0,1fr); gap:10px; align-items:start; padding:12px; border:1px solid #e8ebf1; border-radius:12px; background:#fcfcfe; }
+.gcPlanGridV0103 article > span { display:grid; place-items:center; width:40px; height:40px; border-radius:11px; background:#f2f0ff; font-size:20px; }
+.gcPlanGridV0103 small { color:#8277d6; font-size:8px; font-weight:850; letter-spacing:.06em; }
+.gcPlanGridV0103 h4 { margin:3px 0 0; font-size:12px; }
+.gcPlanGridV0103 p { margin:3px 0 0; color:#7a8396; font-size:10px; }
+.gcPlanGridV0103 button { grid-column:1/-1; justify-self:start; margin-top:3px; padding:7px 10px; border:1px solid #d9d4ff; border-radius:8px; background:#fff; color:#5c50c7; font-size:10px; font-weight:800; cursor:pointer; }
+.gcPlanEmptyV0103 { display:flex; align-items:center; gap:10px; padding:13px; border:1px dashed #dfe3ea; border-radius:12px; color:#768096; }
+.gcPlanEmptyV0103 p { flex:1; margin:0; font-size:11px; }
+.gcPlanEmptyV0103 button { border:0; background:transparent; color:#6254d6; font-size:10px; font-weight:800; cursor:pointer; }
+
+.gcManageListV0103 { display:grid; gap:8px; }
+.gcManageListV0103 article { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:11px 12px; border:1px solid #e9ecf1; border-radius:12px; }
+.gcManageMainV0103 { display:flex; align-items:center; gap:10px; min-width:0; }
+.gcManageMainV0103 > span { display:grid; place-items:center; width:38px; height:38px; border-radius:10px; background:#f4f3ff; font-size:19px; }
+.gcManageMainV0103 small { display:block; color:#7b73bf; font-size:8px; font-weight:800; text-transform:uppercase; }
+.gcManageMainV0103 h4 { margin:2px 0 0; font-size:12px; }
+.gcManageMainV0103 p { margin:3px 0 0; color:#747e92; font-size:10px; }
+.gcManageActionsV0103 { display:flex; align-items:center; justify-content:flex-end; gap:7px; flex-wrap:wrap; }
+.gcManageActionsV0103 button { padding:7px 9px; border:1px solid #e0e4ea; border-radius:8px; background:#fff; color:#59647b; font-size:9px; font-weight:800; cursor:pointer; }
+.gcManageActionsV0103 button.primary { border-color:#cbc4ff; background:#6557de; color:#fff; }
+.gcReflectedV0103 { color:#3f8750; font-size:9px; font-weight:850; }
+
+.gcModalV0103 { position:fixed; inset:0; z-index:500; display:grid; place-items:center; padding:20px; background:rgba(19,27,57,.42); backdrop-filter:blur(3px); }
+.gcModalCardV0103 { width:min(430px,100%); display:grid; gap:12px; padding:20px; border:1px solid #e3e6ed; border-radius:18px; background:#fff; box-shadow:0 24px 70px rgba(18,26,60,.25); }
+.gcModalCardV0103 h3 { margin:0; font-size:19px; }
+.gcModalCardV0103 label { display:grid; gap:5px; color:#4f5b70; font-size:10px; font-weight:800; }
+.gcModalCardV0103 label small { color:#8b94a5; font-weight:600; }
+.gcModalCardV0103 input,.gcModalCardV0103 select,.gcModalCardV0103 textarea { width:100%; padding:9px 10px; border:1px solid #dfe3ea; border-radius:9px; background:#fff; color:#27324a; font:inherit; font-size:12px; }
+.gcModalCardV0103 textarea { min-height:78px; resize:vertical; }
+.gcModalActionsV0103 { display:flex; justify-content:flex-end; gap:8px; margin-top:3px; }
+.gcModalActionsV0103 button { padding:9px 12px; border:1px solid #e0e4ea; border-radius:9px; background:#fff; color:#576278; font-size:10px; font-weight:800; cursor:pointer; }
+.gcModalActionsV0103 button.primary { border-color:#6356db; background:#6356db; color:#fff; }
+.gcModalActionsV0103 button:disabled { opacity:.45; cursor:not-allowed; }
+.gcEnjoymentV0103 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+.gcEnjoymentV0103 button { padding:9px; border:1px solid #e1e4ea; border-radius:9px; background:#fafbfc; color:#536079; font-size:10px; font-weight:750; cursor:pointer; }
+.gcEnjoymentV0103 button.active { border-color:#8a7ff0; background:#f0eeff; color:#5549bd; }
+
+.v0103SaveOpportunity { margin-top:8px; padding:8px 10px; border:1px solid #d8d3ff; border-radius:9px; background:#fff; color:#5a4ece; font-size:10px; font-weight:850; cursor:pointer; }
+.v0103SaveOpportunity:disabled { border-color:#dfe6e1; background:#eff8f1; color:#49805a; cursor:default; }
+
+.mgTrackerCardsV0103 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.mgTrackerCardV091.calendar { background:linear-gradient(145deg,#f6f4ff,#fbfbff); }
+
+@media (max-width:980px) {
+  .gcLayoutV0103 { grid-template-columns:1fr; }
+  .gcPlanGridV0103 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+@media (max-width:700px) {
+  .gcHeaderV0103 { flex-direction:column; }
+  .gcSummaryV0103 { grid-template-columns:1fr; }
+  .gcDayV0103 { min-height:65px; padding:4px; }
+  .gcDotEntryV0103 { font-size:0; width:7px; height:7px; padding:0; border-radius:50%; }
+  .gcPlanGridV0103 { grid-template-columns:1fr; }
+  .gcManageListV0103 article { align-items:flex-start; flex-direction:column; }
+  .gcManageActionsV0103 { justify-content:flex-start; }
+  .gcUpcomingItemV0103 { grid-template-columns:40px minmax(0,1fr); }
+  .gcUpcomingItemV0103 > button { grid-column:2; justify-self:start; padding:0; }
+  .mgTrackerCardsV0103 { grid-template-columns:1fr; }
+}
+
+/* SynapStride MVP v0.10.3 corrective — contextual area calendars */
+.gaWorkspaceV0103 { display:grid; gap:18px; }
+.gaHeaderV0103 { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+.gaHeaderTitleV0103 { display:flex; align-items:flex-start; gap:14px; min-width:0; }
+.gaHeaderIconV0103 { width:48px; height:48px; display:grid; place-items:center; flex:0 0 48px; border-radius:14px; background:#fff; border:1px solid #e3e8e5; box-shadow:0 5px 14px rgba(33,45,39,.06); font-size:24px; }
+.gaHeaderV0103 h2 { margin:3px 0 4px; font-size:27px; line-height:1.12; letter-spacing:-.025em; color:#172238; }
+.gaHeaderV0103 p { margin:0; max-width:720px; color:#687386; font-size:13px; line-height:1.5; }
+.gaBackV0103 { border:1px solid #dde3df; border-radius:10px; background:#fff; padding:9px 12px; color:#52605a; font:inherit; font-size:12px; font-weight:750; cursor:pointer; }
+.gaLocalTabsV0103 { margin-top:0; }
+.gaLocalTabsV0103 button { display:inline-flex !important; align-items:center; gap:7px; }
+.gaTabCountV0103 { min-width:18px; height:18px; display:inline-grid; place-items:center; padding:0 5px; border-radius:999px; background:#eef2f0; color:#53615a; font-size:10px; font-weight:800; }
+.gaLocalTabsV0103 button.active .gaTabCountV0103 { background:#e1f6e5; color:#268542; }
+.gaTrackerV0103,.gaCompletedV0103 { display:grid; gap:13px; }
+.gaSectionTitleV0103 { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
+.gaSectionTitleV0103 h3 { margin:3px 0 0; font-size:18px; color:#1d2a27; }
+.gaSectionTitleV0103 > button { border:0; background:transparent; color:#3867d6; font:inherit; font-size:12px; font-weight:800; cursor:pointer; }
+.gaItemListV0103 { display:grid; gap:9px; }
+.gaItemV0103 { display:grid; grid-template-columns:44px minmax(0,1fr) auto; align-items:center; gap:12px; padding:13px 14px; border:1px solid #e2e7e4; border-radius:13px; background:#fff; box-shadow:0 4px 12px rgba(32,47,39,.035); }
+.gaItemV0103.done { background:#fbfcfb; }
+.gaItemEmojiV0103 { width:42px; height:42px; display:grid; place-items:center; border-radius:12px; background:#f3f6f4; font-size:21px; }
+.gaItemBodyV0103 { min-width:0; }
+.gaItemBodyV0103 small { display:block; margin-bottom:2px; color:#6e7a74; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; }
+.gaItemBodyV0103 h4 { margin:0; color:#1b2823; font-size:14px; }
+.gaItemBodyV0103 p { margin:3px 0 0; color:#6b756f; font-size:11px; line-height:1.4; }
+.gaItemBodyV0103 b { display:block; margin-top:5px; color:#3d6b4b; font-size:10px; }
+.gaItemActionsV0103 { display:flex; align-items:center; gap:7px; }
+.gaItemActionsV0103 button,.gaItemV0103 > button { border:1px solid #dfe5e1; border-radius:9px; background:#fff; padding:8px 10px; color:#47544d; font:inherit; font-size:11px; font-weight:800; cursor:pointer; }
+.gaItemActionsV0103 button.primary { border-color:#bedfc5; background:#eaf8ed; color:#2b7e40; }
+.gaLegacyPillV0103 { padding:6px 9px; border-radius:999px; background:#f1f3f8; color:#68728a; font-size:10px; font-weight:750; }
+.gaEmptyV0103 { min-height:180px; display:grid; place-items:center; align-content:center; gap:7px; padding:28px; border:1px dashed #d9e0dc; border-radius:14px; background:#fcfdfc; text-align:center; }
+.gaEmptyV0103 > span { font-size:30px; }
+.gaEmptyV0103 strong { color:#26342d; }
+.gaEmptyV0103 p { margin:0; max-width:460px; color:#727e77; font-size:12px; }
+.gaEmptyV0103 button { margin-top:4px; border:0; border-radius:9px; background:#2f9f4b; color:#fff; padding:9px 12px; font:inherit; font-size:11px; font-weight:800; cursor:pointer; }
+
+.gaWorkspaceV0103 .growthCalendarV0103 { margin-top:0; }
+.gaWorkspaceV0103 .gcHeaderV0103 { padding-top:2px; }
+.gaWorkspaceV0103 .gcSummaryV0103 { grid-template-columns:repeat(2,minmax(0,1fr)); max-width:520px; }
+
+@media (max-width:760px) {
+  .gaHeaderV0103,.gaSectionTitleV0103 { align-items:flex-start; flex-direction:column; }
+  .gaItemV0103 { grid-template-columns:42px minmax(0,1fr); }
+  .gaItemActionsV0103,.gaLegacyPillV0103,.gaItemV0103 > button,.gaItemV0103 > .gcReflectedV0103 { grid-column:2; justify-self:start; }
+}
+
+/* SynapStride v0.10.4A — unified Interests & Activities */
+.gaNearMeV0104A .gaSectionTitleV0103 p {
+  margin: 6px 0 0;
+  max-width: 680px;
+  color: #667085;
+  line-height: 1.5;
+}
+
+.gaLocalTabsV0103 {
+  gap: 8px;
+}
+
+@media (max-width: 760px) {
+  .gaLocalTabsV0103 {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .gaLocalTabsV0103 button {
+    flex: 0 0 auto;
+  }
+}
+
+.gaTrackerGridV0104A {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 22px;
+  align-items: start;
+}
+.gaMiniCalendarV0104A {
+  border: 1px solid #e2e8e4;
+  border-radius: 20px;
+  background: #fff;
+  padding: 18px;
+  box-shadow: 0 10px 28px rgba(23, 43, 77, 0.05);
+}
+.gaMiniCalendarHeaderV0104A { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; }
+.gaMiniCalendarHeaderV0104A strong { font-size:16px; color:#17223b; }
+.gaMiniCalendarHeaderV0104A button { border:0; background:transparent; color:#347a4b; font-weight:700; cursor:pointer; }
+.gaMiniWeekV0104A, .gaMiniDaysV0104A { display:grid; grid-template-columns:repeat(7,1fr); }
+.gaMiniWeekV0104A span { text-align:center; font-size:9px; font-weight:800; color:#84909f; padding:5px 0 8px; }
+.gaMiniDayV0104A { min-height:36px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:13px; color:#263245; }
+.gaMiniDayV0104A.hasEvent { background:#f1faf3; border-radius:10px; font-weight:800; }
+.gaMiniDayV0104A i { width:5px; height:5px; border-radius:50%; background:#35a853; }
+.gaMiniFiltersV0104A { display:flex; flex-wrap:wrap; gap:6px; padding:14px 0; border-top:1px solid #eef1ef; margin-top:8px; }
+.gaMiniFiltersV0104A span { border:1px solid #dfe7e1; border-radius:9px; padding:5px 8px; font-size:11px; color:#52615a; background:#fafcfb; }
+.gaMiniFiltersV0104A span:first-child { background:#eef9f0; color:#278143; border-color:#bfe0c7; }
+.gaMiniUpcomingV0104A { border-top:1px solid #eef1ef; }
+.gaMiniUpcomingV0104A button { width:100%; border:0; border-bottom:1px solid #eef1ef; background:transparent; padding:11px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; text-align:left; cursor:pointer; }
+.gaMiniUpcomingV0104A button div { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.gaMiniUpcomingV0104A button strong { font-size:12px; color:#1f2a44; }
+.gaMiniUpcomingV0104A button small { color:#7a8696; }
+.gaMiniUpcomingV0104A em { font-style:normal; font-size:10px; font-weight:800; white-space:nowrap; padding:5px 7px; border-radius:999px; background:#eef8f0; color:#2e8748; }
+.gaMiniUpcomingV0104A em[data-type="experience"], .gaMiniUpcomingV0104A em[data-type="learning_resource"] { background:#f2edff; color:#6941c6; }
+.gaMiniUpcomingV0104A em[data-type="local_event"] { background:#fff3e8; color:#d56a14; }
+.gaMiniUpcomingV0104A p { margin:14px 0 2px; color:#7a8696; font-size:12px; line-height:1.5; }
+@media (max-width: 1040px) { .gaTrackerGridV0104A { grid-template-columns:1fr; } .gaMiniCalendarV0104A { max-width:none; } }
+
+/* SynapStride v0.10.4B — Explore More lives inside Interests & Activities. */
+.gaExploreMoreV0104B {
+  margin-top: 4px;
+}
+
+.gaExploreMoreV0104B .exploreV0102 {
+  padding-top: 0;
+}
+
+.gaExploreMoreV0104B .v0102Intro.embedded {
+  margin-top: 0;
+}
+
+.gaExploreMoreV0104B .v0102Intro.embedded h1 {
+  font-size: clamp(1.55rem, 2vw, 2rem);
+}

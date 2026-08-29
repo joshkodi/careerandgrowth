@@ -333,8 +333,35 @@ const buildSearchQueries =
           )
           .trim()
 
+      const instructions =
+        String(
+          learning.notes ||
+          learning.taskText ||
+          ''
+        )
+          .replace(
+            /\s+/g,
+            ' '
+          )
+          .trim()
+
+      const skillTerms =
+        [
+          ...(
+            learning.skills ||
+            []
+          ),
+
+          ...(
+            learning.keywords ||
+            []
+          ),
+        ]
+          .slice(0, 10)
+          .join(' ')
+
       const core =
-        [subject, topic]
+        [subject, topic, skillTerms]
           .filter(Boolean)
           .join(' ')
 
@@ -343,6 +370,9 @@ const buildSearchQueries =
           `${agePhrase} ${grade} ${core} ${intent} explanation educational resource`,
           `${agePhrase} ${grade} ${core} visual example practice interactive`,
           `${agePhrase} ${grade} ${core} lesson tutorial study guide ${intent}`,
+          instructions
+            ? `${agePhrase} ${core} ${intent} ${instructions}`
+            : null,
           note
             ? `${agePhrase} ${core} ${intent} ${note}`
             : null,

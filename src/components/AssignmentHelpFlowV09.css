@@ -1,0 +1,511 @@
+/* Help Flow v0.9.8 */
+.synWorkspaceRecommendationV098 {
+  margin-top:12px
+}
+
+.synWorkspaceTryCardV098 {
+  padding:11px 12px;
+  border:1px solid #cfd7f5;
+  border-radius:13px;
+  background:radial-gradient(circle at 70% 0%,rgba(229,220,255,.38),transparent 34%),linear-gradient(145deg,#fbfbff,#f7fbff)
+}
+
+.synWorkspaceTryHeadingV098 {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-bottom:7px
+}
+
+.synWorkspaceTryHeadingV098>span {
+  font-size:17px
+}
+
+.synWorkspaceTryHeadingV098 strong {
+  color:#17243b;
+  font-size:10px
+}
+
+.synWorkspacePrimaryResourceV098 {
+  display:grid;
+  grid-template-columns:115px minmax(0,1fr) auto;
+  gap:12px;
+  align-items:center;
+  padding:10px;
+  border:1px solid #e2e6e3;
+  border-radius:10px;
+  background:#fff
+}
+
+.synWorkspaceResourceVisualV098 {
+  height:74px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:radial-gradient(circle at 28% 40%,rgba(255,255,255,.16),transparent 20%),linear-gradient(145deg,#4034ae,#6758dd)
+}
+
+.synWorkspaceResourceVisualV098>span {
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:rgba(255,255,255,.94);
+  color:#4f44c7;
+  font-size:14px
+}
+
+.synWorkspaceResourceCopyV098 h4 {
+  margin:0;
+  color:#15213a;
+  font-size:13px
+}
+
+.synWorkspaceResourceCopyV098>div {
+  display:flex;
+  gap:5px;
+  margin-top:3px;
+  color:#53615a;
+  font-size:8px;
+  text-transform:capitalize
+}
+
+.synWorkspaceResourceCopyV098 p {
+  margin:5px 0 0;
+  color:#64716a;
+  font-size:9px;
+  line-height:1.42
+}
+
+.synWorkspaceResourceCopyV098 small {
+  display:block;
+  margin-top:4px;
+  color:#828b86;
+  font-size:7px
+}
+
+.synWorkspacePrimaryResourceV098>a,.synWorkspacePrimaryResourceV098>button {
+  min-width:95px;
+  min-height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  border-radius:8px;
+  background:#0c8242;
+  color:#fff;
+  font:inherit;
+  font-size:8px;
+  font-weight:850;
+  text-decoration:none;
+  cursor:pointer
+}
+
+.synWorkspaceAlternatesV098 {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-top:9px
+}
+
+.synWorkspaceAlternatesV098>strong {
+  flex:0 0 auto;
+  color:#28344a;
+  font-size:8px
+}
+
+.synWorkspaceAlternatesV098>div {
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px
+}
+
+.synWorkspaceAlternatesV098 button {
+  max-width:210px;
+  min-height:27px;
+  overflow:hidden;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 8px;
+  border:1px solid #dedbea;
+  border-radius:999px;
+  background:#f7f4fc;
+  color:#5e4a9b;
+  font:inherit;
+  font-size:7px;
+  font-weight:750;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  cursor:pointer
+}
+
+.synWorkspaceOutcomeV098 {
+  display:grid;
+  grid-template-columns:210px minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+  margin-top:11px;
+  padding:10px 11px;
+  border:1px solid #eadfc8;
+  border-radius:12px;
+  background:#fffdf7
+}
+
+.synWorkspaceOutcomeHeadingV098 {
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+
+.synWorkspaceOutcomeHeadingV098>span {
+  font-size:20px
+}
+
+.synWorkspaceOutcomeHeadingV098 h4 {
+  margin:0;
+  color:#18243a;
+  font-size:12px
+}
+
+.synWorkspaceOutcomeHeadingV098 p {
+  margin:2px 0 0;
+  color:#738078;
+  font-size:7px;
+  line-height:1.35
+}
+
+.synWorkspaceOutcomeChoicesV098 {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px
+}
+
+.synWorkspaceOutcomeChoicesV098 button {
+  min-height:59px;
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr);
+  grid-template-rows:auto auto;
+  column-gap:7px;
+  align-items:center;
+  padding:8px 9px;
+  border:1px solid #dde4df;
+  border-radius:9px;
+  background:#fff;
+  color:#35433b;
+  text-align:left;
+  cursor:pointer
+}
+
+.synWorkspaceOutcomeChoicesV098 button>span {
+  grid-row:1/span 2;
+  font-size:17px
+}
+
+.synWorkspaceOutcomeChoicesV098 button strong {
+  font-size:8px;
+  line-height:1.2
+}
+
+.synWorkspaceOutcomeChoicesV098 button small {
+  margin-top:2px;
+  color:#748078;
+  font-size:7px
+}
+
+.synWorkspaceOutcomeChoicesV098 .resolved {
+  background:#eef9f0
+}
+
+.synWorkspaceOutcomeChoicesV098 .practice {
+  background:#f2f6ff
+}
+
+.synWorkspaceOutcomeChoicesV098 .more {
+  background:#f7f2ff
+}
+
+.synWorkspaceOutcomeChoicesV098 button.active {
+  border-color:#55ac72;
+  box-shadow:inset 0 0 0 1px #55ac72
+}
+
+.synWorkspaceHelpLoadingV098 {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-top:12px;
+  padding:11px;
+  border:1px solid #e1e6e3;
+  border-radius:10px;
+  background:#fff
+}
+
+.synWorkspaceHelpLoadingV098>span {
+  font-size:18px
+}
+
+.synWorkspaceHelpLoadingV098 strong {
+  font-size:9px
+}
+
+.synWorkspaceHelpLoadingV098 p {
+  margin:2px 0 0;
+  color:#758079;
+  font-size:7px
+}
+
+@media(max-width:900px) {
+  .synWorkspacePrimaryResourceV098 {
+    grid-template-columns:90px minmax(0,1fr)
+  }
+  .synWorkspacePrimaryResourceV098>a,.synWorkspacePrimaryResourceV098>button {
+    grid-column:1/-1;
+    width:100%
+  }
+  .synWorkspaceOutcomeV098 {
+    grid-template-columns:1fr
+  }
+}
+
+@media(max-width:650px) {
+  .synWorkspaceOutcomeChoicesV098 {
+    grid-template-columns:1fr
+  }
+  .synWorkspaceAlternatesV098 {
+    align-items:flex-start;
+    flex-direction:column
+  }
+}
+
+
+/* ============================================================
+   SynapStride MVP v0.9 — Help Intelligence v3 / Drop 9
+   ============================================================ */
+
+.synHelpStrategyV099 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 11px;
+  padding: 10px 11px;
+  border: 1px solid #e1e6e3;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.synHelpStrategyIconV099 {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  border-radius: 11px;
+  background: #eef7f0;
+  font-size: 20px;
+}
+
+.synHelpStrategyV099 h4 {
+  margin: 2px 0 2px;
+  color: #18243b;
+  font-size: 11px;
+}
+
+.synHelpStrategyV099 p {
+  margin: 0;
+  color: #6e7973;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.synHelpFirstStepV099 {
+  margin-top: 8px;
+  padding: 10px 11px;
+  border: 1px solid #dfe3f3;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #f7f8ff, #fff);
+}
+
+.synHelpFirstStepV099 > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.synHelpFirstStepV099 > div > span {
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 25px;
+  border-radius: 999px;
+  background: #455bcd;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.synHelpFirstStepV099 strong {
+  display: block;
+  color: #263248;
+  font-size: 9px;
+}
+
+.synHelpFirstStepV099 p {
+  margin: 2px 0 0;
+  color: #5f6c65;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.synHelpFirstStepV099 > small {
+  display: block;
+  margin-top: 7px;
+  color: #7d8782;
+  font-size: 7px;
+}
+
+.synHelpNextActionV099 {
+  margin-top: 8px;
+  padding: 8px 9px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .72);
+  text-align: center;
+}
+
+.synHelpNextActionV099 strong,
+.synHelpNextActionV099 span {
+  display: block;
+}
+
+.synHelpNextActionV099 strong {
+  color: #395246;
+  font-size: 8px;
+}
+
+.synHelpNextActionV099 span {
+  margin-top: 2px;
+  color: #758079;
+  font-size: 7px;
+}
+
+
+/* ============================================================
+   SynapStride MVP v0.9 — Visible Help Switching / Drop 12
+   ============================================================ */
+
+.synWorkspaceOtherHelpV0912 {
+  margin-top: 9px;
+  padding: 10px;
+  border: 1px solid #e2def4;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #f8f6ff, #ffffff);
+}
+
+.synWorkspaceOtherHelpHeaderV0912 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.synWorkspaceOtherHelpHeaderV0912 > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.synWorkspaceOtherHelpHeaderV0912 > div > span {
+  color: #7056c9;
+  font-size: 11px;
+}
+
+.synWorkspaceOtherHelpHeaderV0912 strong {
+  color: #334057;
+  font-size: 9px;
+}
+
+.synWorkspaceOtherHelpHeaderV0912 small {
+  color: #87908b;
+  font-size: 7px;
+}
+
+.synWorkspaceOtherHelpGridV0912 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.synWorkspaceOtherHelpGridV0912 > button {
+  min-width: 0;
+  min-height: 68px;
+  display: grid;
+  grid-template-columns: 31px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  padding: 8px;
+  border: 1px solid #e3e6e4;
+  border-radius: 9px;
+  background: #fff;
+  color: #243049;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.synWorkspaceOtherHelpGridV0912 > button:hover {
+  transform: translateY(-1px);
+  border-color: #b7a9e6;
+  box-shadow: 0 5px 13px rgba(67, 52, 133, .07);
+}
+
+.synWorkspaceOtherHelpGridV0912 > button > span:first-child {
+  width: 31px;
+  height: 31px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #f2f0fa;
+  font-size: 17px;
+}
+
+.synWorkspaceOtherHelpGridV0912 > button > span:last-child {
+  min-width: 0;
+}
+
+.synWorkspaceOtherHelpGridV0912 strong,
+.synWorkspaceOtherHelpGridV0912 small {
+  display: block;
+}
+
+.synWorkspaceOtherHelpGridV0912 strong {
+  color: #263249;
+  font-size: 8px;
+  line-height: 1.25;
+}
+
+.synWorkspaceOtherHelpGridV0912 small {
+  margin-top: 3px;
+  color: #758079;
+  font-size: 7px;
+  line-height: 1.3;
+}
+
+@media (max-width: 1000px) {
+  .synWorkspaceOtherHelpGridV0912 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .synWorkspaceOtherHelpHeaderV0912 {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .synWorkspaceOtherHelpGridV0912 {
+    grid-template-columns: 1fr;
+  }
+}

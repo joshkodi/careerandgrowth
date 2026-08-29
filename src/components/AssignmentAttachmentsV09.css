@@ -1,0 +1,357 @@
+/* SynapStride MVP v0.9 — Persisted Assignment Attachments / Drop 16 */
+.synAssignmentAttachmentInputV0916{display:none}
+.synAssignmentAttachmentsV0916{margin-top:10px;padding:10px;border:1px solid #dfe6e2;border-radius:11px;background:#fbfcfb}
+.synAssignmentAttachmentsHeaderV0916{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+.synAssignmentAttachmentsHeaderV0916>div{display:flex;align-items:center;gap:5px}
+.synAssignmentAttachmentsHeaderV0916 strong{color:#344056;font-size:9px}
+.synAssignmentAttachmentsHeaderV0916 button{padding:4px 8px;border:1px solid #cad8cf;border-radius:7px;background:#fff;color:#277849;font:inherit;font-size:8px;font-weight:850;cursor:pointer}
+.synAssignmentAttachmentListV0916{display:grid;gap:5px}
+.synAssignmentAttachmentListV0916>button{width:100%;display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:7px;padding:7px;border:1px solid #e0e6e2;border-radius:8px;background:#fff;color:#47534c;text-align:left;cursor:pointer}
+.synAssignmentAttachmentListV0916>button:hover{border-color:#a8cbb4;background:#f7fcf8}
+.synAssignmentAttachmentIconV0916{width:28px;height:28px;display:grid;place-items:center;border-radius:7px;background:#edf7f0;font-size:14px}
+.synAssignmentAttachmentNameV0916{min-width:0}
+.synAssignmentAttachmentNameV0916 strong,.synAssignmentAttachmentNameV0916 small{display:block}
+.synAssignmentAttachmentNameV0916 strong{overflow:hidden;color:#344056;font-size:8px;text-overflow:ellipsis;white-space:nowrap}
+.synAssignmentAttachmentNameV0916 small{margin-top:1px;color:#8a948e;font-size:7px}
+.synAssignmentAttachmentsEmptyV0916{padding:7px;border-radius:8px;background:#f3f6f4;text-align:center}
+.synAssignmentAttachmentsEmptyV0916 span,.synAssignmentAttachmentsEmptyV0916 small{display:block}
+.synAssignmentAttachmentsEmptyV0916 span{color:#6f7973;font-size:8px;font-weight:750}
+.synAssignmentAttachmentsEmptyV0916 small{margin-top:2px;color:#969f99;font-size:7px;line-height:1.4}
+.synAssignmentViewerPdfV0916{width:min(820px,100%);height:64vh;border:0;border-radius:12px;background:#fff}
+
+
+/* ============================================================
+   SynapStride MVP v0.9 — Attachment Lifecycle / Drop 17
+   ============================================================ */
+
+.synAssignmentAttachmentsEmptyActionV0917 {
+  min-height: 31px;
+  margin-top: 8px;
+  padding: 6px 11px;
+  border: 1px solid #2e8d51;
+  border-radius: 8px;
+  background: #fff;
+  color: #277849;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.synAssignmentAttachmentsEmptyActionV0917:hover {
+  background: #eef9f1;
+}
+
+.synLearningDraftAttachmentsV0917 {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid #dce5df;
+  border-radius: 12px;
+  background: #f9fbfa;
+}
+
+.synLearningDraftAttachmentsHeaderV0917 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.synLearningDraftAttachmentsHeaderV0917 > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.synLearningDraftAttachmentsHeaderV0917 > div > span {
+  font-size: 20px;
+}
+
+.synLearningDraftAttachmentsHeaderV0917 strong,
+.synLearningDraftAttachmentsHeaderV0917 small {
+  display: block;
+}
+
+.synLearningDraftAttachmentsHeaderV0917 strong {
+  color: #2d3a51;
+  font-size: 10px;
+}
+
+.synLearningDraftAttachmentsHeaderV0917 small {
+  max-width: 500px;
+  margin-top: 3px;
+  color: #78837c;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.synLearningDraftAttachmentsHeaderV0917 > label {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1px solid #2f8b51;
+  border-radius: 8px;
+  background: #fff;
+  color: #287849;
+  font-size: 8px;
+  font-weight: 850;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.synLearningDraftAttachmentsHeaderV0917 input {
+  display: none;
+}
+
+.synLearningDraftAttachmentListV0917 {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.synLearningDraftAttachmentListV0917 > div {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border: 1px solid #e1e6e3;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.synLearningDraftAttachmentListV0917 > div > span:first-child {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #edf7f0;
+}
+
+.synLearningDraftAttachmentListV0917 strong,
+.synLearningDraftAttachmentListV0917 small {
+  display: block;
+}
+
+.synLearningDraftAttachmentListV0917 strong {
+  overflow: hidden;
+  color: #344056;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.synLearningDraftAttachmentListV0917 small {
+  margin-top: 2px;
+  color: #8a948e;
+  font-size: 7px;
+}
+
+.synLearningDraftAttachmentListV0917 button {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: #f3f5f4;
+  color: #67736c;
+  cursor: pointer;
+}
+
+@media (max-width: 650px) {
+  .synLearningDraftAttachmentsHeaderV0917 {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .synLearningDraftAttachmentsHeaderV0917 > label {
+    justify-content: center;
+  }
+}
+
+
+/* ============================================================
+   SynapStride MVP v0.9 — Real Assignment Preview / Drop 19
+   ============================================================ */
+
+.synAssignmentActualPreviewV0919 {
+  position: relative;
+  width: 100%;
+  min-height: 150px;
+  display: block;
+  overflow: hidden;
+  margin-top: 10px;
+  padding: 0;
+  border: 1px solid #d9e2dd;
+  border-radius: 12px;
+  background: #f7f9f8;
+  cursor: pointer;
+}
+
+.synAssignmentActualPreviewV0919 img {
+  width: 100%;
+  height: 180px;
+  display: block;
+  object-fit: cover;
+  object-position: top center;
+  background: #fff;
+}
+
+.synAssignmentDocumentPreviewV0919 {
+  min-height: 170px;
+  display: grid;
+  place-items: center;
+  font-size: 48px;
+}
+
+.synAssignmentActualPreviewCaptionV0919 {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  padding: 9px 10px;
+  background: linear-gradient(to top, rgba(27, 38, 51, .88), rgba(27, 38, 51, .08));
+  color: #fff;
+  text-align: left;
+}
+
+.synAssignmentActualPreviewCaptionV0919 strong,
+.synAssignmentActualPreviewCaptionV0919 small {
+  display: block;
+}
+
+.synAssignmentActualPreviewCaptionV0919 strong {
+  font-size: 9px;
+}
+
+.synAssignmentActualPreviewCaptionV0919 small {
+  margin-top: 2px;
+  overflow: hidden;
+  font-size: 7px;
+  opacity: .86;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.synAssignmentTextPreviewV0919 {
+  margin-top: 10px;
+  padding: 13px;
+  border: 1px solid #dce4df;
+  border-radius: 12px;
+  background: #fff;
+  color: #3d495f;
+}
+
+.synAssignmentTextPreviewV0919 > strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #29364c;
+  font-size: 9px;
+  text-align: center;
+}
+
+.synAssignmentTextPreviewV0919 ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+.synAssignmentTextPreviewV0919 p {
+  margin: 0;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.synAssignmentNoPreviewV0919 {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px;
+  border: 1px dashed #cbd7d0;
+  border-radius: 11px;
+  background: #f6f9f7;
+  text-align: left;
+}
+
+.synAssignmentNoPreviewV0919 > span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  border-radius: 9px;
+  background: #eaf3ed;
+  font-size: 18px;
+}
+
+.synAssignmentNoPreviewV0919 strong,
+.synAssignmentNoPreviewV0919 small {
+  display: block;
+}
+
+.synAssignmentNoPreviewV0919 strong {
+  color: #344157;
+  font-size: 8px;
+}
+
+.synAssignmentNoPreviewV0919 small {
+  margin-top: 2px;
+  color: #89938d;
+  font-size: 7px;
+  line-height: 1.4;
+}
+
+.synAssignmentAttachmentListV0916 {
+  display: grid;
+  gap: 6px;
+}
+
+.synAssignmentAttachmentRowV0919 {
+  overflow: hidden;
+  border: 1px solid #e0e6e2;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.synAssignmentAttachmentRowV0919.primary {
+  border-color: #a9d0b6;
+  background: #f7fcf8;
+}
+
+.synAssignmentAttachmentOpenV0919 {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 7px;
+  border: 0;
+  background: transparent;
+  color: #47534c;
+  text-align: left;
+  cursor: pointer;
+}
+
+.synAssignmentMakePrimaryV0919 {
+  width: 100%;
+  padding: 5px 8px;
+  border: 0;
+  border-top: 1px solid #edf0ee;
+  background: #fafcfb;
+  color: #287849;
+  font: inherit;
+  font-size: 7px;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: right;
+}
+
+.synAssignmentMakePrimaryV0919:hover {
+  background: #edf8f0;
+}

@@ -1,5 +1,6 @@
 // src/intelligence/learningIntentEngine.js
 import { learningSupportIntents } from './unifiedJourneyModels'
+import { buildAssignmentLearningContext } from './assignmentLearningContext'
 
 export const learningHelpModeOptions = Object.freeze([
   { id: 'understand', label: 'Help me understand', description: 'Explain the idea clearly and help me make sense of it.', resourceIntent: learningSupportIntents.UNDERSTAND },
@@ -11,10 +12,19 @@ export const learningHelpModeOptions = Object.freeze([
   { id: 'enrich', label: 'I want to go further', description: 'Give me something more challenging or interesting to explore.', resourceIntent: learningSupportIntents.ENRICH },
 ])
 
-export function createLearningSupportRequest({ journeyItem, modeId, studentNote = '' } = {}) {
+export function createLearningSupportRequest({ journeyItem, modeId, studentNote = '', childProfile = null } = {}) {
   if (!journeyItem?.id) throw new Error('Learning support request requires a Journey item.')
   const mode = learningHelpModeOptions.find((option) => option.id === modeId)
   if (!mode) throw new Error('Learning support request requires a valid help mode.')
+  const learningContext =
+    buildAssignmentLearningContext({
+      journeyItem,
+      childProfile,
+      helpMode: mode.id,
+      learningIntent: mode.resourceIntent,
+      studentNote,
+    })
+
   return {
     id: `learning_support_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     journeyId: journeyItem.id,
@@ -28,6 +38,7 @@ export function createLearningSupportRequest({ journeyItem, modeId, studentNote 
     helpLabel: mode.label,
     learningIntent: mode.resourceIntent,
     studentNote: studentNote?.trim?.() || '',
+    learningContext,
     status: 'ready_for_resources',
     createdAt: new Date().toISOString(),
   }

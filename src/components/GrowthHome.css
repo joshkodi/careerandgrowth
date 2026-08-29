@@ -3326,3 +3326,270 @@
   box-shadow:0 9px 22px rgba(61,51,116,.06);
 }
 .bppHomeMoreV0810 { border-color:#ececf2; background:rgba(255,255,255,.58); }
+
+/* ============================================================
+   Career & Growth — MVP v0.9.1
+   FIRST CUSTOMER PRODUCT SHELL + HOME
+   Safe presentation layer over the v0.8 intelligence foundation.
+   ============================================================ */
+
+.growthHomeV09 {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(255, 239, 205, .52), transparent 25rem),
+    radial-gradient(circle at 92% 5%, rgba(225, 238, 255, .68), transparent 27rem),
+    #fbfcff;
+}
+
+.cgShellV09 {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  min-height: 66px;
+  display: grid;
+  grid-template-columns: minmax(230px, 1fr) auto minmax(230px, 1fr);
+  align-items: center;
+  gap: 18px;
+  padding: 8px max(22px, calc((100vw - 1120px) / 2));
+  border-bottom: 1px solid rgba(226, 228, 239, .92);
+  background: rgba(255, 255, 255, .92);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 4px 20px rgba(31, 38, 73, .025);
+}
+
+.cgBrandV09,
+.cgNavV09 button,
+.cgParentButtonV09,
+.cgProfileButtonV09 {
+  font: inherit;
+  border: 0;
+  cursor: pointer;
+}
+
+.cgBrandV09 {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  background: transparent;
+  color: var(--bpp-ink);
+  text-align: left;
+}
+
+.cgBrandMarkV09 {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #6d55f2, #8a72ff);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(91, 68, 207, .18);
+}
+
+.cgBrandV09 strong,
+.cgBrandV09 small {
+  display: block;
+}
+
+.cgBrandV09 strong {
+  font-size: 13px;
+  letter-spacing: -.01em;
+}
+
+.cgBrandV09 small {
+  margin-top: 1px;
+  color: #8a8fa0;
+  font-size: 9px;
+}
+
+.cgNavV09 {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid #ececf3;
+  border-radius: 12px;
+  background: #f8f8fb;
+}
+
+.cgNavV09 button {
+  min-height: 34px;
+  padding: 0 13px;
+  border-radius: 9px;
+  background: transparent;
+  color: #70768b;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cgNavV09 button:hover,
+.cgNavV09 button.active {
+  background: #fff;
+  color: var(--bpp-purple-dark);
+  box-shadow: 0 2px 8px rgba(60, 50, 119, .07);
+}
+
+.cgShellActionsV09 {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cgParentButtonV09 {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 9px;
+  background: transparent;
+  color: #626a80;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cgParentButtonV09:hover {
+  background: #f5f3ff;
+  color: var(--bpp-purple-dark);
+}
+
+.cgProfileButtonV09 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 4px 9px 4px 5px;
+  border: 1px solid #e7e8f0;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--bpp-ink);
+}
+
+.cgProfileButtonV09 > span {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #efeaff;
+  color: var(--bpp-purple-dark);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.cgProfileButtonV09 strong {
+  font-size: 10px;
+}
+
+.growthHomeV09 .growthWorkspaceV06 {
+  width: min(1020px, calc(100% - 40px));
+  padding-top: 22px;
+}
+
+.growthHomeV09 .bppHomeHeroFidelityV0810 {
+  min-height: 108px;
+  border-radius: 19px 19px 0 0;
+}
+
+.growthHomeV09 .bppHomeFocusFidelityV0810 {
+  border-radius: 0 0 19px 19px;
+}
+
+.growthHomeV09 .bppCurrentActivityFidelityV0810 {
+  min-height: 132px;
+}
+
+.cgSchoolActionV09 {
+  border-color: #dfe9ef !important;
+  background: linear-gradient(100deg, #f2f9ff, #fbfdff) !important;
+}
+
+.cgSchoolIconV09 {
+  background: #e4f3ff !important;
+}
+
+.growthHomeV09 .bppHomeNextFidelityV0810 {
+  align-items: start;
+}
+
+.growthHomeV09 .bppHomeMoreToolsV0810 {
+  margin-bottom: 6px;
+}
+
+.growthHomeV09 .bppHomeMoreToolsV0810 > summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.growthHomeV09 .bppHomeMoreToolsV0810 > summary::-webkit-details-marker {
+  display: none;
+}
+
+.growthHomeV09 .bppHomeMoreToolsV0810 > summary::after {
+  content: '↓';
+  color: #9a9fb0;
+  font-size: 9px;
+}
+
+.growthHomeV09 .bppHomeMoreToolsV0810[open] > summary::after {
+  content: '↑';
+}
+
+@media (max-width: 900px) {
+  .cgShellV09 {
+    grid-template-columns: 1fr auto;
+    padding: 8px 16px;
+  }
+
+  .cgNavV09 {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: stretch;
+    justify-content: center;
+    margin-top: -2px;
+  }
+
+  .cgShellActionsV09 {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .cgShellV09 {
+    min-height: 58px;
+    gap: 6px 10px;
+    padding: 7px 10px;
+  }
+
+  .cgBrandV09 small,
+  .cgProfileButtonV09 strong,
+  .cgParentButtonV09 {
+    display: none;
+  }
+
+  .cgBrandMarkV09 {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+  }
+
+  .cgNavV09 {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .cgNavV09 button {
+    flex: 1 0 auto;
+    padding: 0 10px;
+  }
+
+  .growthHomeV09 .growthWorkspaceV06 {
+    width: min(100% - 20px, 540px);
+    padding-top: 14px;
+  }
+}

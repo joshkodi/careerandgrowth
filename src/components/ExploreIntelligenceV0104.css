@@ -1,0 +1,16 @@
+/* SynapStride MVP v0.10.4 — small, isolated intelligence UI additions. */
+.v0104DifferentButton {
+  margin-top: 10px;
+  border: 0;
+  background: transparent;
+  padding: 4px 0;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: #665d78;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.v0104DifferentButton:hover { color: #2f2450; }
+.v0102Reason strong { color: #3e315e; }

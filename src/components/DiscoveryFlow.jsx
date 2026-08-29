@@ -1,10 +1,10 @@
 // ============================================================
-// Career & Growth
-// MVP v0.6 — Phase 0 — Discover You
+// SynapStride
+// MVP v0.9 — Discover
 //
-// Presentation-only component.
-// Discovery state, evidence, scoring, persistence, and Growth
-// Intelligence remain owned by App.jsx.
+// Discover answers: "Who am I?"
+// Presentation-only. Discovery state, evidence, scoring,
+// persistence and profile inference remain owned by App.jsx.
 // ============================================================
 
 function DiscoveryFlow({
@@ -22,9 +22,6 @@ function DiscoveryFlow({
   const childName =
     childProfile?.name?.trim() || 'Explorer'
 
-  const childInitial =
-    childName.charAt(0).toUpperCase()
-
   const currentNumber =
     currentQuestionIndex + 1
 
@@ -36,172 +33,154 @@ function DiscoveryFlow({
     'Getting to know you'
 
   return (
-    <section className="discoverV06">
+    <section className="synDiscoverV09">
 
-      <div className="discoverTopbarV06">
-        <button
-          type="button"
-          className="discoverBackV06"
-          onClick={onBack}
-        >
-          ← Growth Space
-        </button>
-
-        <div className="discoverChildPillV06">
-          <span className="discoverChildAvatarV06">
-            {childInitial}
+      <header className="synDiscoverHeroV09">
+        <div>
+          <span className="synDiscoverEyebrowV09">
+            DISCOVER
           </span>
 
-          <span>
-            {childName}
-          </span>
+          <h1>
+            Discover more about you, {childName}.
+          </h1>
+
+          <p>
+            What you tell SynapStride gives us important clues about
+            what you enjoy, how you like to think, and what makes you curious.
+          </p>
         </div>
-      </div>
+
+        <div className="synDiscoverHeroMarkV09" aria-hidden="true">
+          <span>🧭</span>
+          <strong>Your voice matters</strong>
+        </div>
+      </header>
 
 
-      <div className="discoverLayoutV06">
+      <section className="synDiscoverProgressPanelV09">
 
-        <aside className="discoverContextV06">
-
-          <div className="discoverContextVisualV06">
-            <span
-              className="discoverSparkV06 discoverSparkOneV06"
-              aria-hidden="true"
-            >
-              ✦
+        <div className="synDiscoverProgressHeadingV09">
+          <div>
+            <span className="synDiscoverEyebrowV09">
+              DISCOVERING YOU
             </span>
 
-            <span
-              className="discoverSparkV06 discoverSparkTwoV06"
-              aria-hidden="true"
-            >
-              ✨
-            </span>
-
-            <div className="discoverCompassV06">
-              🧭
-            </div>
+            <h2>
+              One small question at a time
+            </h2>
           </div>
 
+          <strong>
+            {currentNumber} of {questions.length}
+          </strong>
+        </div>
 
-          <span className="discoverKickerV06">
-            DISCOVER YOU
+        <div
+          className="synDiscoverProgressTrackV09"
+          aria-label={`Question ${currentNumber} of ${questions.length}`}
+        >
+          <div
+            className="synDiscoverProgressBarV09"
+            style={{
+              width: `${progressPercentage}%`,
+            }}
+          />
+        </div>
+
+      </section>
+
+
+      <div className="synDiscoverLayoutV09">
+
+        <aside className="synDiscoverContextV09">
+
+          <div className="synDiscoverContextIconV09">
+            ✨
+          </div>
+
+          <span className="synDiscoverEyebrowV09">
+            WHY DISCOVER?
           </span>
 
           <h2>
-            We're collecting clues
-            about what feels like you.
+            You know things about yourself that activities alone can't tell us.
           </h2>
 
           <p>
-            Pick what feels most like you
-            today. There are no right or
-            wrong answers.
+            Your answers are one part of your evolving Profile.
+            What you try in Journey and what you reflect on add other clues.
           </p>
 
+          <div className="synDiscoverContextNotesV09">
+            <div>
+              <span>✓</span>
+              <p>No right or wrong answers.</p>
+            </div>
 
-          <div className="discoverTopicV06">
-            <span>
-              Exploring now
-            </span>
+            <div>
+              <span>♡</span>
+              <p>Choose what feels most like you today.</p>
+            </div>
 
-            <strong>
-              {currentTopic}
-            </strong>
+            <div>
+              <span>↻</span>
+              <p>Your answers can evolve as you grow.</p>
+            </div>
           </div>
 
-
-          <div className="discoverEncouragementV06">
-            <span aria-hidden="true">
-              🌱
-            </span>
-
+          <div className="synDiscoverProfileLinkV09">
+            <span>DISCOVER → PROFILE</span>
             <p>
-              Your answers can change as
-              you grow. That's part of
-              discovering who you are.
+              What you share here helps SynapStride understand you more clearly.
             </p>
           </div>
 
         </aside>
 
 
-        <main className="discoverQuestionV06">
+        <main className="synDiscoverQuestionV09">
 
-          <div className="discoverProgressRowV06">
-            <div>
-              <span className="discoverKickerV06">
-                DISCOVERING YOU
-              </span>
-
-              <strong>
-                Question {currentNumber}
-                {' '}of{' '}
-                {questions.length}
-              </strong>
-            </div>
-
-            <span>
-              {Math.round(progressPercentage)}%
-            </span>
-          </div>
-
-
-          <div
-            className="discoverProgressTrackV06"
-            aria-label={`Question ${currentNumber} of ${questions.length}`}
-          >
-            <div
-              style={{
-                width: `${progressPercentage}%`,
-              }}
-            />
-          </div>
-
-
-          <div className="discoverQuestionIntroV06">
-            <span className="discoverQuestionNumberV06">
+          <div className="synDiscoverQuestionMetaV09">
+            <span className="synDiscoverQuestionNumberV09">
               {String(currentNumber).padStart(2, '0')}
             </span>
 
-            <div>
-              <span className="discoverKickerV06">
-                {currentTopic}
-              </span>
-
-              <h1>
-                {currentQuestion.question}
-              </h1>
-
-              <p>
-                Don't overthink it — choose
-                the one that sounds most like you.
-              </p>
-            </div>
+            <span className="synDiscoverTopicV09">
+              {currentTopic}
+            </span>
           </div>
 
+          <h2>
+            {currentQuestion.question}
+          </h2>
 
-          <div className="discoverAnswersV06">
+          <p className="synDiscoverQuestionHelpV09">
+            Pick the answer that sounds most like you.
+            Don't overthink it.
+          </p>
+
+
+          <div className="synDiscoverAnswersV09">
+
             {currentQuestion.answers.map(
               (answer, index) => (
                 <button
                   type="button"
                   key={answer.id}
-                  className="discoverAnswerV06"
-                  onClick={() =>
-                    onAnswer(answer)
-                  }
+                  className="synDiscoverAnswerV09"
+                  onClick={() => onAnswer(answer)}
                 >
-                  <span className="discoverAnswerLetterV06">
+                  <span className="synDiscoverAnswerLetterV09">
                     {String.fromCharCode(65 + index)}
                   </span>
 
-                  <span className="discoverAnswerTextV06">
+                  <span>
                     {answer.label}
                   </span>
 
                   <span
-                    className="discoverAnswerArrowV06"
+                    className="synDiscoverAnswerArrowV09"
                     aria-hidden="true"
                   >
                     →
@@ -209,21 +188,22 @@ function DiscoveryFlow({
                 </button>
               )
             )}
-          </div>
 
-
-          <div className="discoverFooterV06">
-            <span aria-hidden="true">
-              ✨
-            </span>
-
-            Each answer adds another clue
-            to your Growth Profile.
           </div>
 
         </main>
 
       </div>
+
+
+      <footer className="synDiscoverFooterV09">
+        <span aria-hidden="true">🌱</span>
+        <p>
+          <strong>Discover is just one source of clues.</strong>
+          {' '}
+          Your Journey, reflections, and parent observations help the picture grow.
+        </p>
+      </footer>
 
     </section>
   )

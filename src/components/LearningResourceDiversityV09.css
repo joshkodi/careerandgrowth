@@ -1,0 +1,261 @@
+/* ============================================================
+   SynapStride MVP v0.9 — Resource Recommendation Diversity / Drop 23
+   ============================================================ */
+
+.synResourceBestMatchV0923 {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 5px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: #edf8f0;
+  color: #287a49;
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: .02em;
+}
+
+.synResourceAlternativesV0923 {
+  margin-top: 15px;
+  padding-top: 13px;
+  border-top: 1px solid #e6ebe8;
+}
+
+.synResourceAlternativesHeaderV0923 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.synResourceAlternativesHeaderV0923 strong {
+  display: block;
+  color: #26334a;
+  font-size: 11px;
+}
+
+.synResourceAlternativesHeaderV0923 p {
+  max-width: 530px;
+  margin: 3px 0 0;
+  color: #7a867f;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.synResourceAlternativesHeaderV0923 > span {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: #f2f5f3;
+  color: #6f7a74;
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.synResourceAlternativeGridV0923 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.synResourceAlternativeCardV0923 {
+  min-width: 0;
+  min-height: 130px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 12px;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 11px;
+  border: 1px solid #dfe6e2;
+  border-radius: 11px;
+  background: #fff;
+  color: #364257;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color .15s ease,
+    background .15s ease,
+    transform .15s ease;
+}
+
+.synResourceAlternativeCardV0923:hover {
+  border-color: #9fc8ac;
+  background: #f8fcf9;
+  transform: translateY(-1px);
+}
+
+.synResourceAlternativeIconV0923 {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #eef7f1;
+  font-size: 15px;
+}
+
+.synResourceAlternativeCopyV0923 {
+  min-width: 0;
+  display: block;
+}
+
+.synResourceAlternativeCopyV0923 em {
+  display: block;
+  margin-bottom: 4px;
+  color: #2c7f4c;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.synResourceAlternativeCopyV0923 strong {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #2c384d;
+  font-size: 9px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.synResourceAlternativeCopyV0923 small {
+  display: block;
+  margin-top: 5px;
+  overflow: hidden;
+  color: #7e8982;
+  font-size: 7px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+}
+
+.synResourceAlternativeCopyV0923 p {
+  margin: 6px 0 0;
+  color: #69756e;
+  font-size: 7px;
+  line-height: 1.4;
+}
+
+.synResourceAlternativeCardV0923 > b {
+  align-self: center;
+  color: #8a948f;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .synResourceAlternativeGridV0923 {
+    grid-template-columns: 1fr;
+  }
+
+  .synResourceAlternativeCardV0923 {
+    min-height: 0;
+  }
+}
+
+
+/* ============================================================
+   Drop 24 FIX — Fully visible alternatives, no horizontal scroll
+   Keeps ALL Drop 23 card styling intact.
+   ============================================================ */
+
+.synResourceAlternativesV0923 {
+  width: 100%;
+  min-width: 0;
+  overflow: visible !important;
+}
+
+.synResourceAlternativeGridV0923 {
+  display: grid !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  grid-auto-flow: row !important;
+  gap: 10px !important;
+  overflow: visible !important;
+  overflow-x: visible !important;
+  scroll-snap-type: none !important;
+}
+
+.synResourceAlternativeCardV0923 {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  scroll-snap-align: none !important;
+}
+
+@media (min-width: 900px) {
+  .synResourceAlternativeGridV0923 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .synResourceAlternativeGridV0923 > :only-child {
+    grid-column: span 1 !important;
+  }
+}
+
+@media (min-width: 620px) and (max-width: 899px) {
+  .synResourceAlternativeGridV0923 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 619px) {
+  .synResourceAlternativeGridV0923 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* ============================================================
+   Drop 25 — final no-scroll alternative layout
+   ============================================================ */
+
+.synWorkspaceTryCardV098,
+.synWorkspaceRecommendationV098,
+.synResourceAlternativesV0923 {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+
+.synResourceAlternativeGridV0923 {
+  display: grid !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  grid-auto-flow: row !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  overflow: visible !important;
+  overflow-x: visible !important;
+  white-space: normal !important;
+  scroll-snap-type: none !important;
+}
+
+.synResourceAlternativeGridV0923 > * {
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  white-space: normal !important;
+}
+
+.synResourceAlternativeGridV0923 > :only-child {
+  grid-column: auto !important;
+}
+
+@media (max-width: 899px) {
+  .synResourceAlternativeGridV0923 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 619px) {
+  .synResourceAlternativeGridV0923 {
+    grid-template-columns: 1fr !important;
+  }
+}

@@ -1,0 +1,136 @@
+:root {
+  --cg-bg: #f7f8f6;
+  --cg-surface: #ffffff;
+  --cg-surface-soft: #f1f7f2;
+  --cg-surface-purple: #f4f1ff;
+  --cg-surface-warm: #fff7e8;
+  --cg-ink: #20252f;
+  --cg-muted: #66706a;
+  --cg-faint: #8a938d;
+  --cg-line: #e2e7e2;
+  --cg-green: #4d8a63;
+  --cg-green-dark: #336b49;
+  --cg-purple: #735ad6;
+  --cg-purple-dark: #5a43bd;
+  --cg-blue: #577bc1;
+  --cg-radius-sm: 10px;
+  --cg-radius-md: 15px;
+  --cg-radius-lg: 22px;
+  --cg-shadow: 0 8px 24px rgba(36, 53, 41, .055);
+  --cg-page: 1180px;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background: var(--cg-bg);
+}
+
+body {
+  color: var(--cg-ink);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cgEyebrowV09 {
+  display: block;
+  color: var(--cg-green-dark);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.cgButtonV09 {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.cgButtonPrimaryV09 {
+  background: var(--cg-green);
+  color: #fff;
+}
+
+.cgButtonPrimaryV09:hover {
+  background: var(--cg-green-dark);
+}
+
+.cgButtonSecondaryV09 {
+  background: #fff;
+  color: var(--cg-ink);
+  border-color: var(--cg-line);
+}
+
+.cgButtonSecondaryV09:hover {
+  background: #f9fbf9;
+  border-color: #cdd8cf;
+}
+
+.cgButtonSmallV09 {
+  min-height: 34px;
+  padding: 7px 11px;
+  font-size: 13px;
+}
+
+.cgPanelV09 {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--cg-line);
+  border-radius: var(--cg-radius-md);
+  background: var(--cg-surface);
+  box-shadow: var(--cg-shadow);
+}
+
+.cgPanelHeadingV09 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.cgPanelHeadingV09 h2 {
+  margin: 4px 0 0;
+  color: var(--cg-ink);
+  font-size: 21px;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+
+.cgPanelHeadingV09 > button,
+.cgParentPreviewV09 > button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--cg-green-dark);
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.cgMutedV09 {
+  margin: 0;
+  color: var(--cg-muted);
+  font-size: 14px;
+}

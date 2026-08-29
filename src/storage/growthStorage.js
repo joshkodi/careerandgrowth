@@ -37,6 +37,13 @@ export function createEmptyGrowthState() {
 
     evidenceEvents: [],
 
+    // SynapStride v0.10.1 — curated/recommended opportunities.
+    growthOpportunities: [],
+
+    // SynapStride v0.10.1 — child/family-selected activities.
+    // Calendar is a derived view of scheduled activities.
+    growthActivities: [],
+
     growthProfile: {
       traits: {},
       domains: {},
@@ -94,6 +101,16 @@ export function loadGrowthState() {
           ? parsed.evidenceEvents.filter(
               isValidEvidenceEvent
             )
+          : [],
+
+      growthOpportunities:
+        Array.isArray(parsed.growthOpportunities)
+          ? parsed.growthOpportunities
+          : [],
+
+      growthActivities:
+        Array.isArray(parsed.growthActivities)
+          ? parsed.growthActivities
           : [],
 
       growthProfile: {
@@ -260,6 +277,135 @@ export function appendEvidenceEvents(events = []) {
   };
 
   return saveGrowthState(nextState);
+}
+
+
+
+//
+// -----------------------------------------------------------------------------
+// GROWTH OPPORTUNITIES + ACTIVITIES — SYNAPSTRIDE MVP v0.10.1
+// -----------------------------------------------------------------------------
+//
+// Opportunities are curated/recommended possibilities.
+// Activities are opportunities the child/family has saved, scheduled or pursued.
+// Calendar views should be derived from activity.schedule rather than persisted
+// as a second source of truth.
+//
+
+export function getGrowthOpportunities({
+  childId = null
+} = {}) {
+  const state = loadGrowthState();
+
+  if (!childId) {
+    return state.growthOpportunities || [];
+  }
+
+  return (state.growthOpportunities || []).filter(
+    (opportunity) =>
+      !opportunity.childId ||
+      opportunity.childId === childId
+  );
+}
+
+export function saveGrowthOpportunity(opportunity) {
+  if (!opportunity?.id) {
+    return false;
+  }
+
+  const state = loadGrowthState();
+  const existing = state.growthOpportunities || [];
+  const exists = existing.some(
+    (item) => item.id === opportunity.id
+  );
+
+  return saveGrowthState({
+    ...state,
+    growthOpportunities: exists
+      ? existing.map((item) =>
+          item.id === opportunity.id
+            ? opportunity
+            : item
+        )
+      : [...existing, opportunity]
+  });
+}
+
+export function saveGrowthOpportunities(opportunities = []) {
+  if (!Array.isArray(opportunities)) {
+    return false;
+  }
+
+  const state = loadGrowthState();
+  const byId = new Map(
+    (state.growthOpportunities || []).map(
+      (item) => [item.id, item]
+    )
+  );
+
+  opportunities
+    .filter((item) => item?.id)
+    .forEach((item) => byId.set(item.id, item));
+
+  return saveGrowthState({
+    ...state,
+    growthOpportunities: [...byId.values()]
+  });
+}
+
+export function getGrowthActivities({
+  childId = null
+} = {}) {
+  const state = loadGrowthState();
+  const activities = state.growthActivities || [];
+
+  if (!childId) {
+    return activities;
+  }
+
+  return activities.filter(
+    (activity) => activity.childId === childId
+  );
+}
+
+export function saveGrowthActivity(activity) {
+  if (!activity?.id) {
+    return false;
+  }
+
+  const state = loadGrowthState();
+  const existing = state.growthActivities || [];
+  const exists = existing.some(
+    (item) => item.id === activity.id
+  );
+
+  return saveGrowthState({
+    ...state,
+    growthActivities: exists
+      ? existing.map((item) =>
+          item.id === activity.id
+            ? activity
+            : item
+        )
+      : [...existing, activity]
+  });
+}
+
+export function removeGrowthActivity(activityId) {
+  if (!activityId) {
+    return false;
+  }
+
+  const state = loadGrowthState();
+
+  return saveGrowthState({
+    ...state,
+    growthActivities: (
+      state.growthActivities || []
+    ).filter(
+      (activity) => activity.id !== activityId
+    )
+  });
 }
 
 //

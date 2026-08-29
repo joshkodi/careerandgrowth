@@ -1,0 +1,30 @@
+/* SynapStride MVP v0.10.2 — finalized brand mark integration */
+
+.cgBrandMarkV09.cgBrandMarkV0102 {
+  overflow: hidden;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.cgBrandMarkV0102 img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(50, 82, 255, .22));
+}
+
+.cgMobileBrandMarkV0102 {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+}
+
+.cgMobileBrandMarkV0102 img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

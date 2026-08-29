@@ -1,0 +1,240 @@
+.pageGrowthShell {
+  min-height: 100vh;
+  padding: 0;
+  background: var(--cg-bg);
+}
+
+.cgShellV09 {
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 205px minmax(0, 1fr);
+  background: var(--cg-bg);
+}
+
+.cgSidebarV09 {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 16px 18px;
+  border-right: 1px solid var(--cg-line);
+  background: rgba(255,255,255,.96);
+  z-index: 40;
+}
+
+.cgBrandV09 {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 2px 4px 18px;
+  border: 0;
+  background: transparent;
+  color: var(--cg-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.cgBrandMarkV09 {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(145deg,#e6f2e8,#f4efff);
+  color: var(--cg-green-dark);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.cgBrandV09 strong,
+.cgBrandV09 small { display:block; }
+.cgBrandV09 strong { font-size: 14px; line-height: 1.15; }
+.cgBrandV09 small { margin-top: 3px; color: var(--cg-faint); font-size: 9px; }
+
+.cgPrimaryNavV09,
+.cgUtilityNavV09 { display:grid; gap:5px; }
+
+.cgPrimaryNavV09 button,
+.cgUtilityNavV09 button {
+  min-height: 42px;
+  display: grid;
+  grid-template-columns: 28px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #4f5a54;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cgPrimaryNavV09 button:hover,
+.cgUtilityNavV09 button:hover { background:#f4f7f4; }
+.cgPrimaryNavV09 button.active,
+.cgUtilityNavV09 button.active { background:#eaf4ec; color:var(--cg-green-dark); }
+
+.cgNavIconV09 {
+  width: 26px;
+  height: 26px;
+  display:grid;
+  place-items:center;
+  font-size:17px;
+}
+
+.cgPrimaryNavV09 button small {
+  min-width:18px;
+  height:18px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:#fff;
+  color:var(--cg-green-dark);
+  font-size:9px;
+}
+
+.cgSidebarDividerV09 {
+  height:1px;
+  margin:14px 4px;
+  background:#edf0ed;
+}
+
+.cgSidebarFooterV09 {
+  margin-top:auto;
+  padding-top:14px;
+  border-top:1px solid #edf0ed;
+}
+
+.cgChildChipV09 {
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.cgChildChipV09 > span {
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#e9f3ea;
+  color:var(--cg-green-dark);
+  font-size:13px;
+  font-weight:850;
+}
+
+.cgChildChipV09 strong,
+.cgChildChipV09 small { display:block; }
+.cgChildChipV09 strong { font-size:12px; }
+.cgChildChipV09 small { color:var(--cg-faint); font-size:9px; }
+.cgSidebarFooterV09 p { margin:10px 0 0; color:var(--cg-faint); font-size:10px; line-height:1.4; }
+
+.cgCanvasV09 {
+  min-width:0;
+  min-height:100vh;
+  padding:20px 24px 40px;
+}
+
+.cgMobileHeaderV09,
+.cgMobileNavV09 { display:none; }
+
+/* Bring legacy top-level spaces into the v0.9 readability system. */
+.cgCanvasV09 > .growthHomeV06,
+.cgCanvasV09 > .exploreBppV0810,
+.cgCanvasV09 > .bppProfile,
+.cgCanvasV09 > .bppParent,
+.cgCanvasV09 > .discoverV06,
+.cgCanvasV09 > .discoverV05 {
+  width:min(var(--cg-page), 100%);
+  max-width:var(--cg-page);
+  margin:0 auto;
+}
+
+.cgCanvasV09 .exploreBppV0810,
+.cgCanvasV09 .bppProfile,
+.cgCanvasV09 .bppParent,
+.cgCanvasV09 .discoverV06,
+.cgCanvasV09 .discoverV05 {
+  font-size:14px;
+}
+
+@media (max-width: 900px) {
+  .cgShellV09 { grid-template-columns: 74px minmax(0,1fr); }
+  .cgSidebarV09 { padding-inline:10px; }
+  .cgBrandV09 { grid-template-columns:1fr; place-items:center; padding-inline:0; }
+  .cgBrandV09 > span:last-child,
+  .cgPrimaryNavV09 button > span:nth-child(2),
+  .cgUtilityNavV09 button > span:nth-child(2),
+  .cgPrimaryNavV09 button small,
+  .cgSidebarFooterV09 { display:none; }
+  .cgPrimaryNavV09 button,
+  .cgUtilityNavV09 button { grid-template-columns:1fr; justify-items:center; padding:0; }
+}
+
+@media (max-width: 640px) {
+  .cgShellV09 { display:block; }
+  .cgSidebarV09 { display:none; }
+  .cgCanvasV09 { padding:0 0 76px; }
+  .cgMobileHeaderV09 {
+    min-height:58px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 14px;
+    border-bottom:1px solid var(--cg-line);
+    background:rgba(255,255,255,.96);
+  }
+  .cgMobileBrandV09 {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border:0;
+    background:transparent;
+    color:var(--cg-ink);
+  }
+  .cgMobileBrandV09 span { color:var(--cg-green-dark); font-size:20px; }
+  .cgMobileBrandV09 strong { font-size:14px; }
+  .cgMobileProfileV09 {
+    width:34px;
+    height:34px;
+    border:0;
+    border-radius:50%;
+    background:#e9f3ea;
+    color:var(--cg-green-dark);
+    font-weight:850;
+  }
+  .cgMobileNavV09 {
+    position:fixed;
+    left:10px;
+    right:10px;
+    bottom:10px;
+    z-index:80;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    padding:5px;
+    border:1px solid var(--cg-line);
+    border-radius:16px;
+    background:rgba(255,255,255,.97);
+    box-shadow:0 10px 30px rgba(36,53,41,.14);
+  }
+  .cgMobileNavV09 button {
+    min-height:48px;
+    display:grid;
+    place-items:center;
+    gap:1px;
+    border:0;
+    border-radius:10px;
+    background:transparent;
+    color:#6b756f;
+  }
+  .cgMobileNavV09 button.active { background:#eaf4ec; color:var(--cg-green-dark); }
+  .cgMobileNavV09 button span { font-size:17px; }
+  .cgMobileNavV09 button small { font-size:9px; font-weight:800; }
+}

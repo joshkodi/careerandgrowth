@@ -24,6 +24,12 @@ import {
   updateJourneyProgress,
   completeJourneyWithReflection,
   journeyStatuses,
+  createGrowthActivity,
+  updateGrowthActivityStatus,
+  scheduleGrowthActivity,
+  reflectOnGrowthActivity,
+  getCalendarActivities,
+  getUpcomingGrowthActivities,
 } from '../../intelligence/journeyModels'
 
 import {
@@ -69,6 +75,11 @@ import {
 } from '../../storage/journeyStorage'
 
 import {
+  getGrowthActivities,
+  saveGrowthActivity,
+} from '../../storage/growthStorage'
+
+import {
   createSessionId,
   getChildEvidenceId,
 } from '../../utils/session'
@@ -106,6 +117,13 @@ export default function useJourney({
     completedJourneyInsight,
     setCompletedJourneyInsight,
   ] = useState(null)
+
+  // SynapStride v0.10.1 — selected/scheduled Growth Activities.
+  // Kept separate from legacy Journey storage for backward compatibility.
+  const [
+    growthActivities,
+    setGrowthActivities,
+  ] = useState([])
 
 
   // ==========================================================
@@ -174,6 +192,26 @@ export default function useJourney({
     )
 
 
+  // Calendar is a derived view; it is not a second persisted data set.
+  const calendarActivities =
+    useMemo(
+      () =>
+        getCalendarActivities(
+          growthActivities
+        ),
+      [growthActivities]
+    )
+
+  const upcomingGrowthActivities =
+    useMemo(
+      () =>
+        getUpcomingGrowthActivities(
+          growthActivities
+        ),
+      [growthActivities]
+    )
+
+
   // ==========================================================
   // RESTORE JOURNEY
   // ==========================================================
@@ -196,6 +234,12 @@ export default function useJourney({
       // Unified Journey normalization is derived above.
       setJourneyItems(
         getJourneyItems({
+          childId,
+        })
+      )
+
+      setGrowthActivities(
+        getGrowthActivities({
           childId,
         })
       )
@@ -992,6 +1036,198 @@ export default function useJourney({
     }
 
 
+  // ==========================================================
+  // GROWTH ACTIVITIES + CALENDAR — SYNAPSTRIDE MVP v0.10.1
+  // ==========================================================
+
+  const handleSaveGrowthOpportunity =
+    (opportunity, overrides = {}) => {
+      if (!opportunity) {
+        return null
+      }
+
+      const childId =
+        getChildEvidenceId(
+          childProfile
+        )
+
+      const existing =
+        growthActivities.find(
+          (activity) =>
+            activity.opportunityId ===
+              opportunity.id &&
+            activity.childId === childId
+        )
+
+      if (existing) {
+        return existing
+      }
+
+      const activity =
+        createGrowthActivity({
+          childId,
+          opportunity,
+          ...overrides,
+        })
+
+      saveGrowthActivity(activity)
+
+      setGrowthActivities(
+        (current) => [
+          ...current,
+          activity,
+        ]
+      )
+
+      return activity
+    }
+
+
+  const handleGrowthActivityStatus =
+    (activityId, status) => {
+      const currentActivity =
+        growthActivities.find(
+          (activity) =>
+            activity.id === activityId
+        )
+
+      if (!currentActivity) {
+        return null
+      }
+
+      const updatedActivity =
+        updateGrowthActivityStatus(
+          currentActivity,
+          status
+        )
+
+      saveGrowthActivity(
+        updatedActivity
+      )
+
+      setGrowthActivities(
+        (current) =>
+          current.map((activity) =>
+            activity.id === activityId
+              ? updatedActivity
+              : activity
+          )
+      )
+
+      return updatedActivity
+    }
+
+
+  const handleScheduleGrowthActivity =
+    (activityId, schedule) => {
+      const currentActivity =
+        growthActivities.find(
+          (activity) =>
+            activity.id === activityId
+        )
+
+      if (!currentActivity) {
+        return null
+      }
+
+      const updatedActivity =
+        scheduleGrowthActivity(
+          currentActivity,
+          schedule
+        )
+
+      saveGrowthActivity(
+        updatedActivity
+      )
+
+      setGrowthActivities(
+        (current) =>
+          current.map((activity) =>
+            activity.id === activityId
+              ? updatedActivity
+              : activity
+          )
+      )
+
+      return updatedActivity
+    }
+
+
+  const handleUpdateGrowthActivity =
+    (activityId, updates = {}) => {
+      const currentActivity =
+        growthActivities.find(
+          (activity) => activity.id === activityId
+        )
+
+      if (!currentActivity) {
+        return null
+      }
+
+      const updatedActivity = {
+        ...currentActivity,
+        ...updates,
+        metadata: {
+          ...(currentActivity.metadata || {}),
+          ...(updates.metadata || {}),
+        },
+        updatedAt: new Date().toISOString(),
+      }
+
+      saveGrowthActivity(updatedActivity)
+      setGrowthActivities((current) =>
+        current.map((activity) =>
+          activity.id === activityId ? updatedActivity : activity
+        )
+      )
+
+      return updatedActivity
+    }
+
+
+  const handleGrowthActivityReflection =
+    (activityId, reflection) => {
+      const currentActivity =
+        growthActivities.find(
+          (activity) =>
+            activity.id === activityId
+        )
+
+      if (!currentActivity) {
+        return null
+      }
+
+      const updatedActivity =
+        reflectOnGrowthActivity(
+          currentActivity,
+          reflection
+        )
+
+      saveGrowthActivity(
+        updatedActivity
+      )
+
+      setGrowthActivities(
+        (current) =>
+          current.map((activity) =>
+            activity.id === activityId
+              ? updatedActivity
+              : activity
+          )
+      )
+
+      if (
+        reflection?.wantsNext?.trim()
+      ) {
+        onStudentIntent?.(
+          reflection.wantsNext
+        )
+      }
+
+      return updatedActivity
+    }
+
+
   const dismissCompletedJourneyInsight =
     () => {
       setCompletedJourneyInsight(
@@ -1004,6 +1240,7 @@ export default function useJourney({
     () => {
       setJourneyItems([])
       setCompletedJourneyInsight(null)
+      setGrowthActivities([])
     }
 
 
@@ -1017,6 +1254,11 @@ export default function useJourney({
     experienceJourneyItems,
     activitiesInterestJourneyItems,
     journeySummary,
+
+    // SynapStride v0.10.1 Growth Activity / Calendar read model.
+    growthActivities,
+    calendarActivities,
+    upcomingGrowthActivities,
 
     completedJourneyInsight,
 
@@ -1035,6 +1277,12 @@ export default function useJourney({
     handleLearningHelpRequest,
     handleLearningResourceFeedback,
     handleLearningSupportOutcome,
+
+    handleSaveGrowthOpportunity,
+    handleUpdateGrowthActivity,
+    handleGrowthActivityStatus,
+    handleScheduleGrowthActivity,
+    handleGrowthActivityReflection,
 
     dismissCompletedJourneyInsight,
 

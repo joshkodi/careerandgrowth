@@ -1,1488 +1,240 @@
-import {
-  useMemo,
-  useState,
-} from 'react'
-
-
 // ============================================================
-// Career & Growth
-// MVP v0.6 — Phase 2B — Guided Adventure Flow
+// SynapStride
+// MVP v0.9 — Explore
 //
-// Keeps the existing App.jsx contract intact.
-//
-// For Adventures that contain exploration.guidedAdventure:
-//
-// Intro
-//   ↓
-// Get Ready
-//   ↓
-// Learn
-//   ↓
-// Try
-//   ↓
-// Build
-//   ↓
-// Existing Challenge Flow
-//   ↓
-// Existing Enjoyment + Favorite Part Reflection
-//
-// Phase 2B is presentation/navigation only.
-// Resource/activity completion is NOT persisted as Growth evidence yet.
-// That arrives in Phase 2C.
+// Explore answers: "What could I try?"
+// It remains presentation-only. Recommendation logic, adventure
+// state, evidence and persistence stay outside this component.
 // ============================================================
 
-function AdventureFlow({
-  exploration,
-  step,
-  challengeIndex,
+function AdventuresHub({
+  childName,
+  recommendations = [],
+  catalog = [],
+  completedExplorations = [],
   onBack,
-  onBeginMission,
-  onKidExperienceAnswer,
-  onGuidedStageComplete,
-  onChallengeAnswer,
-  onEnjoymentAnswer,
-  onFavoritePartAnswer,
+  onStartAdventure,
 }) {
-  const [guidedStageIndex, setGuidedStageIndex] =
-    useState(null)
+  const safeName = childName || 'Explorer'
 
-  const [
-    exploredResourceIds,
-    setExploredResourceIds,
-  ] = useState([])
+  const recommendedIds = new Set(
+    recommendations
+      .map((item) => item?.id)
+      .filter(Boolean)
+  )
 
-  const [
-    selectedActivityId,
-    setSelectedActivityId,
-  ] = useState(null)
+  const catalogById = new Map(
+    catalog
+      .filter(Boolean)
+      .map((item) => [item.id, item])
+  )
 
+  const pickedForYou = recommendations
+    .slice(0, 3)
+    .map((recommendation) => ({
+      ...catalogById.get(recommendation.id),
+      ...recommendation,
+    }))
+    .filter((item) => item?.id)
 
-  const [
-    kidExperienceIndex,
-    setKidExperienceIndex,
-  ] = useState(null)
+  const exploreMore = catalog
+    .filter((item) => !recommendedIds.has(item.id))
+    .slice(0, 6)
 
-  if (!exploration) {
-    return null
-  }
+  const canStart = (id) => id === 'robotics'
 
-  const guidedAdventure =
-    exploration.guidedAdventure || null
+  const isCompleted = (id) =>
+    completedExplorations.includes(id)
 
-  const guidedStages =
-    useMemo(
-      () =>
-        guidedAdventure?.stages
-          ?.filter(
-            (stageItem) =>
-              ![
-                'challenge',
-                'reflect',
-              ].includes(
-                stageItem.id
-              )
-          )
-          ?.sort(
-            (a, b) =>
-              (a.order || 0) -
-              (b.order || 0)
-          ) || [],
-      [guidedAdventure]
-    )
+  return (
+    <section className="synExploreV09">
 
-  const currentGuidedStage =
-    guidedStageIndex !== null
-      ? guidedStages[
-          guidedStageIndex
-        ]
-      : null
-
-
-  const kidExperiencePrompts =
-    guidedAdventure
-      ?.kidExperience
-      ?.prompts || []
-
-  const currentKidExperiencePrompt =
-    kidExperienceIndex !== null
-      ? kidExperiencePrompts[
-          kidExperienceIndex
-        ]
-      : null
-
-  const currentChallenge =
-    exploration.challenges?.[
-      challengeIndex
-    ]
-
-  const totalChallenges =
-    exploration.challenges?.length || 0
-
-  const adventureTitle =
-    exploration.title ||
-    exploration.intro?.title ||
-    'Adventure'
-
-
-  // ==========================================================
-  // GUIDED ADVENTURE HELPERS
-  // ==========================================================
-
-  const startGuidedAdventure = () => {
-    if (
-      guidedAdventure &&
-      guidedStages.length > 0
-    ) {
-      setGuidedStageIndex(0)
-      return
-    }
-
-    onBeginMission()
-  }
-
-
-  const advanceGuidedStage = () => {
-    const isLastGuidedStage =
-      guidedStageIndex ===
-      guidedStages.length - 1
-
-    if (
-      currentGuidedStage?.id ===
-      'build'
-    ) {
-      onGuidedStageComplete?.({
-        stage:
-          currentGuidedStage,
-      })
-    }
-
-    if (isLastGuidedStage) {
-      setGuidedStageIndex(null)
-
-      if (
-        kidExperiencePrompts.length > 0
-      ) {
-        setKidExperienceIndex(0)
-        return
-      }
-
-      onBeginMission()
-      return
-    }
-
-    setGuidedStageIndex(
-      (current) =>
-        current + 1
-    )
-  }
-
-
-  const goBackGuidedStage = () => {
-    if (
-      guidedStageIndex === null ||
-      guidedStageIndex === 0
-    ) {
-      setGuidedStageIndex(null)
-      return
-    }
-
-    setGuidedStageIndex(
-      (current) =>
-        current - 1
-    )
-  }
-
-
-  const toggleResourceExplored =
-    (resourceId) => {
-      setExploredResourceIds(
-        (current) =>
-          current.includes(
-            resourceId
-          )
-            ? current.filter(
-                (id) =>
-                  id !== resourceId
-              )
-            : [
-                ...current,
-                resourceId,
-              ]
-      )
-    }
-
-
-  const stageResources =
-    currentGuidedStage
-      ?.resourceIds
-      ?.map(
-        (resourceId) =>
-          guidedAdventure
-            ?.resources
-            ?.find(
-              (resource) =>
-                resource.id ===
-                resourceId
-            )
-      )
-      .filter(Boolean) || []
-
-
-  const canContinueGuidedStage = (() => {
-    if (!currentGuidedStage) {
-      return false
-    }
-
-    if (
-      currentGuidedStage.type ===
-      'resource'
-    ) {
-      const minimum =
-        currentGuidedStage
-          .minimumResources || 1
-
-      const exploredCount =
-        stageResources.filter(
-          (resource) =>
-            exploredResourceIds.includes(
-              resource.id
-            )
-        ).length
-
-      return exploredCount >= minimum
-    }
-
-    if (
-      currentGuidedStage.id ===
-      'try'
-    ) {
-      return Boolean(
-        selectedActivityId
-      )
-    }
-
-    return true
-  })()
-
-
-  const handleKidExperienceAnswer =
-    (answer) => {
-      if (
-        !currentKidExperiencePrompt ||
-        !answer
-      ) {
-        return
-      }
-
-      onKidExperienceAnswer?.({
-        prompt:
-          currentKidExperiencePrompt,
-
-        answer,
-      })
-
-      const isLastPrompt =
-        kidExperienceIndex ===
-        kidExperiencePrompts.length - 1
-
-      if (isLastPrompt) {
-        setKidExperienceIndex(null)
-        onBeginMission()
-        return
-      }
-
-      setKidExperienceIndex(
-        (current) =>
-          current + 1
-      )
-    }
-
-
-  // ==========================================================
-  // KID EXPERIENCE — POST ACTIVITY
-  // ==========================================================
-
-  if (
-    step === 'intro' &&
-    currentKidExperiencePrompt
-  ) {
-    return (
-      <KidExperienceStage
-        exploration={exploration}
-        prompt={
-          currentKidExperiencePrompt
-        }
-        promptIndex={
-          kidExperienceIndex
-        }
-        promptCount={
-          kidExperiencePrompts.length
-        }
-        onAnswer={
-          handleKidExperienceAnswer
-        }
-        onExit={onBack}
-      />
-    )
-  }
-
-
-  // ==========================================================
-  // GUIDED STAGE
-  // ==========================================================
-
-  if (
-    step === 'intro' &&
-    currentGuidedStage
-  ) {
-    return (
-      <GuidedStage
-        exploration={exploration}
-        guidedAdventure={guidedAdventure}
-        stage={currentGuidedStage}
-        stageIndex={guidedStageIndex}
-        stageCount={guidedStages.length}
-        resources={stageResources}
-        exploredResourceIds={
-          exploredResourceIds
-        }
-        selectedActivityId={
-          selectedActivityId
-        }
-        canContinue={
-          canContinueGuidedStage
-        }
-        onToggleResource={
-          toggleResourceExplored
-        }
-        onSelectActivity={
-          setSelectedActivityId
-        }
-        onBack={
-          goBackGuidedStage
-        }
-        onExit={onBack}
-        onContinue={
-          advanceGuidedStage
-        }
-      />
-    )
-  }
-
-
-  // ==========================================================
-  // INTRO
-  // ==========================================================
-
-  if (step === 'intro') {
-    const mission =
-      guidedAdventure?.mission
-
-    return (
-      <section className="adventureV06">
-
-        <div className="adventureTopbarV06">
-          <button
-            type="button"
-            className="adventureBackV06"
-            onClick={onBack}
-          >
-            ← Back to Explore
-          </button>
-
-          <span className="adventureMiniBrandV06">
-            🌱 Career & Growth
+      <header className="synExploreHeroV09">
+        <div>
+          <span className="synExploreEyebrowV09">
+            EXPLORE
           </span>
+
+          <h1>
+            What would you like to try, {safeName}?
+          </h1>
+
+          <p>
+            Follow your curiosity. Pick something that looks interesting,
+            give it a try, and it can become part of your Journey.
+          </p>
         </div>
 
+        <div
+          className="synExploreHeroMarkV09"
+          aria-hidden="true"
+        >
+          <span>✨</span>
+          <strong>Try something new</strong>
+        </div>
+      </header>
 
-        <div className="adventureShellV06">
 
-          <aside className="adventureSceneV06">
-            <span
-              className="adventureSceneSpark adventureSceneSparkOne"
-              aria-hidden="true"
-            >
-              ✦
-            </span>
+      {pickedForYou.length > 0 && (
+        <section className="synExploreSectionV09">
 
-            <span
-              className="adventureSceneSpark adventureSceneSparkTwo"
-              aria-hidden="true"
-            >
-              ✨
-            </span>
-
-            <div className="adventureCharacterV06">
-              {exploration.emoji || '🚀'}
-            </div>
-
-            <div className="adventureSpeechV06">
-              <strong>
-                Ready, explorer?
-              </strong>
-
-              <span>
-                Let's see what you can figure out.
+          <div className="synExploreSectionHeadingV09">
+            <div>
+              <span className="synExploreEyebrowV09">
+                PICKED FOR YOU
               </span>
+
+              <h2>
+                Good places to start
+              </h2>
             </div>
-          </aside>
 
-
-          <main className="adventureMainV06">
-
-            <span className="adventureKickerV06">
-              {exploration.intro?.eyebrow ||
-                'YOUR ADVENTURE'}
-            </span>
-
-            <h1>
-              {mission?.title ||
-                exploration.intro?.title ||
-                adventureTitle}
-            </h1>
-
-            <p className="adventureLeadV06">
-              {mission?.story ||
-                exploration.intro?.description}
+            <p>
+              Based on what SynapStride is learning about you.
             </p>
+          </div>
 
 
-            <div className="adventureMissionV06">
-              <div className="adventureMissionIconV06">
-                🎯
-              </div>
+          <div className="synExplorePickedGridV09">
 
-              <div>
-                <span>
-                  YOUR MISSION
-                </span>
+            {pickedForYou.map((item, index) => (
+              <article
+                className="synExplorePickedCardV09"
+                key={item.id}
+              >
+                <div
+                  className={`synExploreVisualV09 synExploreTheme${getThemeClass(item.id)}`}
+                >
+                  <span className="synExploreEmojiV09">
+                    {item.emoji || '✨'}
+                  </span>
 
-                <p>
-                  {mission?.challenge ||
-                    exploration.intro?.mission}
-                </p>
-              </div>
-            </div>
+                  <span className="synExploreMatchBadgeV09">
+                    {index === 0 ? 'TOP PICK' : 'FOR YOU'}
+                  </span>
+                </div>
 
+                <div className="synExplorePickedBodyV09">
 
-            {guidedAdventure && (
-              <div className="guidedIntroMetaV06">
-                <span>
-                  ⏱️ About{' '}
-                  {
-                    guidedAdventure
-                      .estimatedMinutes
-                      ?.typical || 60
-                  }{' '}
-                  min
-                </span>
+                  <div>
+                    <h3>
+                      {item.title}
+                    </h3>
 
-                <span>
-                  🧰 Simple materials
-                </span>
+                    <p>
+                      {item.description ||
+                        item.intro ||
+                        'Try something new and see what you notice about yourself.'}
+                    </p>
+                  </div>
 
-                <span>
-                  🌐 Online + hands-on
-                </span>
-              </div>
-            )}
+                  {item.reasons?.length > 0 && (
+                    <div className="synExploreWhyV09">
+                      <span>Why this fits</span>
+                      <p>{item.reasons[0]}</p>
+                    </div>
+                  )}
 
+                  <ExperienceAction
+                    id={item.id}
+                    canStart={canStart(item.id)}
+                    completed={isCompleted(item.id)}
+                    onStartAdventure={onStartAdventure}
+                  />
 
-            <button
-              type="button"
-              className="adventurePrimaryV06"
-              onClick={
-                startGuidedAdventure
-              }
-            >
-              {guidedAdventure
-                ? 'Begin Adventure'
-                : 'Start Mission'}
-              <span>→</span>
-            </button>
+                </div>
+              </article>
+            ))}
 
-          </main>
+          </div>
 
-        </div>
-
-      </section>
-    )
-  }
+        </section>
+      )}
 
 
-  // ==========================================================
-  // CHALLENGE
-  // ==========================================================
+      <section className="synExploreSectionV09">
 
-  if (
-    step === 'challenge' &&
-    currentChallenge
-  ) {
-    const progress =
-      ((challengeIndex + 1) /
-        totalChallenges) *
-      100
-
-    return (
-      <section className="adventureV06">
-
-        <div className="adventureTopbarV06">
-          <button
-            type="button"
-            className="adventureBackV06"
-            onClick={onBack}
-          >
-            ← Exit Adventure
-          </button>
-
-          <span className="adventureMiniBrandV06">
-            {exploration.emoji || '🚀'}
-            {' '}
-            {adventureTitle}
-          </span>
-        </div>
-
-
-        <div className="adventureChallengeShellV06">
-
-          <aside className="adventureChallengeSideV06">
-
-            <div className="adventureSideEmojiV06">
-              {exploration.emoji || '🤖'}
-            </div>
-
-            <span className="adventureKickerV06">
-              MISSION CHALLENGE
+        <div className="synExploreSectionHeadingV09">
+          <div>
+            <span className="synExploreEyebrowV09">
+              EXPLORE MORE
             </span>
 
             <h2>
-              Think it through.
+              Follow your own curiosity
             </h2>
-
-            <p>
-              Pick the answer that feels
-              most like what you would do.
-            </p>
-
-
-            <div className="adventureProgressLabelV06">
-              <span>
-                Challenge {challengeIndex + 1}
-                {' '}of{' '}
-                {totalChallenges}
-              </span>
-
-              <strong>
-                {Math.round(progress)}%
-              </strong>
-            </div>
-
-            <div className="adventureProgressTrackV06">
-              <div
-                style={{
-                  width: `${progress}%`,
-                }}
-              />
-            </div>
-
-
-            <div className="adventureSideNoteV06">
-              <span aria-hidden="true">
-                💡
-              </span>
-
-              <p>
-                No trick questions.
-                We're learning how you
-                like to think and explore.
-              </p>
-            </div>
-
-          </aside>
-
-
-          <main className="adventureQuestionV06">
-
-            <span className="adventureKickerV06">
-              WHAT WOULD YOU DO?
-            </span>
-
-            <h1>
-              {currentChallenge.question}
-            </h1>
-
-
-            <div className="adventureAnswersV06">
-              {currentChallenge.answers.map(
-                (answer, index) => (
-                  <button
-                    type="button"
-                    key={answer.id}
-                    className="adventureAnswerV06"
-                    onClick={() =>
-                      onChallengeAnswer(
-                        answer
-                      )
-                    }
-                  >
-                    <span className="adventureAnswerLetterV06">
-                      {String.fromCharCode(
-                        65 + index
-                      )}
-                    </span>
-
-                    <span className="adventureAnswerTextV06">
-                      {answer.label}
-                    </span>
-
-                    <span
-                      className="adventureAnswerArrowV06"
-                      aria-hidden="true"
-                    >
-                      →
-                    </span>
-                  </button>
-                )
-              )}
-            </div>
-
-          </main>
-
-        </div>
-
-      </section>
-    )
-  }
-
-
-  // ==========================================================
-  // ENJOYMENT
-  // ==========================================================
-
-  if (step === 'enjoyment') {
-    return (
-      <section className="adventureV06">
-
-        <div className="adventureTopbarV06">
-          <span />
-
-          <span className="adventureMiniBrandV06">
-            {exploration.emoji || '🚀'}
-            {' '}
-            {adventureTitle}
-          </span>
-        </div>
-
-
-        <div className="adventureReflectionV06">
-
-          <div className="adventureCelebrationV06">
-            <span aria-hidden="true">
-              🎉
-            </span>
-
-            <span aria-hidden="true">
-              ✨
-            </span>
-
-            <span aria-hidden="true">
-              ⭐
-            </span>
           </div>
-
-          <span className="adventureKickerV06">
-            MISSION COMPLETE
-          </span>
-
-          <h1>
-            Nice work!
-          </h1>
 
           <p>
-            {exploration.reflection
-              ?.enjoyment?.question}
-          </p>
-
-
-          <div className="adventureReflectionChoicesV06">
-            {exploration.reflection
-              ?.enjoyment?.answers
-              ?.map(
-                (answer) => (
-                  <button
-                    type="button"
-                    key={answer.id}
-                    onClick={() =>
-                      onEnjoymentAnswer(
-                        answer
-                      )
-                    }
-                  >
-                    {answer.label}
-                  </button>
-                )
-              )}
-          </div>
-
-        </div>
-
-      </section>
-    )
-  }
-
-
-  // ==========================================================
-  // FAVORITE PART
-  // ==========================================================
-
-  if (step === 'favorite') {
-    return (
-      <section className="adventureV06">
-
-        <div className="adventureTopbarV06">
-          <span />
-
-          <span className="adventureMiniBrandV06">
-            {exploration.emoji || '🚀'}
-            {' '}
-            {adventureTitle}
-          </span>
-        </div>
-
-
-        <div className="adventureReflectionV06">
-
-          <div className="adventureReflectionIconV06">
-            💭
-          </div>
-
-          <span className="adventureKickerV06">
-            ONE MORE THING
-          </span>
-
-          <h1>
-            {exploration.reflection
-              ?.favoritePart?.question}
-          </h1>
-
-          <p>
-            What you enjoyed gives us
-            another clue about you.
-          </p>
-
-
-          <div className="adventureFavoriteGridV06">
-            {exploration.reflection
-              ?.favoritePart?.answers
-              ?.map(
-                (answer) => (
-                  <button
-                    type="button"
-                    key={answer.id}
-                    onClick={() =>
-                      onFavoritePartAnswer(
-                        answer
-                      )
-                    }
-                  >
-                    <span>
-                      {answer.label}
-                    </span>
-
-                    <span aria-hidden="true">
-                      →
-                    </span>
-                  </button>
-                )
-              )}
-          </div>
-
-        </div>
-
-      </section>
-    )
-  }
-
-
-  return null
-}
-
-
-// ============================================================
-// GUIDED STAGE
-// ============================================================
-
-function GuidedStage({
-  exploration,
-  guidedAdventure,
-  stage,
-  stageIndex,
-  stageCount,
-  resources = [],
-  exploredResourceIds = [],
-  selectedActivityId,
-  canContinue,
-  onToggleResource,
-  onSelectActivity,
-  onBack,
-  onExit,
-  onContinue,
-}) {
-  const progress =
-    ((stageIndex + 1) /
-      stageCount) *
-    100
-
-  return (
-    <section className="guidedAdventureV06">
-
-      <div className="guidedTopbarV06">
-        <button
-          type="button"
-          className="guidedBackV06"
-          onClick={onBack}
-        >
-          ← Back
-        </button>
-
-        <button
-          type="button"
-          className="guidedExitV06"
-          onClick={onExit}
-        >
-          Exit Adventure
-        </button>
-      </div>
-
-
-      <div className="guidedProgressHeaderV06">
-        <div>
-          <span className="guidedKickerV06">
-            {exploration.emoji || '🚀'}
-            {' '}
-            {exploration.title}
-          </span>
-
-          <strong>
-            {stage.kidLabel ||
-              stage.title}
-          </strong>
-        </div>
-
-        <span>
-          Step {stageIndex + 1}
-          {' '}of{' '}
-          {stageCount}
-        </span>
-      </div>
-
-      <div className="guidedProgressTrackV06">
-        <div
-          style={{
-            width: `${progress}%`,
-          }}
-        />
-      </div>
-
-
-      <div className="guidedStageShellV06">
-
-        <aside className="guidedStageAsideV06">
-
-          <div className="guidedStageEmojiV06">
-            {stage.emoji || '✨'}
-          </div>
-
-          <span className="guidedKickerV06">
-            {stage.title}
-          </span>
-
-          <h2>
-            {getGuidedStageHeadline(
-              stage.id
-            )}
-          </h2>
-
-          <p>
-            {stage.instruction}
-          </p>
-
-          <div className="guidedTimeV06">
-            ⏱️ About{' '}
-            {stage.estimatedMinutes ||
-              10}{' '}
-            min
-          </div>
-
-        </aside>
-
-
-        <main className="guidedStageMainV06">
-
-          {stage.id ===
-            'get_ready' && (
-            <GetReadyStage
-              guidedAdventure={
-                guidedAdventure
-              }
-            />
-          )}
-
-
-          {stage.type ===
-            'resource' && (
-            <ResourceStage
-              resources={resources}
-              exploredResourceIds={
-                exploredResourceIds
-              }
-              onToggleResource={
-                onToggleResource
-              }
-            />
-          )}
-
-
-          {stage.id === 'try' && (
-            <TryStage
-              stage={stage}
-              guidedAdventure={
-                guidedAdventure
-              }
-              selectedActivityId={
-                selectedActivityId
-              }
-              onSelectActivity={
-                onSelectActivity
-              }
-            />
-          )}
-
-
-          {stage.id ===
-            'build' && (
-            <BuildStage
-              stage={stage}
-              guidedAdventure={
-                guidedAdventure
-              }
-            />
-          )}
-
-
-          <div className="guidedStageActionsV06">
-            {!canContinue && (
-              <span className="guidedActionHintV06">
-                {stage.type ===
-                'resource'
-                  ? 'Explore at least one resource to continue.'
-                  : 'Choose one way to try the mission.'}
-              </span>
-            )}
-
-            <button
-              type="button"
-              className="guidedContinueV06"
-              onClick={onContinue}
-              disabled={!canContinue}
-            >
-              {stageIndex ===
-              stageCount - 1
-                ? 'Go to Mission Challenge'
-                : 'Continue'}
-              <span>→</span>
-            </button>
-          </div>
-
-        </main>
-
-      </div>
-
-    </section>
-  )
-}
-
-
-function GetReadyStage({
-  guidedAdventure,
-}) {
-  return (
-    <>
-      <div className="guidedMissionCardV06">
-        <span className="guidedKickerV06">
-          THE SITUATION
-        </span>
-
-        <h3>
-          {guidedAdventure
-            ?.mission?.title}
-        </h3>
-
-        <p>
-          {guidedAdventure
-            ?.mission?.story}
-        </p>
-      </div>
-
-      <div className="guidedChoicePromptV06">
-        <span>🤔</span>
-
-        <div>
-          <strong>
-            Think before you build
-          </strong>
-
-          <p>
-            {guidedAdventure
-              ?.mission
-              ?.successQuestion}
+            Recommendations are suggestions. Your choices matter too.
           </p>
         </div>
-      </div>
-
-      <div className="guidedMaterialsV06">
-        <div>
-          <span className="guidedKickerV06">
-            YOU'LL NEED
-          </span>
-
-          {(guidedAdventure
-            ?.materials
-            ?.required || [])
-            .map(
-              (item) => (
-                <span
-                  key={item}
-                >
-                  ✓ {item}
-                </span>
-              )
-            )}
-        </div>
-
-        <div>
-          <span className="guidedKickerV06">
-            OPTIONAL
-          </span>
-
-          {(guidedAdventure
-            ?.materials
-            ?.optional || [])
-            .slice(0, 3)
-            .map(
-              (item) => (
-                <span
-                  key={item}
-                >
-                  + {item}
-                </span>
-              )
-            )}
-        </div>
-      </div>
-    </>
-  )
-}
 
 
-function ResourceStage({
-  resources,
-  exploredResourceIds,
-  onToggleResource,
-}) {
-  return (
-    <>
-      <div className="guidedSectionIntroV06">
-        <span className="guidedKickerV06">
-          PICK ONE
-        </span>
+        {exploreMore.length > 0 ? (
+          <div className="synExploreCatalogV09">
 
-        <h3>
-          Learn just enough to get an idea.
-        </h3>
-
-        <p>
-          You don't need to finish everything.
-          Choose one resource that looks interesting.
-        </p>
-      </div>
-
-      <div className="guidedResourceGridV06">
-        {resources.map(
-          (resource) => {
-            const explored =
-              exploredResourceIds.includes(
-                resource.id
-              )
-
-            return (
+            {exploreMore.map((item) => (
               <article
-                className={
-                  explored
-                    ? 'guidedResourceCardV06 explored'
-                    : 'guidedResourceCardV06'
-                }
-                key={resource.id}
+                className="synExploreCatalogCardV09"
+                key={item.id}
               >
-                <div className="guidedResourceTopV06">
-                  <span className="guidedResourceEmojiV06">
-                    {resource.emoji ||
-                      '🔎'}
-                  </span>
-
-                  <div>
-                    <span className="guidedResourceProviderV06">
-                      {resource.provider}
-                    </span>
-
-                    <h4>
-                      {resource.title}
-                    </h4>
-                  </div>
-                </div>
-
-                <p>
-                  {resource.kidDescription}
-                </p>
-
-                <div className="guidedResourceMetaV06">
-                  <span>
-                    ⏱️{' '}
-                    {resource.estimatedMinutes}
-                    {' '}min
-                  </span>
-
-                  <span>
-                    {resource.difficulty}
-                  </span>
-                </div>
-
-                <div className="guidedResourceActionsV06">
-                  <a
-                    href={resource.url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Open Resource ↗
-                  </a>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onToggleResource(
-                        resource.id
-                      )
-                    }
-                  >
-                    {explored
-                      ? '✓ Explored'
-                      : 'I explored this'}
-                  </button>
-                </div>
-              </article>
-            )
-          }
-        )}
-      </div>
-    </>
-  )
-}
-
-
-function TryStage({
-  stage,
-  guidedAdventure,
-  selectedActivityId,
-  onSelectActivity,
-}) {
-  return (
-    <>
-      <div className="guidedSectionIntroV06">
-        <span className="guidedKickerV06">
-          YOUR TURN
-        </span>
-
-        <h3>
-          Choose how you want to try it.
-        </h3>
-
-        <p>
-          There is more than one way to be
-          an engineer.
-        </p>
-      </div>
-
-      <div className="guidedActivityGridV06">
-        {(stage.activityOptions || [])
-          .map(
-            (activity) => {
-              const selected =
-                selectedActivityId ===
-                activity.id
-
-              const resource =
-                activity.resourceId
-                  ? guidedAdventure
-                      ?.resources
-                      ?.find(
-                        (item) =>
-                          item.id ===
-                          activity.resourceId
-                      )
-                  : null
-
-              return (
-                <button
-                  type="button"
-                  key={activity.id}
-                  className={
-                    selected
-                      ? 'guidedActivityCardV06 selected'
-                      : 'guidedActivityCardV06'
-                  }
-                  onClick={() =>
-                    onSelectActivity(
-                      activity.id
-                    )
-                  }
+                <div
+                  className={`synExploreCatalogIconV09 synExploreTheme${getThemeClass(item.id)}`}
                 >
-                  <span className="guidedActivityIconV06">
-                    {activity.id ===
-                    'virtual_robot'
-                      ? '🎮'
-                      : '✏️'}
-                  </span>
+                  {item.emoji || '🔎'}
+                </div>
 
-                  <strong>
-                    {activity.label}
-                  </strong>
+                <div className="synExploreCatalogBodyV09">
+                  <div className="synExploreCatalogTitleV09">
+                    <h3>{item.title}</h3>
+
+                    {isCompleted(item.id) && (
+                      <span>Tried</span>
+                    )}
+                  </div>
 
                   <p>
-                    {resource
-                      ?.kidDescription ||
-                      activity.prompt}
+                    {item.description ||
+                      item.intro ||
+                      'Try this experience and see what feels interesting.'}
                   </p>
+                </div>
 
-                  {resource && (
-                    <a
-                      href={resource.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(event) =>
-                        event.stopPropagation()
-                      }
-                    >
-                      Open tool ↗
-                    </a>
-                  )}
+                <ExperienceAction
+                  id={item.id}
+                  canStart={canStart(item.id)}
+                  completed={isCompleted(item.id)}
+                  onStartAdventure={onStartAdventure}
+                  compact
+                />
+              </article>
+            ))}
 
-                  <span className="guidedSelectMarkV06">
-                    {selected
-                      ? '✓ Selected'
-                      : 'Choose this'}
-                  </span>
-                </button>
-              )
-            }
-          )}
-      </div>
-    </>
-  )
-}
+          </div>
+        ) : (
+          <div className="synExploreEmptyV09">
+            <span>🌱</span>
+
+            <div>
+              <strong>More experiences are growing.</strong>
+              <p>Try one of the ideas above for now.</p>
+            </div>
+          </div>
+        )}
+
+      </section>
 
 
-function BuildStage({
-  stage,
-  guidedAdventure,
-}) {
-  return (
-    <>
-      <div className="guidedSectionIntroV06">
-        <span className="guidedKickerV06">
-          BUILD YOUR IDEA
-        </span>
-
-        <h3>
-          Make your rescue robot better.
-        </h3>
-
-        <p>
-          A sketch counts. A cardboard model
-          counts. LEGO counts. What matters is
-          thinking like a designer.
-        </p>
-      </div>
-
-      <div className="guidedBuildPromptV06">
-        <div className="guidedBuildRobotV06">
-          🤖
-        </div>
+      <div className="synExploreJourneyNoteV09">
+        <span aria-hidden="true">↗</span>
 
         <div>
-          <strong>
-            Your design goal
-          </strong>
-
+          <strong>Explore finds it. Journey tracks it.</strong>
           <p>
-            {guidedAdventure
-              ?.mission?.challenge}
+            When you start something here, your ongoing work belongs in Journey.
           </p>
         </div>
-      </div>
-
-      <div className="guidedPromptGridV06">
-        {(stage.prompts || [])
-          .map(
-            (prompt, index) => (
-              <div
-                key={prompt}
-                className="guidedPromptCardV06"
-              >
-                <span>
-                  {index + 1}
-                </span>
-
-                <p>
-                  {prompt}
-                </p>
-              </div>
-            )
-          )}
-      </div>
-
-      <div className="guidedBuildNoteV06">
-        <span>🔄</span>
-
-        <p>
-          <strong>
-            Engineer move:
-          </strong>
-          {' '}
-          change at least one part of your
-          first idea before continuing.
-        </p>
-      </div>
-    </>
-  )
-}
-
-
-// ============================================================
-// KID EXPERIENCE STAGE
-// ============================================================
-
-function KidExperienceStage({
-  exploration,
-  prompt,
-  promptIndex,
-  promptCount,
-  onAnswer,
-  onExit,
-}) {
-  const progress =
-    ((promptIndex + 1) /
-      promptCount) *
-    100
-
-  return (
-    <section className="guidedAdventureV06">
-
-      <div className="guidedTopbarV06">
-        <span className="guidedKickerV06">
-          {exploration.emoji || '🚀'}
-          {' '}
-          {exploration.title}
-        </span>
-
-        <button
-          type="button"
-          className="guidedExitV06"
-          onClick={onExit}
-        >
-          Exit Adventure
-        </button>
-      </div>
-
-
-      <div className="guidedProgressHeaderV06">
-        <div>
-          <span className="guidedKickerV06">
-            KID EXPERIENCE
-          </span>
-
-          <strong>
-            Mission Check-In
-          </strong>
-        </div>
-
-        <span>
-          {promptIndex + 1}
-          {' '}of{' '}
-          {promptCount}
-        </span>
-      </div>
-
-      <div className="guidedProgressTrackV06">
-        <div
-          style={{
-            width:
-              `${progress}%`,
-          }}
-        />
-      </div>
-
-
-      <div className="guidedKidExperienceV06">
-
-        <div className="guidedKidExperienceIconV06">
-          {promptIndex === 0
-            ? '🎉'
-            : promptIndex === 1
-              ? '🧠'
-              : '🧭'}
-        </div>
-
-        <span className="guidedKickerV06">
-          WHAT FELT LIKE YOU?
-        </span>
-
-        <h1>
-          {prompt.question}
-        </h1>
-
-        <p>
-          This isn't a test. Tell us what
-          the experience actually felt like
-          for you.
-        </p>
-
-
-        <div className="guidedKidAnswerGridV06">
-          {(prompt.options || [])
-            .map(
-              (answer) => (
-                <button
-                  type="button"
-                  key={answer.id}
-                  onClick={() =>
-                    onAnswer(answer)
-                  }
-                >
-                  <span>
-                    {answer.label}
-                  </span>
-
-                  <span
-                    aria-hidden="true"
-                  >
-                    →
-                  </span>
-                </button>
-              )
-            )}
-        </div>
-
       </div>
 
     </section>
@@ -1490,26 +242,53 @@ function KidExperienceStage({
 }
 
 
-function getGuidedStageHeadline(
-  stageId
-) {
-  switch (stageId) {
-    case 'get_ready':
-      return 'Understand the problem.'
-
-    case 'learn':
-      return 'Unlock a few robot ideas.'
-
-    case 'try':
-      return 'Test something yourself.'
-
-    case 'build':
-      return 'Create your rescue robot.'
-
-    default:
-      return 'Keep exploring.'
+function ExperienceAction({
+  id,
+  canStart,
+  completed,
+  onStartAdventure,
+  compact = false,
+}) {
+  if (!canStart) {
+    return (
+      <span
+        className={
+          compact
+            ? 'synExploreSoonV09 compact'
+            : 'synExploreSoonV09'
+        }
+      >
+        More soon
+      </span>
+    )
   }
+
+  return (
+    <button
+      type="button"
+      className={
+        compact
+          ? 'synExploreActionV09 compact'
+          : 'synExploreActionV09'
+      }
+      onClick={() => onStartAdventure(id)}
+    >
+      {completed ? 'Try again' : 'Try this'}
+      <span>→</span>
+    </button>
+  )
 }
 
 
-export default AdventureFlow
+function getThemeClass(id = '') {
+  if (id.includes('robot')) return 'Robot'
+  if (id.includes('body') || id.includes('health')) return 'Health'
+  if (id.includes('story') || id.includes('creative')) return 'Creative'
+  if (id.includes('nature') || id.includes('animal')) return 'Nature'
+  if (id.includes('science') || id.includes('space')) return 'Science'
+
+  return 'Default'
+}
+
+
+export default AdventuresHub
