@@ -1,8 +1,8 @@
 // src/intelligence/intelligenceRecommendationLoop.js
 
 // ============================================================
-// Career & Growth — MVP v0.8.11
-// Intelligence & Recommendation Loop
+// SynapStride — MVP v0.11 — Growth Intelligence Foundation
+// Growth Intelligence Orchestration Loop
 //
 // Thin orchestration layer across the intelligence engines that
 // already exist in the product.
@@ -47,6 +47,18 @@ import {
 import {
   getGrowthRecommendations,
 } from './growthRecommendationEngine'
+
+import {
+  buildGrowthIntelligenceContext,
+} from './growthIntelligenceContext'
+
+import {
+  buildGrowthRecommendationSet,
+} from './growthRecommendationContract'
+
+import {
+  buildGrowthDomainIntelligence,
+} from './growthDomainIntelligence'
 
 
 export const recommendationIntentTypes = Object.freeze({
@@ -441,11 +453,51 @@ export function buildIntelligenceRecommendationLoop({
         actionLimit,
     })
 
+  const context =
+    buildGrowthIntelligenceContext({
+      childId,
+      age,
+      evidenceEvents,
+      journeyItems,
+      studentIntents,
+      parentIntents,
+      completedExperienceIds,
+      growthProfile,
+      patternIntelligence,
+      promotionRegistry,
+      learningProgression,
+    })
+
+  const recommendationSet =
+    buildGrowthRecommendationSet({
+      nextActions,
+      recommendationIntent,
+    })
+
+  const domains =
+    buildGrowthDomainIntelligence({
+      context,
+      recommendationSet,
+    })
+
   return {
-    version: '0.8.11',
+    version: '0.11.1',
 
     mode:
-      'intelligence_recommendation_loop',
+      'growth_intelligence_orchestrator',
+
+    // v0.11 canonical contract. Existing fields below remain for
+    // backward compatibility with the current UI.
+    context,
+    decision: {
+      intent: recommendationIntent,
+      recommendations: recommendationSet,
+      domains,
+    },
+
+    // Phase 2 domain adapters. Each feature area receives a
+    // read-only view of the same canonical context.
+    domains,
 
     childId,
 

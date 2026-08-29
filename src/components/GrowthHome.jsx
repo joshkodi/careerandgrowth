@@ -1975,6 +1975,7 @@ function JourneyPanel({
   onExplore,
   exploreRecommendations = [],
   exploreCatalog = [],
+  intelligenceOpportunities = [],
   completedExplorations = [],
   onSaveGrowthOpportunity,
   onStartAdventure,
@@ -5967,6 +5968,12 @@ function JourneyPanel({
           onExplore={onExplore}
           exploreRecommendations={exploreRecommendations}
           exploreCatalog={exploreCatalog}
+          intelligenceOpportunities={
+            intelligenceRecommendationLoop
+              ?.domains
+              ?.interests_activities
+              ?.discoveredOpportunities || []
+          }
           completedExplorations={completedExplorations}
           onSaveGrowthOpportunity={onSaveGrowthOpportunity}
           onStartAdventure={onStartAdventure}
@@ -7367,6 +7374,7 @@ function GrowthAreaWorkspaceV0103({
   onExplore,
   exploreRecommendations = [],
   exploreCatalog = [],
+  intelligenceOpportunities = [],
   completedExplorations = [],
   onSaveGrowthOpportunity,
   onStartAdventure,
@@ -7427,6 +7435,54 @@ function GrowthAreaWorkspaceV0103({
   )
   const activeJourneyItems = journeyItems.filter((item) => item.status !== 'completed')
   const completedJourneyItems = journeyItems.filter((item) => item.status === 'completed')
+
+  const visibleIntelligenceOpportunities =
+    intelligenceOpportunities
+      .filter(Boolean)
+      .slice(0, 3)
+
+  const saveIntelligenceOpportunity = (candidate) => {
+    if (!candidate) return
+
+    onSaveGrowthOpportunity?.({
+      id:
+        candidate.opportunityId ||
+        candidate.id,
+      type: 'activity',
+      title: candidate.title,
+      emoji: candidate.emoji || '✨',
+      description: candidate.description || '',
+      experienceId:
+        candidate.opportunityId ||
+        candidate.source?.experienceId ||
+        null,
+      domainIds: candidate.domains || [],
+      skillIds: candidate.develops || [],
+      interestIds: candidate.interests || [],
+      ageRange: candidate.ageRange || null,
+      provider: {
+        name:
+          candidate.provider ||
+          'SynapStride Curated Growth Catalog',
+        type:
+          candidate.providerType ||
+          'curated_catalog',
+      },
+      recommendationContext: {
+        source:
+          'growth_intelligence_v0.11',
+        evaluationScore:
+          candidate.evaluation?.score ?? null,
+        reasons:
+          candidate.evaluation?.reasons || [],
+      },
+      metadata: {
+        growthIntelligenceRecommended: true,
+        providerMatchScore:
+          candidate.providerMatchScore ?? null,
+      },
+    })
+  }
 
   return (
     <section className="gaWorkspaceV0103">
@@ -7514,6 +7570,53 @@ function GrowthAreaWorkspaceV0103({
 
       {localView === 'explore' && (
         <div className="gaExploreMoreV0104B">
+          {visibleIntelligenceOpportunities.length > 0 && (
+            <section className="iaPanelV0104D iaInterestsV0104D">
+              <div className="iaPanelHeadV0104D">
+                <div>
+                  <span className="cgEyebrowV09">
+                    PICKED FOR YOU
+                  </span>
+                  <strong>
+                    Based on what we’re learning about you
+                  </strong>
+                </div>
+              </div>
+
+              <p>
+                These ideas use your interests, what you’ve tried, and your
+                evolving Growth Profile. They are suggestions — trying one is
+                what gives SynapStride new evidence.
+              </p>
+
+              <div className="iaDoingListV0104D">
+                {visibleIntelligenceOpportunities.map((candidate) => (
+                  <article key={`intelligence-${candidate.id}`}>
+                    <span className="iaDoingEmojiV0104D">
+                      {candidate.emoji || '✨'}
+                    </span>
+
+                    <div>
+                      <strong>{candidate.title}</strong>
+                      <small>
+                        {candidate.evaluation?.reasons?.[0] ||
+                          'Picked from your current interests and Growth Profile.'}
+                      </small>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="cgButtonV09 cgButtonPrimaryV09 cgButtonSmallV09"
+                      onClick={() => saveIntelligenceOpportunity(candidate)}
+                    >
+                      Save
+                    </button>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
           <AdventuresHub
             embedded
             childName={childName}
