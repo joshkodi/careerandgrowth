@@ -50,8 +50,8 @@ function GrowthIntelligenceInspector({
           fontWeight: 800,
         }}
       >
-        🧪 Developer: Growth
-        Intelligence Inspector
+        🧪 Growth Intelligence
+        Inspector
       </summary>
 
       <div
@@ -348,7 +348,7 @@ function GrowthIntelligenceInspector({
         >
 
           <strong>
-            Developer Tools
+            Danger Zone
           </strong>
 
           <p
@@ -361,11 +361,12 @@ function GrowthIntelligenceInspector({
                 '0.78rem',
             }}
           >
-            Clear all test evidence,
-            intents, Journey items,
-            and profile data and start
-            a new persona from a
-            completely clean state.
+            Clear all local MVP test
+            evidence, intents, Journey
+            items, and profile data.
+            This is a development
+            action, not a customer
+            Profile control.
           </p>
 
           <button

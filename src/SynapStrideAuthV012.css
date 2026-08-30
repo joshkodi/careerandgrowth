@@ -1,0 +1,487 @@
+/* SynapStride v0.12 — Family Account & First-Use Foundation */
+
+.synAuthPageV012,
+.synChildSetupV012 {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(103, 80, 232, 0.08), transparent 28%),
+    radial-gradient(circle at 90% 90%, rgba(22, 163, 74, 0.07), transparent 30%),
+    #f8faff;
+  color: #142345;
+}
+
+.synAuthWelcomeCardV012,
+.synAuthAccountCardV012,
+.synChildSetupCardV012 {
+  width: min(100%, 470px);
+  border: 1px solid #dfe5f2;
+  border-radius: 28px;
+  background: rgba(255,255,255,0.97);
+  box-shadow: 0 24px 70px rgba(26, 48, 87, 0.10);
+}
+
+.synAuthWelcomeCardV012 {
+  padding: 38px;
+}
+
+.synAuthAccountCardV012,
+.synChildSetupCardV012 {
+  padding: 30px 32px 34px;
+}
+
+.synAuthBrandV012 {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.synAuthBrandV012 img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.synAuthBrandV012 strong {
+  color: #11244a;
+  font-size: 29px;
+  line-height: 1;
+  letter-spacing: -1.2px;
+}
+
+.synAuthBrandV012 strong span {
+  color: #6951e8;
+}
+
+.synAuthBrandHeroV012 {
+  margin-bottom: 34px;
+}
+
+.synAuthBrandCenteredV012 {
+  display: flex;
+  justify-content: center;
+  margin: 8px auto 26px;
+}
+
+.synAuthWelcomeCopyV012 h1,
+.synAuthAccountCardV012 h1,
+.synChildSetupCardV012 h1 {
+  margin: 8px 0 12px;
+  color: #102144;
+  letter-spacing: -1.3px;
+}
+
+.synAuthWelcomeCopyV012 h1 {
+  max-width: 390px;
+  font-size: clamp(34px, 5vw, 46px);
+  line-height: 1.07;
+}
+
+.synAuthAccountCardV012 h1,
+.synChildSetupCardV012 h1 {
+  font-size: 31px;
+  line-height: 1.12;
+  text-align: center;
+}
+
+.synAuthEyebrowV012 {
+  margin: 0;
+  color: #674fe5;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.synAuthLeadV012 {
+  margin: 0;
+  color: #68748c;
+  font-size: 16px;
+  line-height: 1.58;
+}
+
+.synAuthAccountCardV012 > .synAuthEyebrowV012,
+.synAuthAccountCardV012 > .synAuthLeadV012,
+.synChildSetupCardV012 > .synAuthEyebrowV012,
+.synChildSetupCardV012 > .synAuthLeadV012 {
+  text-align: center;
+}
+
+.synAuthWelcomePointsV012 {
+  display: grid;
+  gap: 13px;
+  margin: 28px 0 30px;
+  padding: 20px;
+  border-radius: 18px;
+  background: #f8f9ff;
+}
+
+.synAuthWelcomePointsV012 span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #3d4b67;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.synAuthWelcomePointsV012 b {
+  min-width: 26px;
+  text-align: center;
+}
+
+.synAuthWelcomeActionsV012 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.synAuthPrimaryV012,
+.synAuthSecondaryV012,
+.synAuthProviderStackV012 button,
+.synSignOutButtonV012 {
+  min-height: 52px;
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.synAuthPrimaryV012 {
+  border: 0;
+  background: linear-gradient(135deg, #7256ed, #5b47de);
+  color: white;
+  box-shadow: 0 10px 22px rgba(103, 79, 229, 0.20);
+}
+
+.synAuthSecondaryV012 {
+  border: 1px solid #d7ddec;
+  background: white;
+  color: #15264a;
+}
+
+.synAuthPrimaryV012:hover,
+.synAuthSecondaryV012:hover,
+.synAuthProviderStackV012 button:hover {
+  transform: translateY(-1px);
+}
+
+.synAuthWhyV012 {
+  display: block;
+  margin: 22px auto 0;
+  border: 0;
+  background: transparent;
+  color: #6048de;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.synAuthBackV012 {
+  border: 0;
+  background: transparent;
+  color: #61708d;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.synAuthProviderStackV012 {
+  display: grid;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.synAuthProviderStackV012 button {
+  border: 1px solid #dbe1ee;
+  background: white;
+  color: #17284c;
+}
+
+.synProviderGlyphV012 {
+  display: inline-grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: #f4f6fb;
+  font-weight: 900;
+}
+
+.synAuthDividerV012 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 21px 0;
+  color: #9aa4b8;
+  font-size: 12px;
+}
+
+.synAuthDividerV012::before,
+.synAuthDividerV012::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: #e4e8f1;
+}
+
+.synAuthFormV012 {
+  display: grid;
+  gap: 16px;
+}
+
+.synAuthFormV012 label {
+  display: grid;
+  gap: 7px;
+  color: #33415f;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.synAuthFormV012 input,
+.synAuthFormV012 select {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 50px;
+  border: 1px solid #d8deeb;
+  border-radius: 13px;
+  background: #fff;
+  color: #17284a;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.synAuthFormV012 input:focus,
+.synAuthFormV012 select:focus {
+  border-color: #8068ed;
+  box-shadow: 0 0 0 3px rgba(112, 83, 232, 0.10);
+}
+
+.synAuthMessageV012 {
+  margin: -3px 0 0;
+  padding: 11px 12px;
+  border-radius: 11px;
+  background: #f7f4ff;
+  color: #5d49bd;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.synAuthSwitchV012 {
+  margin: 20px 0 0;
+  text-align: center;
+  color: #7a859a;
+  font-size: 13px;
+}
+
+.synAuthSwitchV012 button {
+  border: 0;
+  background: transparent;
+  color: #6048df;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.synAuthFinePrintV012 {
+  margin: 19px 0 0;
+  text-align: center;
+  color: #98a1b3;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.synChildSetupIconV012 {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+  margin: 4px auto 15px;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #f1ecff, #eafaf1);
+  font-size: 34px;
+}
+
+.synChildSetupCardV012 .synAuthFormV012 {
+  margin-top: 26px;
+}
+
+.synAccountCardV012 {
+  border-color: #ddd6fe;
+  background: linear-gradient(135deg, #fbfaff, #ffffff);
+}
+
+.synSignOutButtonV012 {
+  min-height: 38px;
+  margin-top: 10px;
+  padding: 0 14px;
+  border: 1px solid #d8deeb;
+  background: white;
+  color: #5b4ac8;
+  font-size: 12px;
+}
+
+@media (max-width: 620px) {
+  .synAuthPageV012,
+  .synChildSetupV012 {
+    padding: 14px;
+  }
+
+  .synAuthWelcomeCardV012,
+  .synAuthAccountCardV012,
+  .synChildSetupCardV012 {
+    border-radius: 22px;
+  }
+
+  .synAuthWelcomeCardV012,
+  .synAuthAccountCardV012,
+  .synChildSetupCardV012 {
+    padding: 24px 20px;
+  }
+
+  .synAuthWelcomeActionsV012 {
+    grid-template-columns: 1fr;
+  }
+
+  .synAuthWelcomeCopyV012 h1 {
+    font-size: 34px;
+  }
+}
+
+/* v0.12.1 local account maturity */
+.synAuthIdentityMetaV0121 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: 10px 0 14px;
+  color: #7a7690;
+  font-size: 12px;
+}
+
+.synAuthIdentityMetaV0121 span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f5f3fb;
+  border: 1px solid #ebe7f5;
+}
+
+/* ============================================================
+   v0.12.2 — CHILD ACCOUNT MENU
+   ============================================================ */
+.synChildAccountWrapV0122 {
+  position: relative;
+  margin-top: 8px;
+}
+
+.synChildCardButtonV0122 {
+  width: 100%;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.synChildCardButtonV0122:focus-visible {
+  outline: 3px solid rgba(111, 80, 220, 0.22);
+  outline-offset: 2px;
+}
+
+.synChildMenuChevronV0122 {
+  transition: transform 160ms ease;
+}
+
+.synChildAccountWrapV0122.open .synChildMenuChevronV0122 {
+  transform: rotate(180deg);
+}
+
+.synChildAccountMenuV0122 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 10px);
+  z-index: 30;
+  padding: 10px;
+  border: 1px solid #e8e3f2;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 16px 38px rgba(47, 38, 75, 0.16);
+}
+
+.synChildAccountMenuHeadV0122 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 7px 8px;
+}
+
+.synChildAccountMenuHeadV0122 > div:last-child,
+.synChildAccountMenuV0122 button > span:last-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.synChildAccountMenuHeadV0122 strong,
+.synChildAccountMenuV0122 button strong {
+  color: #29243a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.synChildAccountMenuHeadV0122 small,
+.synChildAccountMenuV0122 button small {
+  color: #858097;
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.synChildAccountMenuDividerV0122 {
+  height: 1px;
+  margin: 5px 4px;
+  background: #eeeaf4;
+}
+
+.synChildAccountMenuV0122 > button {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 25px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  padding: 9px 8px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.synChildAccountMenuV0122 > button:hover:not(:disabled),
+.synChildAccountMenuV0122 > button:focus-visible:not(:disabled) {
+  background: #f6f3fc;
+  outline: none;
+}
+
+.synChildAccountMenuV0122 > button:disabled {
+  cursor: default;
+  opacity: 0.48;
+}
+
+.synChildAccountMenuV0122 > button.danger strong,
+.synChildAccountMenuV0122 > button.danger > span:first-child {
+  color: #b54552;
+}
+
+@media (max-width: 820px) {
+  .synChildAccountMenuV0122 {
+    display: none;
+  }
+}

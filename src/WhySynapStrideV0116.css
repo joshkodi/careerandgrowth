@@ -1,0 +1,183 @@
+:root{
+  --syn-navy:#0b2457;
+  --syn-text:#12284f;
+  --syn-muted:#62708a;
+  --syn-line:#dfe6f2;
+  --syn-purple:#6b4fd3;
+  --syn-purple-soft:#f3efff;
+  --syn-blue:#2f80ed;
+  --syn-blue-soft:#eef6ff;
+  --syn-green:#1a9b62;
+  --syn-green-soft:#effaf5;
+  --syn-orange:#f59e2f;
+  --syn-orange-soft:#fff7e8;
+  --syn-teal:#2aa69a;
+}
+
+/* =========================================================
+   v0.11.6 — unified visual shell
+   ========================================================= */
+.synShellV0116{min-height:100vh;display:grid;grid-template-columns:264px minmax(0,1fr);background:#f8faff;color:var(--syn-text)}
+.synSidebarV0116{position:sticky;top:0;height:100vh;box-sizing:border-box;background:#fff;border-right:1px solid #e4e9f2;padding:24px 15px 18px;display:flex;flex-direction:column;z-index:20;box-shadow:5px 0 24px rgba(22,43,78,.025)}
+.synBrandV0116{border:0;background:transparent;padding:0 13px 23px;text-align:left;cursor:pointer;color:var(--syn-navy)}
+.synBrandWordV0116{display:block;font-size:1.78rem;font-weight:850;letter-spacing:-.055em;line-height:1}.synBrandWordV0116 span{color:#6954d6}.synBrandWordV0116 i{font-style:normal;font-size:1rem;color:#6c56db;vertical-align:top;margin-left:2px}
+.synBrandV0116 small{display:flex;align-items:center;gap:5px;margin-top:9px;font-size:.78rem;font-weight:700}.synBrandV0116 small b:nth-child(1){color:#169d5e}.synBrandV0116 small b:nth-child(3){color:#1785ee}.synBrandV0116 small b:nth-child(5){color:#7351df}.synBrandV0116 small em{font-style:normal;color:#b1bbcc}
+.synNavV0116,.synBottomNavV0116{display:flex;flex-direction:column;gap:4px}.synNavV0116 button,.synBottomNavV0116 button{width:100%;min-height:46px;border:0;border-radius:12px;background:transparent;color:#172950;display:flex;align-items:center;gap:12px;padding:9px 12px;font:inherit;text-align:left;cursor:pointer;transition:.15s ease}.synNavV0116 button:hover,.synBottomNavV0116 button:hover{background:#f6f8fc}.synNavV0116 button.active,.synBottomNavV0116 button.active{background:#f2efff;color:#5538c3}.synNavV0116 button strong,.synBottomNavV0116 button strong{font-size:.92rem;font-weight:760;flex:1}.synNavIconV0116{width:28px;height:28px;display:grid;place-items:center;color:#506687}.synNavIconV0116 svg{width:23px;height:23px}.synNavIconV0116.growth{color:#12a85f}.synNavIconV0116.profile{color:#8256d8}.synNavIconV0116.parent{color:#2583e8}.synNavIconV0116.why{color:#734bd2}.synChevronV0116{font-size:1rem;transition:transform .2s ease;color:#304b75}.synNavGroupV0116.open>.active .synChevronV0116{transform:rotate(180deg)}.synNavCountV0116{display:grid!important;place-items:center!important;min-width:19px;height:19px;border-radius:10px;background:#edf1f7;color:#61718b;font-size:.64rem!important;font-weight:800;padding:0 5px!important}
+.synSubnavV0116{margin:1px 0 8px 28px;border-left:2px solid #e5eaf3;padding:2px 0 2px 12px;display:flex;flex-direction:column;gap:2px}.synSubnavV0116 button{min-height:39px;padding:6px 8px;border-radius:9px;font-size:.84rem}.synSubnavV0116 button span{width:22px;height:22px;display:grid;place-items:center;color:#8190ab}.synSubnavV0116 button span svg{width:18px;height:18px}.synSubnavV0116 button.active{background:#f7f4ff;color:#5e41c8;font-weight:750}.synSubnavV0116 button.active span{color:#6f51da}
+.synNavSpacerV0116{flex:1}.synBottomNavV0116{border-top:1px solid #e8edf5;padding-top:12px}.synWhyNavButtonV0116{border:1px solid transparent!important}.synWhyNavButtonV0116.active{border-color:#d8ccff!important;background:#f6f1ff!important}.synChildCardV0116{margin-top:14px;border:1px solid #e0e6f0;border-radius:14px;padding:10px;display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:9px;background:#fbfcff}.synChildAvatarV0116{width:38px;height:38px;border-radius:50%;background:linear-gradient(145deg,#d8f1ff,#dff6e7);display:grid;place-items:center;font-weight:850;color:#284d70;border:2px solid #fff;box-shadow:0 1px 5px rgba(28,66,110,.1)}.synChildCardV0116 strong{display:block;font-size:.86rem}.synChildCardV0116 small{display:block;margin-top:2px;color:#738097;font-size:.72rem}.synChildCardV0116>span{color:#60708a}
+.synCanvasV0116{min-width:0;min-height:100vh;background:linear-gradient(180deg,#fbfcff 0,#f7f9fd 100%)}.synMobileHeaderV0116,.synMobileNavV0116{display:none}.synMobileBrandV0116{border:0;background:transparent;font-weight:850;font-size:1.15rem;color:var(--syn-navy)}.synMobileBrandV0116 span{color:#6b4fd3}.synMobileBrandV0116 i{font-style:normal;color:#6b4fd3}.synMobileAvatarV0116{width:34px;height:34px;border:0;border-radius:50%;background:#edf4ff;color:#214f88;font-weight:800}
+
+/* =========================================================
+   v0.11.6 — Why SynapStride page
+   ========================================================= */
+.synWhyPageV0116{width:min(1240px,calc(100% - 44px));margin:0 auto;padding:24px 0 54px;color:var(--syn-text)}.synWhyPageV0116.embedded{padding-top:22px}.synWhyBackV0116{border:0;background:transparent;color:#5a6e8c;font:inherit;font-weight:750;padding:8px 0;margin-bottom:10px;cursor:pointer}
+.synWhyHeroV0116{display:grid;grid-template-columns:190px minmax(0,1fr) 190px;align-items:end;gap:18px;margin-bottom:18px}.synWhyHeroCopyV0116{text-align:center;align-self:center}.synWhyHeroCopyV0116 h1{margin:0;color:#0d2860;font-size:clamp(2.1rem,3.8vw,3.55rem);line-height:.98;letter-spacing:-.05em}.synWhyHeroCopyV0116 h2{margin:10px 0 7px;color:#6742d7;font-size:1.1rem;line-height:1.25}.synWhyHeroCopyV0116 p{max-width:720px;margin:0 auto;color:#334666;font-size:.9rem;line-height:1.5}.synWhyKidPortraitV0116,.synWhyParentPortraitV0116{height:112px;border-radius:48% 48% 24px 24px;display:flex;align-items:end;justify-content:center;position:relative;overflow:hidden}.synWhyKidPortraitV0116{background:radial-gradient(circle at 50% 80%,#d8c9ff 0 32%,transparent 33%),linear-gradient(180deg,transparent 32%,#efeaff 33%)}.synWhyParentPortraitV0116{background:radial-gradient(circle at 50% 80%,#cbf0df 0 32%,transparent 33%),linear-gradient(180deg,transparent 32%,#e6f7ef 33%)}.synWhyKidPortraitV0116 span,.synWhyParentPortraitV0116 span{font-size:4.8rem;line-height:1;filter:saturate(.85)}.synWhyKidPortraitV0116 i,.synWhyParentPortraitV0116 i,.synWhyKidPortraitV0116 b,.synWhyParentPortraitV0116 b{position:absolute;font-style:normal}.synWhyKidPortraitV0116 i{left:18px;top:18px;color:#f3a821}.synWhyKidPortraitV0116 b{right:16px;top:28px;font-size:1.4rem}.synWhyParentPortraitV0116 i{left:15px;top:17px;color:#43b68b;font-size:1.15rem}.synWhyParentPortraitV0116 b{right:20px;top:18px;color:#4fc398}
+.synWhyMainGridV0116{display:grid;grid-template-columns:minmax(360px,.82fr) minmax(570px,1.5fr);gap:16px}.synWhyKidsPanelV0116,.synWhyParentsPanelV0116{border:1px solid #dfe5ef;border-radius:16px;background:#fff;padding:14px 16px;box-shadow:0 8px 22px rgba(40,58,90,.04)}.synWhyKidsPanelV0116{border-color:#ded5f7;background:linear-gradient(180deg,#fff 0,#fdfbff 100%)}.synWhyParentsPanelV0116{border-color:#d1e8dc;background:linear-gradient(180deg,#fbfffd 0,#fff 45%)}
+.synWhySectionTitleV0116{display:flex;align-items:flex-start;gap:10px;padding:0 4px 10px;border-bottom:1px solid #e7eaf1}.synWhyTitleIconV0116{width:32px;height:32px;display:grid;place-items:center}.synWhySectionTitleV0116.kids .synWhyTitleIconV0116{color:#7150d5}.synWhySectionTitleV0116.parents .synWhyTitleIconV0116{color:#168652}.synWhySectionTitleV0116 small{display:block;font-size:.72rem;font-weight:850;letter-spacing:.02em}.synWhySectionTitleV0116.kids small{color:#5133a5}.synWhySectionTitleV0116.parents small{color:#14764b}.synWhySectionTitleV0116 h2{margin:2px 0 0;font-size:1.16rem;line-height:1.15;letter-spacing:-.02em}.synWhySectionTitleV0116.parents h2{color:#08663f;font-size:1.3rem}
+.synWhyKidActionsV0116{display:flex;flex-direction:column}.synWhyKidActionV0116{display:grid;grid-template-columns:54px minmax(0,1fr) 46px;gap:10px;align-items:center;padding:11px 4px;border-bottom:1px solid #e9edf4}.synWhyActionIconV0116{width:52px;height:52px;border-radius:10px;display:grid;place-items:center;border:1px solid}.synWhyActionIconV0116 svg{width:28px;height:28px}.synWhyActionIconV0116.violet{background:#f3efff;border-color:#cdbdff;color:#744fde}.synWhyActionIconV0116.blue{background:#edf6ff;border-color:#bcd9ff;color:#2783e8}.synWhyActionIconV0116.green{background:#edf9f2;border-color:#bbdfc9;color:#138957}.synWhyActionIconV0116.orange{background:#fff5e6;border-color:#ffd28f;color:#e58716}.synWhyKidActionV0116 h3{margin:0 0 3px;font-size:.82rem;color:#5d36c9;letter-spacing:.01em}.synWhyKidActionV0116:nth-child(2) h3{color:#1970ca}.synWhyKidActionV0116:nth-child(3) h3{color:#178351}.synWhyKidActionV0116:nth-child(4) h3{color:#dc7614}.synWhyKidActionV0116 p{margin:0;color:#243552;font-size:.73rem;line-height:1.38}.synWhyActionVisualV0116{text-align:center;font-size:2rem}.synWhyKidsPromiseV0116{margin-top:10px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #d9cefa;border-radius:10px;background:#faf7ff;padding:8px 10px;color:#6035cc;text-align:center;font-size:.72rem;line-height:1.35}.synWhyKidsPromiseV0116>span{font-size:1.35rem}
+.synWhyParentJourneyV0116{display:grid;grid-template-columns:1fr 34px 1.15fr 34px 1.12fr;align-items:stretch;gap:8px;margin-top:13px}.synWhyParentJourneyV0116 article{border:1px solid #d9e7e0;border-radius:12px;background:#fff;padding:13px}.synWhyParentJourneyV0116 h3{margin:0 0 10px;color:#0b6842;font-size:.71rem;line-height:1.25;text-align:center}.synWhyParentJourneyV0116 article p{margin:0 0 7px;display:flex;gap:7px;color:#243855;font-size:.71rem;line-height:1.25}.synWhyParentJourneyV0116 article p span{width:17px;height:17px;border-radius:50%;display:grid;place-items:center;flex:none;background:#dff5e8;color:#16824f;font-size:.63rem;font-weight:900}.synWhyJourneyArrowV0116{align-self:center;width:31px;height:31px;border:1px solid #a8d4c0;border-radius:50%;display:grid;place-items:center;color:#16865a;background:#fff;font-weight:850}.synWhyUnderstandCardV0116{text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center}.synWhyUnderstandCardV0116 div{font-size:.72rem;line-height:1.4}.synWhyUnderstandCardV0116 b{color:#18a05f;margin:4px 0}.synWhyEverydayV0116{display:flex;align-items:center;justify-content:center;gap:13px;margin:10px 0 13px;border:1px solid #cce7d9;border-radius:10px;padding:8px 12px;background:#f2faf6;color:#0b7046;text-align:center;font-size:.75rem;line-height:1.35}.synWhyEverydayV0116 span{font-size:1.4rem}
+.synWhyDifferenceV0116 h3{font-size:.76rem;margin:0 0 6px;color:#183365}.synWhyCompareTableV0116{display:grid;grid-template-columns:.92fr 1.28fr;border:1px solid #dce4ed;border-radius:10px;overflow:hidden}.synWhyCompareTableV0116>div{min-height:28px;border-bottom:1px solid #e3e8ef;padding:5px 8px;box-sizing:border-box;font-size:.66rem;line-height:1.25;display:flex;align-items:center;gap:6px}.synWhyCompareTableV0116>div:nth-last-child(-n+2){border-bottom:0}.synWhyCompareTableV0116 .generic{border-right:1px solid #e3e8ef}.synWhyCompareTableV0116 .head{font-weight:850;font-size:.67rem;justify-content:center}.synWhyCompareTableV0116 .head.generic{background:#eef2ff;color:#24336c}.synWhyCompareTableV0116 .head.synap{background:#eaf8f2;color:#086d45}.synWhyCompareTableV0116 .cell span{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;flex:none;font-size:.65rem;font-weight:900}.synWhyCompareTableV0116 .cell.generic span{background:#eef0f4;color:#667085}.synWhyCompareTableV0116 .cell.synap span{background:#e2f7e9;color:#168252}
+.synWhyBottomGridV0116{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px;margin-top:14px}.synWhyLoopV0116,.synWhyBigQuestionV0116{border:1px solid #e0e5ef;border-radius:15px;background:#fff;padding:13px 16px}.synWhyLoopV0116 h2{margin:0 0 10px;text-align:center;color:#6845d1;font-size:.8rem;letter-spacing:.02em}.synWhyLoopStepsV0116{display:grid;grid-template-columns:repeat(6,1fr);gap:13px}.synWhyLoopNodeV0116{position:relative;text-align:center;min-width:0}.synWhyLoopIconV0116{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;margin:0 auto 5px;color:#fff;box-shadow:0 3px 9px rgba(25,46,82,.12)}.synWhyLoopIconV0116 svg{width:24px;height:24px}.synWhyLoopIconV0116.tone0,.synWhyLoopIconV0116.tone5{background:#794fd6}.synWhyLoopIconV0116.tone1{background:#2b82e5}.synWhyLoopIconV0116.tone2{background:#2da65e}.synWhyLoopIconV0116.tone3{background:#f09327}.synWhyLoopIconV0116.tone4{background:#38a89d}.synWhyLoopNodeV0116 strong{display:block;font-size:.63rem;color:#4931ae}.synWhyLoopNodeV0116 small{display:block;font-size:.58rem;color:#41516d;line-height:1.2;margin-top:2px}.synWhyLoopNodeV0116 i{position:absolute;top:18px;right:-14px;color:#8164d5;font-style:normal}.synWhyLoopReturnV0116{margin:9px 0 0;text-align:center;color:#7453cd;font-size:.63rem;border-bottom:1px dashed #a893e2;padding-bottom:2px}.synWhyBigQuestionV0116{background:linear-gradient(150deg,#fffaf0,#fff);border-color:#f0dcae;display:flex;flex-direction:column;justify-content:center}.synWhyBigQuestionV0116 small{color:#dd7b18;font-weight:850;font-size:.7rem}.synWhyBigQuestionV0116 h2{margin:9px 0 7px;font-size:1.02rem;line-height:1.3;color:#13284e}.synWhyBigQuestionV0116 p{margin:0;color:#dd6911;font-weight:800;font-size:.87rem;line-height:1.35}.synWhyBigQuestionV0116 .cta{margin-top:14px;align-self:flex-start}
+
+@media(max-width:1080px){.synShellV0116{grid-template-columns:226px minmax(0,1fr)}.synSidebarV0116{padding-left:10px;padding-right:10px}.synWhyHeroV0116{grid-template-columns:125px 1fr 125px}.synWhyMainGridV0116{grid-template-columns:1fr}.synWhyParentsPanelV0116{order:2}.synWhyKidsPanelV0116{order:1}.synWhyBottomGridV0116{grid-template-columns:1fr}.synWhyBigQuestionV0116{min-height:130px}.synWhyParentJourneyV0116{grid-template-columns:1fr 28px 1fr 28px 1fr}}
+@media(max-width:760px){.synShellV0116{display:block;padding-bottom:67px}.synSidebarV0116{display:none}.synMobileHeaderV0116{height:56px;background:#fff;border-bottom:1px solid #e3e8f1;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:30}.synMobileNavV0116{position:fixed;z-index:40;left:0;right:0;bottom:0;height:66px;background:#fff;border-top:1px solid #dfe5ef;display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:max(0px,env(safe-area-inset-bottom))}.synMobileNavV0116 button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#64748b}.synMobileNavV0116 button svg{width:20px;height:20px}.synMobileNavV0116 button small{font-size:.62rem}.synMobileNavV0116 button.active{color:#6041c8}.synWhyPageV0116{width:min(100% - 24px,1240px);padding:18px 0 34px}.synWhyHeroV0116{grid-template-columns:1fr;margin-bottom:14px}.synWhyKidPortraitV0116,.synWhyParentPortraitV0116{display:none}.synWhyHeroCopyV0116 h1{font-size:2.25rem}.synWhyHeroCopyV0116 h2{font-size:1rem}.synWhyHeroCopyV0116 p{font-size:.83rem}.synWhyMainGridV0116{grid-template-columns:1fr}.synWhyKidsPanelV0116,.synWhyParentsPanelV0116{padding:12px}.synWhyKidActionV0116{grid-template-columns:48px 1fr}.synWhyActionIconV0116{width:46px;height:46px}.synWhyActionVisualV0116{display:none}.synWhyParentJourneyV0116{grid-template-columns:1fr}.synWhyJourneyArrowV0116{transform:rotate(90deg);justify-self:center}.synWhyCompareTableV0116{grid-template-columns:1fr 1fr}.synWhyCompareTableV0116>div{font-size:.61rem;padding:5px}.synWhyLoopStepsV0116{grid-template-columns:repeat(3,1fr);row-gap:16px}.synWhyLoopNodeV0116 i{display:none}.synWhyBottomGridV0116{grid-template-columns:1fr}.synWhyLoopIconV0116{width:44px;height:44px}.synWhyBigQuestionV0116{padding:16px}}
+
+/* =========================================================
+   v0.11.6.1 — typography, logo + Growth Guide polish
+   ========================================================= */
+.synWhyPageV0116{
+  --syn-description-font: ui-rounded,"SF Pro Rounded","Avenir Next",Avenir,Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+.synWhyPageV0116 p,
+.synWhyKidActionV0116 p,
+.synWhyParentJourneyV0116 article p,
+.synWhyUnderstandCardV0116 div,
+.synWhyEverydayV0116,
+.synWhyCompareTableV0116>div,
+.synWhyLoopNodeV0116 small,
+.synWhyBigQuestionV0116 p,
+.synWhyGuideCardV01161 p,
+.synWhyGuideRolesV01161 small,
+.synWhyKidsPromiseV0116{
+  font-family:var(--syn-description-font);
+  letter-spacing:.005em;
+}
+.synWhyHeroCopyV0116 p{font-size:.94rem;line-height:1.55;max-width:680px}
+.synWhyKidActionV0116 p{font-size:.77rem;line-height:1.42}
+.synWhyEverydayV0116{font-size:.78rem}
+.synWhyCompareTableV0116>div{font-size:.69rem;line-height:1.3}
+.synWhyLoopNodeV0116 small{font-size:.61rem}
+.synWhyBigQuestionV0116 p{font-size:.9rem}
+
+/* Brand lockup — keeps the approved menu structure, adds the mark beside it. */
+.synBrandV0116{display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:10px;padding:0 10px 23px}
+.synBrandLogoV01161{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:#6650d7;background:linear-gradient(145deg,#f4f0ff,#eef7ff);box-shadow:inset 0 0 0 1px #ded6fb,0 4px 12px rgba(69,63,143,.08)}
+.synBrandLogoV01161 svg{width:34px;height:34px}
+.synBrandTextV01161{min-width:0;display:block}
+.synBrandTextV01161 .synBrandWordV0116{font-size:1.58rem}
+.synBrandTextV01161 small{margin-top:7px;white-space:nowrap}
+
+/* Growth Guide concept */
+.synWhyGuideCardV01161{margin:0 0 13px;border:1px solid #d9d8f2;border-radius:12px;padding:11px 12px;background:linear-gradient(135deg,#fbf9ff 0,#f6fbff 100%);display:grid;grid-template-columns:minmax(180px,.85fr) minmax(360px,1.5fr);gap:12px;align-items:center}
+.synWhyGuideIntroV01161 small{display:block;color:#6444c9;font-size:.66rem;font-weight:900;letter-spacing:.04em}
+.synWhyGuideIntroV01161 h3{margin:4px 0 4px;color:#172d5a;font-size:.88rem;line-height:1.22}
+.synWhyGuideIntroV01161 p{margin:0;color:#52627d;font-size:.69rem;line-height:1.38}
+.synWhyGuideRolesV01161{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.synWhyGuideRolesV01161>div{min-width:0;border:1px solid #e0e4ef;border-radius:10px;background:#fff;padding:8px 6px;text-align:center}
+.synWhyGuideRolesV01161>div>span{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;margin:0 auto 4px;background:#f1edff;color:#6848cf;font-weight:900;font-size:.76rem}
+.synWhyGuideRolesV01161 strong{display:block;color:#243a65;font-size:.66rem;line-height:1.2}
+.synWhyGuideRolesV01161 small{display:block;margin-top:2px;color:#6c7890;font-size:.56rem;line-height:1.2}
+
+@media(max-width:1080px){
+  .synBrandV0116{grid-template-columns:37px minmax(0,1fr);gap:8px;padding-left:8px;padding-right:8px}
+  .synBrandLogoV01161{width:37px;height:37px;border-radius:11px}.synBrandLogoV01161 svg{width:30px;height:30px}
+  .synBrandTextV01161 .synBrandWordV0116{font-size:1.4rem}
+  .synBrandTextV01161 small{font-size:.68rem}
+}
+@media(max-width:760px){
+  .synWhyGuideCardV01161{grid-template-columns:1fr}
+  .synWhyGuideRolesV01161{grid-template-columns:repeat(2,1fr)}
+  .synWhyHeroCopyV0116 p{font-size:.86rem}
+}
+
+
+/* =========================================================
+   v0.11.8.1 — restore approved SynapStride logo asset
+   ========================================================= */
+.synBrandLogoV01161{
+  overflow:hidden;
+  background:#fff;
+}
+.synBrandLogoV01161 img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+.synMobileBrandV0116{display:flex;align-items:center;gap:7px}
+.synMobileBrandV0116>img{width:29px;height:29px;object-fit:contain;display:block}
+.synMobileBrandTextV01181{display:inline-block}
+
+/* =========================================================
+   v0.11.8.2 — Why SynapStride compact hero / density polish
+   Keeps the approved page structure and sidebar intact.
+   ========================================================= */
+.synWhyPageV0116{
+  padding-top:12px;
+}
+.synWhyPageV0116.embedded{
+  padding-top:10px;
+}
+.synWhyHeroV0116{
+  grid-template-columns:150px minmax(0,1fr) 150px;
+  align-items:center;
+  gap:14px;
+  margin-bottom:12px;
+}
+.synWhyHeroCopyV0116 h1{
+  font-size:clamp(2rem,3vw,2.85rem);
+  line-height:1.02;
+  letter-spacing:-.045em;
+  white-space:nowrap;
+}
+.synWhyHeroCopyV0116 h2{
+  margin:6px 0 5px;
+  font-size:1rem;
+  line-height:1.22;
+}
+.synWhyHeroCopyV0116 p{
+  max-width:650px;
+  font-size:.88rem;
+  line-height:1.45;
+}
+.synWhyKidPortraitV0116,
+.synWhyParentPortraitV0116{
+  height:88px;
+  border-radius:42% 42% 20px 20px;
+}
+.synWhyKidPortraitV0116 span,
+.synWhyParentPortraitV0116 span{
+  font-size:3.7rem;
+}
+.synWhyKidPortraitV0116 i{left:14px;top:12px}
+.synWhyKidPortraitV0116 b{right:12px;top:18px;font-size:1.15rem}
+.synWhyParentPortraitV0116 i{left:12px;top:12px;font-size:1rem}
+.synWhyParentPortraitV0116 b{right:15px;top:13px}
+.synWhyMainGridV0116{
+  gap:14px;
+}
+
+@media(max-width:1080px){
+  .synWhyHeroV0116{grid-template-columns:105px minmax(0,1fr) 105px;gap:10px}
+  .synWhyHeroCopyV0116 h1{font-size:clamp(1.85rem,3.2vw,2.5rem)}
+  .synWhyKidPortraitV0116,.synWhyParentPortraitV0116{height:76px}
+  .synWhyKidPortraitV0116 span,.synWhyParentPortraitV0116 span{font-size:3.15rem}
+}
+
+@media(max-width:760px){
+  .synWhyPageV0116,.synWhyPageV0116.embedded{padding-top:10px}
+  .synWhyHeroV0116{grid-template-columns:1fr;margin-bottom:12px}
+  .synWhyHeroCopyV0116 h1{font-size:2rem;white-space:normal}
+  .synWhyHeroCopyV0116 h2{margin-top:6px;font-size:.95rem}
+  .synWhyHeroCopyV0116 p{font-size:.84rem;line-height:1.45}
+}

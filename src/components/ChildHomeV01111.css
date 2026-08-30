@@ -1,0 +1,456 @@
+/* ============================================================
+   SynapStride — MVP v0.11 UX Integration
+   Child Home: guide first, features second.
+   ============================================================ */
+
+.synChildHomeV01111 {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 34px 0 54px;
+  color: #18213a;
+}
+
+.synChildHomeV01111 button,
+.synChildHomeV01111 input {
+  font: inherit;
+}
+
+.synChildHomeEyebrowV01111 {
+  display: block;
+  color: #7469d9;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.synChildHomeHeroV01111 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 28px;
+  align-items: center;
+  padding: 8px 2px 26px;
+}
+
+.synChildHomeHeroCopyV01111 {
+  max-width: 760px;
+}
+
+.synChildHomeHeroCopyV01111 h1 {
+  margin: 6px 0 0;
+  font-size: clamp(32px, 4.8vw, 48px);
+  line-height: 1.05;
+  letter-spacing: -.045em;
+}
+
+.synChildHomeHeroCopyV01111 p {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: #626b7e;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.synChildHomeProfilePulseV01111 {
+  min-width: 220px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px 12px;
+  align-items: center;
+  padding: 14px 15px;
+  border: 1px solid #e2def8;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f7f5ff, #f2f8ff);
+  color: #283049;
+  text-align: left;
+  cursor: pointer;
+}
+
+.synChildHomeProfilePulseIconV01111 {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  grid-row: 1 / span 2;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 20px;
+}
+
+.synChildHomeProfilePulseV01111 small,
+.synChildHomeProfilePulseV01111 strong,
+.synChildHomeProfilePulseV01111 b {
+  display: block;
+}
+
+.synChildHomeProfilePulseV01111 small {
+  color: #8580a6;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .08em;
+}
+
+.synChildHomeProfilePulseV01111 strong {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.synChildHomeProfilePulseV01111 b {
+  grid-column: 2;
+  color: #6757e8;
+  font-size: 10px;
+}
+
+.synChildHomeNextV01111 {
+  overflow: hidden;
+  border: 1px solid #ded9fb;
+  border-radius: 22px;
+  background: linear-gradient(125deg, #eeeaff 0%, #f4f7ff 55%, #eef8f3 100%);
+  box-shadow: 0 16px 38px rgba(78, 66, 150, .07);
+}
+
+.synChildHomeNextLabelV01111 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px 0;
+  color: #6757e8;
+  font-size: 9px;
+  letter-spacing: .1em;
+}
+
+.synChildHomeNextBodyV01111 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 30px;
+  align-items: center;
+  padding: 18px 22px 24px;
+}
+
+.synChildHomeNextBodyV01111 > div {
+  max-width: 760px;
+}
+
+.synChildHomeNextBodyV01111 h2 {
+  margin: 7px 0 0;
+  font-size: clamp(23px, 3vw, 31px);
+  line-height: 1.15;
+  letter-spacing: -.03em;
+}
+
+.synChildHomeNextBodyV01111 p {
+  margin: 8px 0 0;
+  color: #596174;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.synChildHomeNextBodyV01111 small {
+  display: block;
+  margin-top: 9px;
+  color: #7b8190;
+  font-size: 9px;
+}
+
+.synChildHomeNextBodyV01111 > button {
+  min-width: 132px;
+  padding: 11px 15px;
+  border: 0;
+  border-radius: 11px;
+  background: #6757e8;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.synChildHomeContextPillV01111 {
+  display: inline-flex;
+  padding: 6px 9px;
+  border: 1px solid rgba(103, 87, 232, .14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .7);
+  color: #5e56a5;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.synChildHomeChooseV01111,
+.synChildHomePictureV01111,
+.synChildHomeBottomV01111 {
+  margin-top: 28px;
+}
+
+.synChildHomeSectionHeadingV01111 h2 {
+  margin: 5px 0 0;
+  font-size: 20px;
+  letter-spacing: -.02em;
+}
+
+.synChildHomeChoiceGridV01111 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.synChildHomeChoiceV01111 {
+  min-height: 178px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 13px;
+  align-items: start;
+  padding: 18px;
+  border: 1px solid #e2e5ed;
+  border-radius: 17px;
+  background: #fff;
+  color: #242d43;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.synChildHomeChoiceV01111:hover {
+  transform: translateY(-2px);
+  border-color: #cbc6ec;
+  box-shadow: 0 12px 28px rgba(49, 43, 86, .07);
+}
+
+.synChildHomeChoiceIconV01111 {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  font-size: 21px;
+}
+
+.synChildHomeChoiceV01111.learn .synChildHomeChoiceIconV01111 { background: #eef7ff; }
+.synChildHomeChoiceV01111.explore .synChildHomeChoiceIconV01111 { background: #fff5e9; }
+.synChildHomeChoiceV01111.grow .synChildHomeChoiceIconV01111 { background: #eef9f3; }
+
+.synChildHomeChoiceV01111 small {
+  display: block;
+  color: #8a8fa0;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .08em;
+}
+
+.synChildHomeChoiceV01111 strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.synChildHomeChoiceV01111 p {
+  margin: 7px 0 0;
+  color: #697184;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.synChildHomeChoiceV01111 > b {
+  align-self: center;
+  color: #9a9fb0;
+  font-size: 17px;
+}
+
+.synChildHomePictureV01111 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, .7fr);
+  gap: 20px;
+  align-items: center;
+  padding: 22px;
+  border: 1px solid #e2e5ed;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.synChildHomePictureCopyV01111 h2 {
+  max-width: 720px;
+  margin: 5px 0 0;
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.synChildHomePictureCopyV01111 p {
+  max-width: 700px;
+  margin: 7px 0 0;
+  color: #697184;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.synChildHomePictureCopyV01111 button,
+.synChildHomeTextActionV01111 {
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #6757e8;
+  font-size: 10px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.synChildHomePictureSignalsV01111 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.synChildHomePictureSignalsV01111 span {
+  padding: 8px 10px;
+  border: 1px solid #e8e7ef;
+  border-radius: 999px;
+  background: #f8f9fc;
+  color: #555e72;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.synChildHomeBottomV01111 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.synChildHomeVoiceV01111,
+.synChildHomeRecentV01111 {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e2e5ed;
+  border-radius: 17px;
+  background: #fff;
+}
+
+.synChildHomeVoiceV01111 h2,
+.synChildHomeRecentV01111 h2 {
+  margin: 5px 0 0;
+  font-size: 16px;
+}
+
+.synChildHomeVoiceV01111 p,
+.synChildHomeRecentV01111 > p {
+  margin: 6px 0 0;
+  color: #72798a;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.synChildHomeVoiceV01111 form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.synChildHomeVoiceV01111 input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 11px;
+  border: 1px solid #dfe3eb;
+  border-radius: 10px;
+  background: #fafbfc;
+  color: #283049;
+  font-size: 11px;
+}
+
+.synChildHomeVoiceV01111 form button {
+  padding: 9px 13px;
+  border: 0;
+  border-radius: 10px;
+  background: #283049;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.synChildHomeVoiceV01111 form button:disabled {
+  opacity: .4;
+  cursor: default;
+}
+
+.synChildHomeLatestIdeaV01111 {
+  display: block;
+  margin-top: 9px;
+  color: #747b8c;
+  font-size: 9px;
+}
+
+.synChildHomeRecentListV01111 {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.synChildHomeRecentListV01111 > button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid #eaebf0;
+  border-radius: 11px;
+  background: #fafbfc;
+  color: #283049;
+  text-align: left;
+  cursor: pointer;
+}
+
+.synChildHomeRecentListV01111 strong,
+.synChildHomeRecentListV01111 small {
+  display: block;
+}
+
+.synChildHomeRecentListV01111 strong { font-size: 10px; }
+.synChildHomeRecentListV01111 small { margin-top: 2px; color: #848999; font-size: 8px; }
+.synChildHomeRecentListV01111 b { color: #76a384; font-size: 10px; }
+
+@media (max-width: 900px) {
+  .synChildHomeHeroV01111,
+  .synChildHomePictureV01111 {
+    grid-template-columns: 1fr;
+  }
+
+  .synChildHomeProfilePulseV01111 {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .synChildHomeChoiceGridV01111 {
+    grid-template-columns: 1fr;
+  }
+
+  .synChildHomeChoiceV01111 {
+    min-height: 0;
+  }
+
+  .synChildHomePictureSignalsV01111 {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 650px) {
+  .synChildHomeV01111 {
+    width: min(100% - 22px, 600px);
+    padding-top: 20px;
+  }
+
+  .synChildHomeNextBodyV01111 {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .synChildHomeNextBodyV01111 > button {
+    width: 100%;
+  }
+
+  .synChildHomeBottomV01111 {
+    grid-template-columns: 1fr;
+  }
+}

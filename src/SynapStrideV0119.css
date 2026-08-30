@@ -1,0 +1,171 @@
+/* SynapStride MVP v0.11 — Phase 11.9 */
+
+.cgSystemNavV0119 {
+  display: grid;
+  gap: 4px;
+}
+
+.cgSystemNavV0119 button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #667085;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cgSystemNavV0119 button:hover {
+  background: #f5f6f8;
+  color: #344054;
+}
+
+.cgSystemNavV0119 button.active {
+  background: #f1f0fb;
+  color: #5148a8;
+}
+
+.cgSettingsV0119 {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 34px 34px 56px;
+}
+
+.cgSettingsHeaderV0119 {
+  max-width: 700px;
+}
+
+.cgSettingsHeaderV0119 h1 {
+  margin: 6px 0 8px;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.08;
+  color: #202536;
+}
+
+.cgSettingsHeaderV0119 > p:last-child {
+  margin: 0;
+  color: #697083;
+  line-height: 1.6;
+}
+
+.cgSettingsGridV0119 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.cgSettingsCardV0119 {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #e6e8ee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.cgSettingsIconV0119 {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: #f5f6f8;
+  font-size: 18px;
+}
+
+.cgSettingsLabelV0119 {
+  margin: 0;
+  color: #8a90a0;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .08em;
+}
+
+.cgSettingsCardV0119 h2,
+.cgDeveloperToolsV0119 h2 {
+  margin: 5px 0 6px;
+  color: #262b3a;
+  font-size: 17px;
+}
+
+.cgSettingsCardV0119 p:last-child,
+.cgDeveloperToolsV0119 p {
+  margin: 0;
+  color: #707789;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.cgDeveloperToolsV0119 {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px dashed #b9c0cd;
+  border-radius: 16px;
+  background: #f8f9fb;
+}
+
+.cgDeveloperToolsHeaderV0119 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cgDeveloperToolsHeaderV0119 > div {
+  max-width: 680px;
+}
+
+.cgDeveloperBadgeV0119 {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #eceef2;
+  color: #6b7280;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.cgDeveloperToolsV0119 details {
+  max-width: none !important;
+  margin: 18px 0 0 !important;
+  background: #fff !important;
+}
+
+.cgDeveloperEmptyV0119 {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #e1e4ea;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.cgDangerButtonV0119 {
+  margin-top: 14px;
+  padding: 9px 12px;
+  border: 1px solid #c8cdd7;
+  border-radius: 9px;
+  background: #fff;
+  color: #475467;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .cgSettingsV0119 {
+    padding: 24px 18px 90px;
+  }
+  .cgSettingsGridV0119 {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,753 @@
+.synChildHomeV0118 {
+  display: grid;
+  gap: 24px;
+  padding: 26px 30px 42px;
+  color: #16213e;
+}
+
+.synHomeWelcomeV0118 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(360px, .8fr);
+  gap: 26px;
+  align-items: end;
+}
+
+.synHomeKickerV0118,
+.synHomeCardLabelV0118 {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .13em;
+  color: #6d55e8;
+}
+
+.synHomeWelcomeV0118 h1 {
+  margin: 4px 0 4px;
+  font-size: clamp(34px, 3vw, 46px);
+  line-height: 1.05;
+  letter-spacing: -.035em;
+  color: #111b37;
+}
+
+.synHomeWelcomeV0118 h2 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.25;
+  color: #17213e;
+}
+
+.synHomeWelcomeV0118 p {
+  max-width: 690px;
+  margin: 8px 0 0;
+  color: #68738b;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.synHomeQuickActionsV0118 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.synHomeQuickActionV0118 {
+  width: 100%;
+  min-height: 92px;
+  border: 1px solid #dce4f0;
+  border-radius: 20px;
+  background: #fff;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 13px;
+  align-items: center;
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.synHomeQuickActionV0118:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(31, 45, 78, .08);
+}
+
+.synHomeQuickActionV0118.learn {
+  background: linear-gradient(135deg, #f7fbff, #ffffff);
+  border-color: #cfe2ff;
+}
+
+.synHomeQuickActionV0118.explore {
+  background: linear-gradient(135deg, #f6fffb, #ffffff);
+  border-color: #d4eee3;
+}
+
+.synHomeQuickIconV0118 {
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  font-size: 25px;
+  background: #eef5ff;
+}
+
+.synHomeQuickActionV0118.explore .synHomeQuickIconV0118 {
+  background: #eaf8f1;
+}
+
+.synHomeQuickActionV0118 strong,
+.synHomeQuickActionV0118 small {
+  display: block;
+}
+
+.synHomeQuickActionV0118 strong {
+  font-size: 17px;
+  color: #17213e;
+}
+
+.synHomeQuickActionV0118 small {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #768197;
+}
+
+.synHomeQuickActionV0118 b {
+  color: #8a95aa;
+  font-size: 20px;
+}
+
+.synHomeMainGridV0118 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, .78fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.synHomeGuideCardV0118,
+.synHomeAgentV0118,
+.synHomePictureV0118 {
+  border: 1px solid #dfe5ef;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(30, 42, 72, .045);
+}
+
+.synHomeGuideCardV0118 {
+  position: relative;
+  overflow: hidden;
+  min-height: 310px;
+  padding: 30px 32px;
+  background:
+    radial-gradient(circle at 90% 20%, rgba(109, 85, 232, .1), transparent 28%),
+    radial-gradient(circle at 80% 90%, rgba(64, 182, 139, .1), transparent 30%),
+    #fff;
+}
+
+.synHomeGuideCardV0118::after {
+  content: '✨';
+  position: absolute;
+  right: 46px;
+  bottom: 34px;
+  width: 106px;
+  height: 106px;
+  border-radius: 30px;
+  display: grid;
+  place-items: center;
+  font-size: 50px;
+  background: linear-gradient(145deg, #f2edff, #eefaf5);
+  transform: rotate(4deg);
+}
+
+.synHomeContextPillV0118 {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 22px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #f7f5ff;
+  color: #6752cf;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.synHomeGuideCardV0118 h2 {
+  position: relative;
+  z-index: 1;
+  max-width: calc(100% - 150px);
+  margin: 14px 0 10px;
+  font-size: clamp(25px, 2.2vw, 34px);
+  line-height: 1.12;
+  letter-spacing: -.025em;
+  color: #121c39;
+}
+
+.synHomeGuideCardV0118 > p {
+  position: relative;
+  z-index: 1;
+  max-width: calc(100% - 155px);
+  margin: 0 0 8px;
+  color: #505d77;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.synHomeGuideCardV0118 .synHomeWhyCopyV0118 {
+  color: #778299;
+  font-size: 13px;
+}
+
+.synHomeGuideActionsV0118 {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.synHomePrimaryV0118 {
+  border: 0;
+  border-radius: 13px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #7357eb, #6247db);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(103, 76, 221, .2);
+}
+
+.synHomeLinkV0118,
+.synHomeProfileLinkV0118 {
+  border: 0;
+  background: transparent;
+  color: #654ce0;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.synHomeAgentV0118 {
+  padding: 22px;
+  border-color: #cfc5ff;
+  background: linear-gradient(180deg, #fcfbff, #fff 35%);
+  display: flex;
+  flex-direction: column;
+  min-height: 310px;
+}
+
+.synHomeAgentHeaderV0118 {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.synHomeBotV0118 {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  background: #f0ecff;
+}
+
+.synHomeAgentHeaderV0118 strong,
+.synHomeAgentHeaderV0118 small {
+  display: block;
+}
+
+.synHomeAgentHeaderV0118 strong {
+  color: #18213d;
+  font-size: 15px;
+}
+
+.synHomeAgentHeaderV0118 strong em {
+  margin-left: 5px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: #6d55e8;
+  color: #fff;
+  font-size: 9px;
+  font-style: normal;
+  letter-spacing: .05em;
+}
+
+.synHomeAgentHeaderV0118 small {
+  margin-top: 3px;
+  color: #7b8498;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.synHomeAgentIntroV0118 {
+  padding: 22px 4px 14px;
+}
+
+.synHomeAgentIntroV0118 strong {
+  font-size: 20px;
+  color: #16203c;
+}
+
+.synHomeAgentIntroV0118 p {
+  margin: 7px 0 0;
+  color: #68758c;
+  line-height: 1.5;
+  font-size: 13px;
+}
+
+.synHomeAgentConversationV0118 {
+  display: grid;
+  gap: 10px;
+  padding: 18px 0 12px;
+}
+
+.synHomeAgentQuestionV0118 {
+  justify-self: end;
+  max-width: 88%;
+  padding: 10px 12px;
+  border-radius: 14px 14px 4px 14px;
+  background: #eee9ff;
+  color: #3f3474;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.synHomeAgentReplyV0118 {
+  padding: 12px 13px;
+  border: 1px solid #e4e7ee;
+  border-radius: 4px 14px 14px 14px;
+  background: #fff;
+}
+
+.synHomeAgentReplyV0118 p {
+  margin: 0;
+  color: #44516b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.synHomeAgentReplyV0118 button {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #654ce0;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.synHomeAgentPromptsV0118 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.synHomeAgentPromptsV0118 button {
+  border: 1px solid #ddd5ff;
+  border-radius: 999px;
+  background: #f8f6ff;
+  color: #55459a;
+  padding: 7px 9px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.synHomeAgentInputV0118 {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 6px;
+  border: 1px solid #dfe3ec;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.synHomeAgentInputV0118 input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  padding: 6px 8px;
+  color: #27324b;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+}
+
+.synHomeAgentInputV0118 button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 11px;
+  background: #6d55e8;
+  color: #fff;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.synHomeAgentInputV0118 button:disabled {
+  opacity: .38;
+  cursor: default;
+}
+
+.synHomeAgentFootV0118 {
+  margin-top: 7px;
+  color: #9299aa;
+  font-size: 9px;
+}
+
+.synHomePictureV0118 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 20px;
+  align-items: center;
+  padding: 22px 26px;
+  background: linear-gradient(135deg, #fbfffd, #ffffff);
+  border-color: #d7ece2;
+}
+
+.synHomePictureLeadV0118 h2 {
+  margin: 7px 0 4px;
+  font-size: 18px;
+  color: #18223d;
+}
+
+.synHomePictureLeadV0118 p {
+  margin: 0;
+  color: #778197;
+  font-size: 12px;
+}
+
+.synHomeSignalsV0118 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.synHomeSignalsV0118 span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 11px;
+  border: 1px solid #e0e5ed;
+  border-radius: 999px;
+  background: #fff;
+  color: #4c5871;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.synHomeSignalsV0118 b {
+  font-size: 15px;
+}
+
+.synHomeProfileLinkV0118 {
+  white-space: nowrap;
+  color: #14905c;
+}
+
+@media (max-width: 1120px) {
+  .synHomeWelcomeV0118,
+  .synHomeMainGridV0118 {
+    grid-template-columns: 1fr;
+  }
+
+  .synHomeQuickActionsV0118 {
+    max-width: 720px;
+  }
+
+  .synHomeAgentV0118 {
+    min-height: auto;
+  }
+
+  .synHomePictureV0118 {
+    grid-template-columns: 1fr;
+  }
+
+  .synHomeSignalsV0118 {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .synChildHomeV0118 {
+    padding: 20px 16px 34px;
+    gap: 18px;
+  }
+
+  .synHomeWelcomeV0118 h1 {
+    font-size: 34px;
+  }
+
+  .synHomeQuickActionsV0118 {
+    grid-template-columns: 1fr;
+  }
+
+  .synHomeGuideCardV0118 {
+    padding: 24px 22px 132px;
+  }
+
+  .synHomeGuideCardV0118 h2,
+  .synHomeGuideCardV0118 > p {
+    max-width: none;
+  }
+
+  .synHomeGuideCardV0118::after {
+    right: 22px;
+    bottom: 18px;
+    width: 92px;
+    height: 92px;
+  }
+
+  .synHomeGuideActionsV0118 {
+    flex-wrap: wrap;
+  }
+}
+
+/* v0.11.8 Growth Guide expansion */
+.synHomeGuideCardV0118 {
+  min-height: 0;
+  padding: 26px;
+  background: #fff;
+}
+
+.synHomeGuideCardV0118::after {
+  display: none;
+}
+
+.synHomeGuideHeadV0118 {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.synHomeGuideHeadV0118 h2 {
+  max-width: none;
+  margin: 6px 0 0;
+  font-size: 20px;
+  line-height: 1.25;
+  letter-spacing: -.015em;
+}
+
+.synHomeGuideBadgeV0118 {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #f5f2ff;
+  color: #6b54db;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.synHomeGuideStackV0118 {
+  display: grid;
+  gap: 12px;
+}
+
+.synHomeGuideItemV0118 {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px;
+  border: 1px solid #dfe6f0;
+  border-radius: 18px;
+}
+
+.synHomeGuideItemV0118.continue {
+  background: linear-gradient(135deg, #f7fbff, #fff);
+  border-color: #cfe1ff;
+}
+
+.synHomeGuideItemV0118.try {
+  background: linear-gradient(135deg, #fbf9ff, #fff);
+  border-color: #ded5ff;
+}
+
+.synHomeGuideItemIconV0118 {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #eef5ff;
+  font-size: 23px;
+}
+
+.synHomeGuideItemV0118.try .synHomeGuideItemIconV0118 {
+  background: #f1edff;
+}
+
+.synHomeGuideItemCopyV0118 {
+  min-width: 0;
+}
+
+.synHomeGuideItemCopyV0118 small,
+.synHomeGuideItemCopyV0118 strong,
+.synHomeGuideItemCopyV0118 p {
+  display: block;
+}
+
+.synHomeGuideItemCopyV0118 small {
+  margin-bottom: 5px;
+  color: #3974cf;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.synHomeGuideItemV0118.try .synHomeGuideItemCopyV0118 small {
+  color: #7254d6;
+}
+
+.synHomeGuideItemCopyV0118 strong {
+  color: #17213d;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.synHomeGuideItemCopyV0118 p {
+  max-width: none;
+  margin: 4px 0 0;
+  color: #6d7890;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.synHomeGuideItemV0118 > button,
+.synHomeGuideItemActionsV0118 > button {
+  border: 0;
+  border-radius: 11px;
+  padding: 10px 13px;
+  background: #2f78df;
+  color: #fff;
+  font-weight: 800;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.synHomeGuideItemV0118.try > button,
+.synHomeGuideItemActionsV0118 > button:not(.why) {
+  background: #674ce0;
+}
+
+.synHomeGuideItemActionsV0118 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.synHomeGuideItemActionsV0118 > button.why {
+  padding: 8px 4px;
+  background: transparent;
+  color: #654ce0;
+}
+
+.synHomeAlsoLabelV0118 {
+  margin: 18px 0 9px;
+  color: #6f7890;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.synHomeDiscoveryGridV0118 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.synHomeDiscoveryCardV0118 {
+  min-width: 0;
+  min-height: 132px;
+  padding: 15px 16px;
+  border: 1px solid #dce7e1;
+  border-radius: 17px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.synHomeDiscoveryCardV0118.near {
+  background: linear-gradient(135deg, #f5fff9, #fff);
+  border-color: #d5eadf;
+}
+
+.synHomeDiscoveryCardV0118.explore {
+  background: linear-gradient(135deg, #fffaf0, #fff);
+  border-color: #f0dfbd;
+}
+
+.synHomeDiscoveryTypeV0118 {
+  color: #1a9a60;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.synHomeDiscoveryCardV0118.explore .synHomeDiscoveryTypeV0118 {
+  color: #d38a14;
+}
+
+.synHomeDiscoveryCardV0118 strong {
+  margin-top: 9px;
+  color: #18223d;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.synHomeDiscoveryCardV0118 small {
+  margin-top: 5px;
+  color: #748096;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.synHomeDiscoveryCardV0118 b {
+  margin-top: auto;
+  padding-top: 10px;
+  color: #148f5b;
+  font-size: 11px;
+}
+
+.synHomeDiscoveryCardV0118.explore b {
+  color: #d98200;
+}
+
+@media (max-width: 900px) {
+  .synHomeGuideHeadV0118,
+  .synHomeGuideItemV0118 {
+    grid-template-columns: 1fr;
+  }
+
+  .synHomeGuideHeadV0118 {
+    display: grid;
+  }
+
+  .synHomeGuideBadgeV0118 {
+    justify-self: start;
+  }
+
+  .synHomeGuideItemV0118 {
+    align-items: start;
+  }
+
+  .synHomeGuideItemV0118 > button,
+  .synHomeGuideItemActionsV0118 {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 620px) {
+  .synHomeDiscoveryGridV0118 {
+    grid-template-columns: 1fr;
+  }
+}

@@ -35,6 +35,20 @@ function DiscoveryFlow({
   return (
     <section className="synDiscoverV09">
 
+      <div
+        style={{
+          marginBottom: '14px',
+        }}
+      >
+        <button
+          type="button"
+          className="backButton"
+          onClick={onBack}
+        >
+          ← My Profile
+        </button>
+      </div>
+
       <header className="synDiscoverHeroV09">
         <div>
           <span className="synDiscoverEyebrowV09">

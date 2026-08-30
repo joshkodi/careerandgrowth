@@ -1,0 +1,181 @@
+/* ============================================================
+   SynapStride — MVP v0.11
+   First-Customer Completion Pass
+   Settings + customer/developer boundary
+   ============================================================ */
+
+.synSettingsV01112 {
+  width: min(1080px, calc(100% - 44px));
+  margin: 0 auto;
+  padding: 28px 0 48px;
+  color: #18213a;
+}
+
+.synSettingsHeroV01112 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 20px 2px 24px;
+  border-bottom: 1px solid #e5e8f0;
+}
+
+.synSettingsEyebrowV01112 {
+  display: block;
+  color: #7469d9;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.synSettingsHeroV01112 h1 {
+  margin: 7px 0 0;
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 1.08;
+  letter-spacing: -.04em;
+}
+
+.synSettingsHeroV01112 p {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: #6d7488;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.synSettingsHeroMarkV01112 {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 62px;
+  border: 1px solid #e2def7;
+  border-radius: 18px;
+  background: #f5f3ff;
+  font-size: 27px;
+}
+
+.synSettingsGridV01112 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.synSettingsCardV01112 {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  min-height: 150px;
+  padding: 20px;
+  border: 1px solid #e4e7ef;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.synSettingsCardIconV01112 {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #f2f4f9;
+  font-size: 20px;
+}
+
+.synSettingsCardV01112 h2 {
+  margin: 5px 0 0;
+  font-size: 17px;
+}
+
+.synSettingsCardV01112 p {
+  margin: 7px 0 0;
+  color: #626b80;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.synSettingsCardV01112 small {
+  display: block;
+  margin-top: 10px;
+  color: #8a91a1;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.synDeveloperToolsV01112 {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid #e4e7ef;
+}
+
+.synDeveloperToolsHeaderV01112 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.synDeveloperToolsHeaderV01112 h2 {
+  margin: 6px 0 0;
+  font-size: 18px;
+}
+
+.synDeveloperToolsHeaderV01112 p {
+  max-width: 680px;
+  margin: 7px 0 0;
+  color: #6d7488;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.synDeveloperBadgeV01112 {
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #f1f2f6;
+  color: #6e7585;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.synDeveloperToolsV01112 > details {
+  max-width: none !important;
+  margin: 16px 0 0 !important;
+}
+
+.synDeveloperEmptyV01112 {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px dashed #ccd2df;
+  border-radius: 14px;
+  background: #fafbfc;
+}
+
+.synDeveloperEmptyV01112 > span { font-size: 22px; }
+.synDeveloperEmptyV01112 strong { font-size: 12px; }
+.synDeveloperEmptyV01112 p { margin: 4px 0 0; color: #747c8d; font-size: 10px; }
+.synDeveloperEmptyV01112 button {
+  padding: 8px 11px;
+  border: 1px solid #cfd4df;
+  border-radius: 9px;
+  background: #fff;
+  color: #465168;
+  font-size: 10px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .synSettingsV01112 { width: min(100% - 22px, 720px); padding-top: 16px; }
+  .synSettingsGridV01112 { grid-template-columns: 1fr; }
+  .synSettingsHeroMarkV01112 { display: none; }
+  .synDeveloperToolsHeaderV01112 { flex-direction: column; }
+  .synDeveloperEmptyV01112 { grid-template-columns: auto minmax(0, 1fr); }
+  .synDeveloperEmptyV01112 button { grid-column: 1 / -1; justify-self: start; }
+}

@@ -1,8 +1,8 @@
 // ============================================================
 // SynapStride
-// MVP v0.9 — Parent View
+// MVP v0.11 — Parent Space Observation
 //
-// Parent View answers:
+// Parent Space answers:
 // "How is my child growing, and how can I help?"
 //
 // Presentation-only. Parent answers, evidence generation,
@@ -33,7 +33,7 @@ function ParentPerspectiveFlow({
         <header className="synParentHeroV09">
           <div>
             <span className="synParentEyebrowV09">
-              PARENT VIEW
+              PARENT SPACE
             </span>
 
             <h1>
@@ -73,7 +73,7 @@ function ParentPerspectiveFlow({
             className="synParentActionV09"
             onClick={onFinish}
           >
-            Back to Home
+            Back to Parent Overview
             <span>→</span>
           </button>
         </section>
@@ -87,7 +87,7 @@ function ParentPerspectiveFlow({
       <header className="synParentHeroV09">
         <div>
           <span className="synParentEyebrowV09">
-            PARENT VIEW
+            PARENT SPACE
           </span>
 
           <h1>

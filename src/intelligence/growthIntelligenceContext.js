@@ -13,6 +13,10 @@
 // from evidence, Journey, intent, and derived intelligence outputs.
 // ============================================================
 
+import {
+  buildGrowthProfileUnderstanding,
+} from './growthProfileUnderstanding'
+
 export const growthIntelligenceContextVersion = '0.11.0'
 
 export const growthIntelligenceDomains = Object.freeze({
@@ -70,6 +74,20 @@ export function buildGrowthIntelligenceContext({
   const safeEvidence = safeArray(evidenceEvents)
   const safeJourney = safeArray(journeyItems)
 
+  const profileUnderstanding =
+    buildGrowthProfileUnderstanding({
+      child: {
+        id: childId,
+        age: age ?? null,
+      },
+      evidenceEvents: safeEvidence,
+      journeyItems: safeJourney,
+      studentIntents,
+      parentIntents,
+      growthProfile,
+      promotionRegistry,
+    })
+
   const sourceTypes = unique(
     safeEvidence.map(
       (event) => event?.source?.type
@@ -109,6 +127,7 @@ export function buildGrowthIntelligenceContext({
       patternIntelligence,
       promotionRegistry,
       learningProgression,
+      profileUnderstanding,
     },
 
     capabilities: {

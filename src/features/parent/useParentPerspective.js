@@ -41,12 +41,12 @@ import {
 
 // ============================================================
 // Career & Growth — MVP v0.6
-// Parent Perspective Controller
+// Parent Space Observation Controller
 //
 // Extracted from App.jsx with NO intended behavior change.
 //
 // Owns:
-// - General Parent Perspective state/navigation
+// - General Parent Space observation state/navigation
 // - Experience Observation state/navigation
 // - Parent evidence creation for both flows
 // - Parent Experience Observation status derivation
@@ -65,6 +65,7 @@ export default function useParentPerspective({
   setActiveExploration,
   setEvidenceSessionId,
   persistGrowthEvidence,
+  onParentPerspectiveComplete,
 }) {
   const [
     parentPerspectiveComplete,
@@ -331,8 +332,15 @@ export default function useParentPerspective({
           true
         )
 
+        onParentPerspectiveComplete?.()
+
+        // MVP v0.11.10.2 — Parent observations enrich the same
+        // evolving child Profile, while Parent Space remains the
+        // parent's navigation context. Return to Parent Overview
+        // after the final answer so the unified application shell
+        // stays stable and the parent immediately sees the update.
         setScreen(
-          'parentPerspectiveComplete'
+          'parentSpace'
         )
 
         return
@@ -351,7 +359,7 @@ export default function useParentPerspective({
         parentQuestionIndex === 0
       ) {
         setScreen(
-          'parentPerspectiveIntro'
+          'parentSpace'
         )
 
         return

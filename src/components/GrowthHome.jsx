@@ -19,6 +19,7 @@ import './AssignmentEditV09.css'
 import './LearningResourceDiversityV09.css'
 import './GrowthCalendarV0103.css'
 import './InterestsActivitiesV0104D.css'
+import './ChildHomeV0118.css'
 
 import ExperienceResearchPanel from './ExperienceResearchPanel'
 import AdventuresHub from './AdventuresHub'
@@ -127,6 +128,8 @@ function GrowthHome({
 }) {
   const [studentIdea, setStudentIdea] = useState('')
   const [journeyStartPath, setJourneyStartPath] = useState(journeyPaths.EXPERIENCES)
+  const [guideInput, setGuideInput] = useState('')
+  const [guideReply, setGuideReply] = useState(null)
 
   const childName =
     childProfile?.name?.trim() ||
@@ -150,6 +153,51 @@ function GrowthHome({
 
   const secondaryRecommendation =
     recommendations?.[1] || null
+
+  const homeExplorePool = [
+    ...(Array.isArray(exploreRecommendations) ? exploreRecommendations : []),
+    ...(Array.isArray(exploreCatalog) ? exploreCatalog : []),
+  ].filter(Boolean)
+
+  const isLocalExploreCandidate = (candidate) => {
+    const type = String(candidate?.type || candidate?.kind || candidate?.category || '').toLowerCase()
+    return Boolean(
+      type.includes('local') ||
+      candidate?.location ||
+      candidate?.distanceMiles != null ||
+      candidate?.distance != null
+    )
+  }
+
+  const nearYouCandidate =
+    growthActivities.find((activity) =>
+      activity &&
+      activity.type === 'local_event' &&
+      !['completed', 'attended', 'cancelled', 'skipped'].includes(activity.status)
+    ) ||
+    homeExplorePool.find(isLocalExploreCandidate) ||
+    null
+
+  const worthExploringCandidate =
+    secondaryRecommendation ||
+    homeExplorePool.find((candidate) =>
+      candidate !== nearYouCandidate && !isLocalExploreCandidate(candidate)
+    ) ||
+    null
+
+  const candidateTitle = (candidate, fallback) =>
+    candidate?.title || candidate?.name || fallback
+
+  const candidateMeta = (candidate, fallback) => {
+    if (!candidate) return fallback
+    if (candidate?.distanceMiles != null) return `${candidate.distanceMiles} miles away`
+    if (candidate?.distance != null) return String(candidate.distance)
+    if (candidate?.schedule?.date) return candidate.schedule.date
+    if (candidate?.location?.city) return candidate.location.city
+    if (candidate?.provider?.name) return candidate.provider.name
+    if (candidate?.provider) return String(candidate.provider)
+    return candidate?.description || fallback
+  }
 
   const latestStudentIntent =
     [...studentIntents]
@@ -190,6 +238,72 @@ function GrowthHome({
 
   const openSchoolLearning = () =>
     openJourney(journeyPaths.SCHOOL_LEARNING)
+
+  const runGuideRequest = (rawText) => {
+    const text = String(rawText || '').trim()
+    if (!text) return
+
+    const normalized = text.toLowerCase()
+    let reply = {
+      text: 'I can help you learn, explore, understand your growth, or figure out what might be worth trying next.',
+      actionLabel: null,
+      action: null,
+    }
+
+    if (/(homework|school|study|test|fraction|math|reading|science|history|learn)/.test(normalized)) {
+      reply = {
+        text: 'Let’s work on it in School & Learning so we can understand what you need and keep track of what helps.',
+        actionLabel: 'Open School & Learning →',
+        action: openSchoolLearning,
+      }
+    } else if (/(build|make|robot|activity|activities|explore|interest|project|fun|bored)/.test(normalized)) {
+      reply = {
+        text: 'Let’s look for something worth trying based on what sounds interesting to you.',
+        actionLabel: 'Explore ideas →',
+        action: onExplore,
+      }
+    } else if (/(profile|about me|good at|strength|what.*learning.*me|know about me)/.test(normalized)) {
+      reply = {
+        text: 'I can show you the clues SynapStride is beginning to connect about how you learn, explore, and engage.',
+        actionLabel: 'See My Profile →',
+        action: onGrowthProfile,
+      }
+    } else if (/(growth|history|progress|done|doing|journey|continue)/.test(normalized)) {
+      reply = {
+        text: 'Let’s open My Growth so you can see what you have in motion and what you have already completed.',
+        actionLabel: 'Open My Growth →',
+        action: onJourney,
+      }
+    } else if (/(next|try|recommend|suggest|what should|guide me|something for me)/.test(normalized)) {
+      if (currentJourney) {
+        reply = {
+          text: `You already have “${currentJourney.title}” in motion. Continuing it could be a useful next step.`,
+          actionLabel: 'Continue →',
+          action: () => openJourney(currentJourney.path),
+        }
+      } else if (topRecommendation) {
+        reply = {
+          text: `“${topRecommendation.title}” looks worth trying based on the clues SynapStride has so far.`,
+          actionLabel: 'Try it →',
+          action: () => onStartGrow?.(topRecommendation),
+        }
+      } else {
+        reply = {
+          text: 'We are still gathering clues. Exploring something that catches your attention is a great next move.',
+          actionLabel: 'Explore ideas →',
+          action: onExplore,
+        }
+      }
+    }
+
+    setGuideReply({ question: text, ...reply })
+    setGuideInput('')
+  }
+
+  const handleGuideSubmit = (event) => {
+    event.preventDefault()
+    runGuideRequest(guideInput)
+  }
 
   return (
     <div className="growthHomeV06 growthHomeV09">
@@ -250,66 +364,28 @@ function GrowthHome({
             requestedGrowthView={requestedGrowthView}
           />
         ) : (
-          <>
-            {!discoveryComplete && (
-              <section className="growthPageIntroV06">
-                <div>
-                  <span className="growthKickerV06">
-                    MY GROWTH
-                  </span>
+          <div className="synChildHomeV0118">
+            <section className="synHomeWelcomeV0118">
+              <div>
+                <span className="synHomeKickerV0118">YOUR SPACE</span>
+                <h1>Hi {childName}! <span aria-hidden="true">👋</span></h1>
+                <h2>What would you like to do today?</h2>
+                <p>Learn something, explore an interest, or ask your guide for help deciding what to do next.</p>
+              </div>
 
-                  <h1>
-                    Hi {childName}.
-                  </h1>
-
-                  <p>
-                    Pick up where you left off,
-                    explore something new, or
-                    tell us what sounds interesting.
-                  </p>
-                </div>
-
-                <button
-                  className="profileStatusV06"
-                  onClick={onGrowthProfile}
-                >
-                  <span className="statusDotV06" />
-                  <span>
-                    {growthProfile
-                      ? 'Profile is evolving'
-                      : 'Profile is getting started'}
-                  </span>
-                  <strong>View profile →</strong>
+              <div className="synHomeQuickActionsV0118" aria-label="Start something">
+                <button type="button" className="synHomeQuickActionV0118 learn" onClick={openSchoolLearning}>
+                  <span className="synHomeQuickIconV0118">📘</span>
+                  <span><strong>Learn</strong><small>Work on something</small></span>
+                  <b>→</b>
                 </button>
-              </section>
-            )}
-
-            {!discoveryComplete && (
-              <section className="discoveryStartBannerV06">
-                <div className="bannerIconV06">
-                  🧭
-                </div>
-                <div>
-                  <span className="growthKickerV06">
-                    START HERE
-                  </span>
-                  <h2>
-                    Let's discover what feels like you.
-                  </h2>
-                  <p>
-                    A few simple questions give us our first clues
-                    about what you enjoy, how you think, and what
-                    makes you curious.
-                  </p>
-                </div>
-                <button
-                  className="growthPrimaryButtonV06"
-                  onClick={onDiscover}
-                >
-                  Discover Me <span>→</span>
+                <button type="button" className="synHomeQuickActionV0118 explore" onClick={onExplore}>
+                  <span className="synHomeQuickIconV0118">🚀</span>
+                  <span><strong>Explore</strong><small>Find something interesting</small></span>
+                  <b>→</b>
                 </button>
-              </section>
-            )}
+              </div>
+            </section>
 
             {completedJourneyInsight && (
               <PostReflectionInsight
@@ -320,377 +396,150 @@ function GrowthHome({
               />
             )}
 
-            {discoveryComplete && (
-              <div className="cgHomeV09">
-                <section className="cgHomeHeroV09">
-                  <div className="cgHomeHeroCopyV09">
-                    <span className="cgEyebrowV09">MY GROWTH</span>
-                    <h1>
-                      Hi, {childName}! <span aria-hidden="true">👋</span>
-                    </h1>
-                    <p>
-                      Discover what you enjoy, keep moving on what matters,
-                      and learn something new about yourself along the way.
-                    </p>
-
-                    <div className="cgHeroActionsV09">
-                      <button
-                        type="button"
-                        className="cgButtonV09 cgButtonPrimaryV09"
-                        onClick={() =>
-                          currentJourney
-                            ? openJourney(currentJourney.path)
-                            : onExplore?.()
-                        }
-                      >
-                        {currentJourney ? 'Continue My Growth' : 'Find something to try'}
-                        <span>→</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        className="cgButtonV09 cgButtonSecondaryV09"
-                        onClick={onExplore}
-                      >
-                        Explore
-                      </button>
-                    </div>
+            <section className="synHomeMainGridV0118">
+              <article className="synHomeGuideCardV0118">
+                <div className="synHomeGuideHeadV0118">
+                  <div>
+                    <div className="synHomeCardLabelV0118"><span>✨</span> YOUR GROWTH GUIDE</div>
+                    <h2>Things that might be worth your attention</h2>
                   </div>
+                  <span className="synHomeGuideBadgeV0118">Picked for {childName}</span>
+                </div>
 
-                  <div className="cgHomeHeroArtV09" aria-hidden="true">
-                    <span className="cgHeroSparkV09">✦</span>
-                    <div className="cgHeroOrbitV09">
-                      <span>🚀</span>
-                    </div>
-                    <small>Keep growing</small>
-                  </div>
-                </section>
-
-                <section className="cgQuickActionsV09" aria-label="Quick actions">
-                  <button
-                    type="button"
-                    className="cgQuickActionV09 cgQuickJourneyV09"
-                    onClick={onJourney}
-                  >
-                    <span className="cgQuickIconV09">↗</span>
-                    <span>
-                      <strong>My Growth</strong>
-                      <small>See what I’m doing now</small>
-                    </span>
-                    <b>›</b>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="cgQuickActionV09 cgQuickExploreV09"
-                    onClick={onExplore}
-                  >
-                    <span className="cgQuickIconV09">✦</span>
-                    <span>
-                      <strong>Explore</strong>
-                      <small>Find something new to try</small>
-                    </span>
-                    <b>›</b>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="cgQuickActionV09 cgQuickLearningV09"
-                    onClick={openSchoolLearning}
-                  >
-                    <span className="cgQuickIconV09">📚</span>
-                    <span>
-                      <strong>School &amp; Learning</strong>
-                      <small>Homework, projects and support</small>
-                    </span>
-                    <b>›</b>
-                  </button>
-                </section>
-
-                <section className="cgHomeStatsV09" aria-label="Growth summary">
-                  <button type="button" onClick={onJourney}>
-                    <span>IN PROGRESS</span>
-                    <strong>{activeJourneyItems.length}</strong>
-                    <small>Growth items</small>
-                  </button>
-
-                  <button type="button" onClick={onJourney}>
-                    <span>COMPLETED</span>
-                    <strong>{completedJourneyItems.length + completedExplorations.length}</strong>
-                    <small>Things tried</small>
-                  </button>
-
-                  <button type="button" onClick={onGrowthProfile}>
-                    <span>PROFILE CLUES</span>
-                    <strong>{evidenceEventCount}</strong>
-                    <small>Signals collected</small>
-                  </button>
-                </section>
-
-                <section className="cgHomeGridV09">
-                  <article className="cgPanelV09 cgCurrentPanelV09">
-                    <div className="cgPanelHeadingV09">
-                      <div>
-                        <span className="cgEyebrowV09">WHAT I'M WORKING ON</span>
-                        <h2>{currentJourney ? currentJourney.title : 'Ready for your next step?'}</h2>
-                      </div>
-                      <button type="button" onClick={onJourney}>View My Growth →</button>
-                    </div>
-
-                    {currentJourney ? (
-                      <div className="cgCurrentItemV09">
-                        <span className="cgCurrentEmojiV09">
-                          {currentJourney.emoji || '🌱'}
-                        </span>
-                        <div>
-                          <span className="cgTypePillV09">
-                            {currentJourney.path
-                              ? journeyPathLabels[currentJourney.path] || 'Journey'
-                              : 'Journey'}
-                          </span>
-                          <p>
-                            {currentJourney.description ||
-                              currentJourney.learningStateLabel ||
-                              'Keep going — every step counts.'}
-                          </p>
-                          <button
-                            type="button"
-                            className="cgButtonV09 cgButtonPrimaryV09 cgButtonSmallV09"
-                            onClick={() => openJourney(currentJourney.path)}
-                          >
-                            Continue <span>→</span>
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="cgEmptyCompactV09">
-                        <span>🧭</span>
-                        <div>
-                          <strong>My Growth is ready.</strong>
-                          <p>Find an interest or activity to try, or add what you’re already working on.</p>
-                        </div>
-                        <button type="button" onClick={onExplore}>Interests & Activities →</button>
-                      </div>
-                    )}
-                  </article>
-
-                  <article className="cgPanelV09 cgRecommendationPanelV09">
-                    <div className="cgPanelHeadingV09">
-                      <div>
-                        <span className="cgEyebrowV09">PICKED FOR YOU</span>
-                        <h2>What could help next</h2>
-                      </div>
-                    </div>
-
-                    {topRecommendation ? (
-                      <button
-                        type="button"
-                        className="cgRecommendationCardV09"
-                        onClick={() => onStartGrow?.(topRecommendation)}
-                      >
-                        <span>{topRecommendation.emoji || '✨'}</span>
-                        <span>
-                          <strong>{topRecommendation.title}</strong>
-                          <small>
-                            {topRecommendation.reasons?.[0] ||
-                              'Picked from your interests and recent growth.'}
-                          </small>
-                        </span>
-                        <b>›</b>
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className="cgRecommendationCardV09"
-                        onClick={onExplore}
-                      >
-                        <span>✨</span>
-                        <span>
-                          <strong>Try something new</strong>
-                          <small>Exploring gives us better clues about what fits you.</small>
-                        </span>
-                        <b>›</b>
-                      </button>
-                    )}
-
-                    {secondaryRecommendation && (
-                      <button
-                        type="button"
-                        className="cgRecommendationCardV09 cgRecommendationSecondaryV09"
-                        onClick={() => onStartGrow?.(secondaryRecommendation)}
-                      >
-                        <span>{secondaryRecommendation.emoji || '🧩'}</span>
-                        <span>
-                          <strong>{secondaryRecommendation.title}</strong>
-                          <small>{secondaryRecommendation.reasons?.[0] || 'Another useful next step.'}</small>
-                        </span>
-                        <b>›</b>
-                      </button>
-                    )}
-                  </article>
-                </section>
-
-                <section className="cgHomeGridV09 cgHomeInsightGridV09">
-                  <article className="cgPanelV09 cgInsightPanelV09">
-                    <div className="cgPanelHeadingV09">
-                      <div>
-                        <span className="cgEyebrowV09">WHAT WE’RE LEARNING ABOUT YOU</span>
-                        <h2>Your profile is taking shape</h2>
-                      </div>
-                      <button type="button" onClick={onGrowthProfile}>My Profile →</button>
-                    </div>
-
-                    <div className="cgTraitGridV09">
-                      {strongestTraits.length > 0 ? (
-                        strongestTraits.map((trait) => (
-                          <div key={trait.id} className="cgTraitV09">
-                            <span>{trait.emoji || '🌱'}</span>
-                            <strong>{trait.label}</strong>
-                          </div>
-                        ))
+                <div className="synHomeGuideStackV0118">
+                  <section className="synHomeGuideItemV0118 continue">
+                    <span className="synHomeGuideItemIconV0118">📘</span>
+                    <div className="synHomeGuideItemCopyV0118">
+                      <small>PICK UP WHERE YOU LEFT OFF</small>
+                      {currentJourney ? (
+                        <>
+                          <strong>{currentJourney.title}</strong>
+                          <p>You were working on this recently.</p>
+                        </>
                       ) : (
-                        <p className="cgMutedV09">
-                          Keep discovering and trying things. Your first patterns will appear here.
-                        </p>
+                        <>
+                          <strong>{discoveryComplete ? 'Nothing waiting right now' : 'Start by telling me a little about you'}</strong>
+                          <p>{discoveryComplete ? 'You are all caught up. Pick something new whenever you are ready.' : 'A few quick answers help SynapStride start guiding you.'}</p>
+                        </>
                       )}
-                    </div>
-
-                    {strongestDomains.length > 0 && (
-                      <div className="cgDomainLineV09">
-                        <span>Interests showing up:</span>
-                        {strongestDomains.map((domain) => (
-                          <strong key={domain.id}>{domain.label}</strong>
-                        ))}
-                      </div>
-                    )}
-                  </article>
-
-                  <article className="cgPanelV09 cgDiscoverPanelV09">
-                    <span className="cgDiscoverIconV09">◎</span>
-                    <div>
-                      <span className="cgEyebrowV09">DISCOVER YOU</span>
-                      <h2>Your voice matters too.</h2>
-                      <p>
-                        Discover tells us what feels true to you. My Growth then helps us learn
-                        from what you actually try and do.
-                      </p>
                     </div>
                     <button
                       type="button"
-                      className="cgButtonV09 cgButtonSecondaryV09 cgButtonSmallV09"
-                      onClick={onDiscover}
-                      data-cg-discover-entry="true"
+                      onClick={currentJourney ? () => openJourney(currentJourney.path) : (discoveryComplete ? onExplore : onDiscover)}
                     >
-                      Visit Discover
+                      {currentJourney ? 'Continue' : (discoveryComplete ? 'Explore' : 'Start')} →
                     </button>
-                  </article>
-                </section>
+                  </section>
 
-                <section className="cgPanelV09 cgRecentPanelV09">
-                  <div className="cgPanelHeadingV09">
-                    <div>
-                      <span className="cgEyebrowV09">RECENTLY</span>
-                      <h2>Things you’ve done</h2>
+                  <section className="synHomeGuideItemV0118 try">
+                    <span className="synHomeGuideItemIconV0118">{topRecommendation?.emoji || '✨'}</span>
+                    <div className="synHomeGuideItemCopyV0118">
+                      <small>SOMETHING WORTH TRYING</small>
+                      <strong>{topRecommendation?.title || 'Find something new to try'}</strong>
+                      <p>{topRecommendation?.reasons?.[0] || 'Explore an idea that matches what sounds interesting to you.'}</p>
                     </div>
-                    <button type="button" onClick={onJourney}>View all →</button>
-                  </div>
-
-                  <div className="cgRecentGridV09">
-                    {completedJourneyItems.slice(0, 3).map((item) => (
+                    <div className="synHomeGuideItemActionsV0118">
+                      {topRecommendation && (
+                        <button type="button" className="why" onClick={() => runGuideRequest('Why is this a good next step?')}>Why this?</button>
+                      )}
                       <button
                         type="button"
-                        className="cgRecentItemV09"
-                        key={item.id}
-                        onClick={onJourney}
+                        onClick={topRecommendation ? () => onStartGrow?.(topRecommendation) : onExplore}
                       >
-                        <span>{item.emoji || '✓'}</span>
-                        <span>
-                          <strong>{item.title}</strong>
-                          <small>
-                            {item.path === journeyPaths.SCHOOL_LEARNING
-                              ? 'School & Learning'
-                              : journeyPathLabels[item.path] || 'Journey'}
-                          </small>
-                        </span>
-                        <b>✓</b>
+                        {topRecommendation ? 'Try it' : 'Explore'} →
                       </button>
-                    ))}
+                    </div>
+                  </section>
+                </div>
 
-                    {completedJourneyItems.length === 0 &&
-                      completedExplorations.slice(0, 3).map((item, index) => (
-                        <button
-                          type="button"
-                          className="cgRecentItemV09"
-                          key={item.id || item.title || index}
-                          onClick={onJourney}
-                        >
-                          <span>{item.emoji || '✨'}</span>
-                          <span>
-                            <strong>{item.title || 'Experience'}</strong>
-                            <small>Experience</small>
-                          </span>
-                          <b>✓</b>
-                        </button>
-                      ))}
+                <div className="synHomeAlsoLabelV0118">YOU MIGHT ALSO LIKE</div>
+                <div className="synHomeDiscoveryGridV0118">
+                  <button type="button" className="synHomeDiscoveryCardV0118 near" onClick={onExplore}>
+                    <span className="synHomeDiscoveryTypeV0118">📍 NEAR YOU</span>
+                    <strong>{candidateTitle(nearYouCandidate, 'See what’s happening near you')}</strong>
+                    <small>{candidateMeta(nearYouCandidate, 'Activities and experiences nearby')}</small>
+                    <b>See activity →</b>
+                  </button>
 
-                    {completedJourneyItems.length === 0 &&
-                      completedExplorations.length === 0 && (
-                        <div className="cgEmptyCompactV09">
-                          <span>✨</span>
-                          <div>
-                            <strong>Your history will grow here.</strong>
-                            <p>Complete and reflect on things in My Growth.</p>
-                          </div>
-                        </div>
+                  <button type="button" className="synHomeDiscoveryCardV0118 explore" onClick={onExplore}>
+                    <span className="synHomeDiscoveryTypeV0118">⭐ WORTH EXPLORING</span>
+                    <strong>{candidateTitle(worthExploringCandidate, 'Find something that catches your interest')}</strong>
+                    <small>{worthExploringCandidate?.reasons?.[0] || candidateMeta(worthExploringCandidate, 'Ideas picked around what you enjoy')}</small>
+                    <b>Explore →</b>
+                  </button>
+                </div>
+              </article>
+
+              <aside className="synHomeAgentV0118" aria-label="SynapStride Guide">
+                <div className="synHomeAgentHeaderV0118">
+                  <span className="synHomeBotV0118" aria-hidden="true">🤖</span>
+                  <span>
+                    <strong>SynapStride Guide <em>AI</em></strong>
+                    <small>Your guide for learning, exploring, and what comes next.</small>
+                  </span>
+                </div>
+
+                {guideReply ? (
+                  <div className="synHomeAgentConversationV0118" aria-live="polite">
+                    <div className="synHomeAgentQuestionV0118">{guideReply.question}</div>
+                    <div className="synHomeAgentReplyV0118">
+                      <p>{guideReply.text}</p>
+                      {guideReply.actionLabel && guideReply.action && (
+                        <button type="button" onClick={guideReply.action}>{guideReply.actionLabel}</button>
                       )}
+                    </div>
                   </div>
-                </section>
-
-                <section className="cgBottomGridV09">
-                  <article className="cgPanelV09 cgVoicePanelV09">
-                    <span className="cgEyebrowV09">YOUR VOICE</span>
-                    <h2>What sounds fun to try?</h2>
-                    <form className="cgIdeaFormV09" onSubmit={handleStudentIdeaSubmit}>
-                      <input
-                        type="text"
-                        value={studentIdea}
-                        onChange={(event) => setStudentIdea(event.target.value)}
-                        placeholder="I want to..."
-                        aria-label="What do you want to try?"
-                      />
-                      <button type="submit" disabled={!studentIdea.trim()}>Save</button>
-                    </form>
-                    {latestStudentIntent && (
-                      <p className="cgLatestIdeaV09">
-                        You told us: “{latestStudentIntent.text}”
-                      </p>
-                    )}
-                  </article>
-
-                  <article className="cgPanelV09 cgParentPreviewV09">
-                    <span className="cgEyebrowV09">FOR PARENTS</span>
-                    <h2>Add another perspective</h2>
-                    <p>
-                      Parent observations help corroborate what shows up across Discover and My Growth.
-                    </p>
-                    <button type="button" onClick={onParentPerspective}>Open Parent View →</button>
-                  </article>
-                </section>
-
-                <details className="cgResearchDetailsV09">
-                  <summary>More researched experiences</summary>
-                  <div className="cgResearchDetailsBodyV09">
-                    <ExperienceResearchPanel
-                      childName={childName}
-                      candidates={researchedExperienceCandidates}
-                      journeyItems={journeyItems}
-                      onAddToJourney={onAddResearchedExperienceToJourney}
-                    />
+                ) : (
+                  <div className="synHomeAgentIntroV0118">
+                    <strong>Ask me anything.</strong>
+                    <p>I can help you get unstuck, find something to try, or take you to the right place in SynapStride.</p>
                   </div>
-                </details>
+                )}
+
+                <div className="synHomeAgentPromptsV0118">
+                  <button type="button" onClick={() => runGuideRequest('Help me with my homework')}>Help with homework</button>
+                  <button type="button" onClick={() => runGuideRequest('What can I build?')}>What can I build?</button>
+                  <button type="button" onClick={() => runGuideRequest('What should I try next?')}>What should I try?</button>
+                </div>
+
+                <form className="synHomeAgentInputV0118" onSubmit={handleGuideSubmit}>
+                  <input
+                    type="text"
+                    value={guideInput}
+                    onChange={(event) => setGuideInput(event.target.value)}
+                    placeholder="Ask me anything..."
+                    aria-label="Ask SynapStride Guide"
+                  />
+                  <button type="submit" disabled={!guideInput.trim()} aria-label="Send to SynapStride Guide">→</button>
+                </form>
+                <small className="synHomeAgentFootV0118">✨ I can answer briefly, guide you, and open the right part of SynapStride.</small>
+              </aside>
+            </section>
+
+            <section className="synHomePictureV0118">
+              <div className="synHomePictureLeadV0118">
+                <span className="synHomeCardLabelV0118"><span>🌱</span> YOUR PICTURE IS GROWING</span>
+                <h2>We’re beginning to notice what you keep coming back to.</h2>
+                <p>These are clues, not labels. They can change as you learn and try more things.</p>
               </div>
-            )}
-          </>
+
+              <div className="synHomeSignalsV0118">
+                {strongestTraits.length > 0 ? (
+                  strongestTraits.slice(0, 3).map((trait) => (
+                    <span key={trait.id}><b>{trait.emoji || '🌱'}</b>{trait.label}</span>
+                  ))
+                ) : (
+                  <>
+                    <span><b>🔎</b>Curious</span>
+                    <span><b>🧩</b>Problem Solver</span>
+                    <span><b>🛠</b>Builder</span>
+                  </>
+                )}
+              </div>
+
+              <button type="button" className="synHomeProfileLinkV0118" onClick={onGrowthProfile}>See My Profile →</button>
+            </section>
+          </div>
         )}
 
       </main>
