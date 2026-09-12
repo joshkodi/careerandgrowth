@@ -69,6 +69,7 @@ import {
   appendEvidenceEvents,
   getEvidenceEvents,
   saveGrowthProfile,
+  resetGrowthIntelligence,
 } from './storage/growthStorage'
 
 import {
@@ -88,6 +89,16 @@ import useAdventureFlow from './features/adventures/useAdventureFlow'
 import useJourney from './features/journey/useJourney'
 
 import useGrowthIntents from './features/growth/useGrowthIntents'
+
+import {
+  clearGrowthLoopData,
+} from './storage/growthLoopStorage'
+
+import {
+  getFamilyStorageKey,
+  migrateLegacyStorageKey,
+  removeFamilyStorageKey,
+} from './storage/familyStorage'
 
 import {
   getChildEvidenceId,
@@ -134,6 +145,7 @@ import {
 import {
   findJourneyByExperience,
   saveJourneyItem,
+  clearJourneyItems,
 } from './storage/journeyStorage'
 
 
@@ -170,11 +182,14 @@ const defaultChildProfile = {
 }
 
 
-const readStoredAppState = () => {
+const readStoredAppState = (familyId = null) => {
   try {
     const raw =
       localStorage.getItem(
-        APP_STATE_STORAGE_KEY
+        migrateLegacyStorageKey(
+          APP_STATE_STORAGE_KEY,
+          familyId
+        )
       )
 
     if (!raw) {
@@ -199,14 +214,16 @@ const readStoredAppState = () => {
 }
 
 
-const storedAppState =
-  readStoredAppState()
-
 const storedAuthSession =
   getLocalSession()
 
 const storedParentAccount =
   getAccountForSession(storedAuthSession)
+
+const storedAppState =
+  readStoredAppState(
+    storedAuthSession?.familyId || null
+  )
 
 
 // ============================================================
@@ -1241,7 +1258,10 @@ function App() {
       }
 
       localStorage.setItem(
-        APP_STATE_STORAGE_KEY,
+        getFamilyStorageKey(
+          APP_STATE_STORAGE_KEY,
+          authSession?.familyId
+        ),
         JSON.stringify(
           appState
         )
@@ -1254,6 +1274,7 @@ function App() {
       parentPerspectiveComplete,
       completedExplorations,
       screen,
+      authSession?.familyId,
     ]
   )
 
@@ -1272,18 +1293,15 @@ function App() {
       return
     }
 
-    const savedAccount = readJsonStorage(PARENT_ACCOUNT_STORAGE_KEY)
-    const savedSession = readJsonStorage(AUTH_SESSION_STORAGE_KEY)
-
-    localStorage.clear()
-
-    if (savedAccount) {
-      localStorage.setItem(PARENT_ACCOUNT_STORAGE_KEY, JSON.stringify(savedAccount))
-    }
-
-    if (savedSession) {
-      localStorage.setItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(savedSession))
-    }
+    // Reset only the active family's workspace. Never clear other
+    // local families or authentication accounts.
+    removeFamilyStorageKey(
+      APP_STATE_STORAGE_KEY,
+      authSession?.familyId
+    )
+    resetGrowthIntelligence()
+    clearJourneyItems()
+    clearGrowthLoopData()
 
     setChildProfile(
       defaultChildProfile
@@ -1317,18 +1335,11 @@ function App() {
 
 
   const completeLocalSignIn = (account) => {
-    const session = createLocalSession(account)
-
-    setAuthSession(session)
-    setParentAccount(account)
-    setAuthForm({ email: '', password: '', confirmPassword: '' })
-    setAuthMessage('')
-
-    setScreen(
-      childProfile.name.trim()
-        ? 'childSpace'
-        : 'parentSetup'
-    )
+    // Persist the authenticated family first, then reload the local MVP shell.
+    // This guarantees every hook/controller initializes from the newly selected
+    // family's workspace rather than retaining the previous family's memory state.
+    createLocalSession(account)
+    window.location.reload()
   }
 
 
@@ -1418,6 +1429,14 @@ function App() {
     // a successful sign-in.
     setAuthSession(null)
     setParentAccount(null)
+    setChildProfile(defaultChildProfile)
+    resetDiscovery()
+    resetParentPerspective()
+    resetAdventure()
+    resetGrowthIntents()
+    resetJourney()
+    setGrowthIntelligenceProfile(null)
+    setEvidenceEventCount(0)
     setAuthForm({ email: '', password: '', confirmPassword: '' })
     setAuthMessage('')
     setWhyReturnScreen('landing')

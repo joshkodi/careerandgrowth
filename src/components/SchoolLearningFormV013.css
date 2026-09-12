@@ -1,0 +1,153 @@
+
+/* SynapStride MVP v0.13 — School & Learning add-item form stabilization */
+
+.learningWorkspaceV08.cgLearningWorkspaceOpenV09 {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 28px;
+  padding: 24px;
+  border: 1px solid rgba(36, 50, 79, 0.12);
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 12px 34px rgba(36, 50, 79, 0.08);
+}
+
+.learningWorkspaceHeaderV08 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.learningWorkspaceHeaderV08 > div {
+  min-width: 0;
+}
+
+.learningWorkspaceHeaderV08 h2 {
+  margin: 6px 0 8px;
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+.learningWorkspaceHeaderV08 p {
+  max-width: 720px;
+  margin: 0;
+  line-height: 1.55;
+  color: #667085;
+}
+
+.learningFormV08 {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.learningFormV08 label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  font-weight: 650;
+  color: #27324a;
+}
+
+.learningFormV08 label > span {
+  display: block;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+
+.learningFormV08 input,
+.learningFormV08 select,
+.learningFormV08 textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid #d8deea;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #1d2740;
+  font: inherit;
+  font-weight: 400;
+  outline: none;
+}
+
+.learningFormV08 input,
+.learningFormV08 select {
+  min-height: 44px;
+  padding: 9px 12px;
+}
+
+.learningFormV08 textarea {
+  min-height: 96px;
+  padding: 12px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.learningFormV08 input:focus,
+.learningFormV08 select:focus,
+.learningFormV08 textarea:focus {
+  border-color: #7667dc;
+  box-shadow: 0 0 0 3px rgba(118, 103, 220, 0.12);
+}
+
+.learningFormGridV08 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.learningFormActionsV08 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 2px;
+}
+
+.learningFormActionsV08 button {
+  min-height: 42px;
+  padding: 9px 18px;
+  border-radius: 11px;
+}
+
+.learningFormActionsV08 button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.synLearningDraftAttachmentsV0917 {
+  margin-top: 2px;
+}
+
+@media (max-width: 1100px) {
+  .learningFormGridV08 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .learningWorkspaceV08.cgLearningWorkspaceOpenV09 {
+    padding: 18px;
+    border-radius: 17px;
+  }
+
+  .learningWorkspaceHeaderV08 {
+    flex-direction: column;
+  }
+
+  .learningFormGridV08 {
+    grid-template-columns: 1fr;
+  }
+
+  .learningFormActionsV08 {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .learningFormActionsV08 button {
+    width: 100%;
+  }
+}

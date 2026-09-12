@@ -8,6 +8,11 @@ import {
   isValidEvidenceEvent
 } from "../intelligence/evidenceEngine";
 
+import {
+  migrateLegacyStorageKey,
+  removeFamilyStorageKey,
+} from "./familyStorage";
+
 //
 // Career & Growth — MVP v0.3
 // Growth Intelligence Storage
@@ -24,6 +29,9 @@ import {
 
 const STORAGE_KEY =
   "careerAndGrowth.growthIntelligence";
+
+const activeStorageKey = () =>
+  migrateLegacyStorageKey(STORAGE_KEY);
 
 
 //
@@ -84,7 +92,7 @@ export function loadGrowthState() {
 
   try {
     const raw =
-      window.localStorage.getItem(STORAGE_KEY);
+      window.localStorage.getItem(activeStorageKey());
 
     if (!raw) {
       return createEmptyGrowthState();
@@ -163,7 +171,7 @@ export function saveGrowthState(state) {
     };
 
     window.localStorage.setItem(
-      STORAGE_KEY,
+      activeStorageKey(),
       JSON.stringify(nextState)
     );
 
@@ -501,9 +509,7 @@ export function resetGrowthIntelligence() {
   }
 
   try {
-    window.localStorage.removeItem(
-      STORAGE_KEY
-    );
+    removeFamilyStorageKey(STORAGE_KEY);
 
     return true;
   } catch (error) {

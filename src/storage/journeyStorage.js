@@ -1,3 +1,5 @@
+import { migrateLegacyStorageKey, removeFamilyStorageKey } from './familyStorage'
+
 // ============================================================
 // Career & Growth
 // MVP v0.4
@@ -15,6 +17,9 @@
 const JOURNEY_STORAGE_KEY =
   'career_growth_journey_v1'
 
+const activeJourneyStorageKey = () =>
+  migrateLegacyStorageKey(JOURNEY_STORAGE_KEY)
+
 
 // ============================================================
 // READ ALL
@@ -24,7 +29,7 @@ export function getAllJourneyItems() {
   try {
     const stored =
       localStorage.getItem(
-        JOURNEY_STORAGE_KEY
+        activeJourneyStorageKey()
       )
 
     if (!stored) {
@@ -128,7 +133,7 @@ export function saveJourneyItem(
   }
 
   localStorage.setItem(
-    JOURNEY_STORAGE_KEY,
+    activeJourneyStorageKey(),
     JSON.stringify(
       updatedItems
     )
@@ -184,7 +189,7 @@ export function deleteJourneyItem(
     )
 
   localStorage.setItem(
-    JOURNEY_STORAGE_KEY,
+    activeJourneyStorageKey(),
     JSON.stringify(
       updatedItems
     )
@@ -197,7 +202,7 @@ export function deleteJourneyItem(
 // ============================================================
 
 export function clearJourneyItems() {
-  localStorage.removeItem(
+  removeFamilyStorageKey(
     JOURNEY_STORAGE_KEY
   )
 }

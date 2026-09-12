@@ -1,3 +1,5 @@
+import { migrateLegacyStorageKey, removeFamilyStorageKey } from './familyStorage'
+
 const STORAGE_KEYS = {
   intents:
     'careerGrowth.v04.intents',
@@ -11,10 +13,12 @@ const STORAGE_KEYS = {
 // HELPERS
 // ============================================================
 
+const activeKey = (key) => migrateLegacyStorageKey(key)
+
 const readArray = (key) => {
   try {
     const stored =
-      localStorage.getItem(key)
+      localStorage.getItem(activeKey(key))
 
     if (!stored) {
       return []
@@ -42,7 +46,7 @@ const writeArray = (
   values
 ) => {
   localStorage.setItem(
-    key,
+    activeKey(key),
     JSON.stringify(values)
   )
 
@@ -171,11 +175,11 @@ export const saveJourneyItem =
 
 export const clearGrowthLoopData =
   () => {
-    localStorage.removeItem(
+    removeFamilyStorageKey(
       STORAGE_KEYS.intents
     )
 
-    localStorage.removeItem(
+    removeFamilyStorageKey(
       STORAGE_KEYS.journey
     )
   }
