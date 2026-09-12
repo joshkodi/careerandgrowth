@@ -557,6 +557,7 @@ function App() {
     upcomingGrowthActivities,
 
     completedJourneyInsight,
+    completedGrowthActivityInsight,
 
     restoreJourney,
 
@@ -584,6 +585,7 @@ function App() {
       handleCompleteJourneyBase,
 
     dismissCompletedJourneyInsight,
+    dismissCompletedGrowthActivityInsight,
 
     resetJourney,
   } = journey
@@ -1859,8 +1861,16 @@ function App() {
               completedJourneyInsight
             }
 
+            completedGrowthActivityInsight={
+              completedGrowthActivityInsight
+            }
+
             onDismissJourneyInsight={
               dismissCompletedJourneyInsight
+            }
+
+            onDismissGrowthActivityInsight={
+              dismissCompletedGrowthActivityInsight
             }
 
             onSaveStudentIntent={

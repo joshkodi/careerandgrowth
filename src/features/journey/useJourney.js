@@ -76,6 +76,7 @@ import {
 
 import {
   getGrowthActivities,
+  getGrowthProfile,
   saveGrowthActivity,
 } from '../../storage/growthStorage'
 
@@ -87,6 +88,15 @@ import {
 import {
   getGrowExperience,
 } from '../../data/growExperiences'
+
+import {
+  buildGrowthActivityCompletionEvidence,
+  buildGrowthActivityReflectionEvidence,
+} from '../../intelligence/growthActivityEvidenceAdapter'
+
+import {
+  buildGrowthProfileDelta,
+} from '../../intelligence/growthProfileDeltaEngine'
 
 
 // ============================================================
@@ -116,6 +126,11 @@ export default function useJourney({
   const [
     completedJourneyInsight,
     setCompletedJourneyInsight,
+  ] = useState(null)
+
+  const [
+    completedGrowthActivityInsight,
+    setCompletedGrowthActivityInsight,
   ] = useState(null)
 
   // SynapStride v0.10.1 — selected/scheduled Growth Activities.
@@ -1114,6 +1129,30 @@ export default function useJourney({
           )
       )
 
+      const childId =
+        getChildEvidenceId(
+          childProfile
+        )
+
+      const completionEvidence =
+        buildGrowthActivityCompletionEvidence({
+          childId,
+          activity:
+            updatedActivity,
+          previousStatus:
+            currentActivity.status,
+          sessionId:
+            createSessionId(),
+        })
+
+      if (
+        completionEvidence.length > 0
+      ) {
+        persistGrowthEvidence(
+          completionEvidence
+        )
+      }
+
       return updatedActivity
     }
 
@@ -1216,6 +1255,55 @@ export default function useJourney({
           )
       )
 
+      const childId =
+        getChildEvidenceId(
+          childProfile
+        )
+
+      const reflectionEvidence =
+        buildGrowthActivityReflectionEvidence({
+          childId,
+          activity:
+            updatedActivity,
+          reflection,
+          sessionId:
+            createSessionId(),
+        })
+
+      const profileBeforeReflection =
+        getGrowthProfile()
+
+      const updatedProfile =
+        reflectionEvidence.length > 0
+          ? persistGrowthEvidence(
+              reflectionEvidence
+            )
+          : null
+
+      const profileChanges =
+        buildGrowthProfileDelta({
+          beforeProfile:
+            profileBeforeReflection,
+          afterProfile:
+            updatedProfile,
+          limit: 3,
+        })
+
+      setCompletedGrowthActivityInsight({
+        growthActivity:
+          updatedActivity,
+        reflection: {
+          ...(updatedActivity.reflection || {}),
+          ...(reflection || {}),
+        },
+        updatedProfile,
+        profileChanges,
+        completedAt:
+          updatedActivity.completedAt ||
+          updatedActivity.attendedAt ||
+          updatedActivity.updatedAt,
+      })
+
       if (
         reflection?.wantsNext?.trim()
       ) {
@@ -1236,10 +1324,19 @@ export default function useJourney({
     }
 
 
+  const dismissCompletedGrowthActivityInsight =
+    () => {
+      setCompletedGrowthActivityInsight(
+        null
+      )
+    }
+
+
   const resetJourney =
     () => {
       setJourneyItems([])
       setCompletedJourneyInsight(null)
+      setCompletedGrowthActivityInsight(null)
       setGrowthActivities([])
     }
 
@@ -1261,6 +1358,7 @@ export default function useJourney({
     upcomingGrowthActivities,
 
     completedJourneyInsight,
+    completedGrowthActivityInsight,
 
     restoreJourney,
 
@@ -1285,6 +1383,7 @@ export default function useJourney({
     handleGrowthActivityReflection,
 
     dismissCompletedJourneyInsight,
+    dismissCompletedGrowthActivityInsight,
 
     resetJourney,
   }

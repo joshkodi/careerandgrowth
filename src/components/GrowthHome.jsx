@@ -52,6 +52,14 @@ import {
 } from '../intelligence/intelligenceRecommendationLoop'
 
 import {
+  buildPersonalizedGuidance,
+} from '../intelligence/personalizedGuidanceEngine'
+
+import {
+  describeGrowthProfileDelta,
+} from '../intelligence/growthProfileDeltaEngine'
+
+import {
   buildLearningNextSteps,
 } from '../intelligence/learningNextStepEngine'
 
@@ -104,7 +112,9 @@ function GrowthHome({
   calendarActivities = [],
   upcomingGrowthActivities = [],
   completedJourneyInsight = null,
+  completedGrowthActivityInsight = null,
   onDismissJourneyInsight,
+  onDismissGrowthActivityInsight,
   onSaveStudentIntent,
   onStartGrow,
   onHome,
@@ -135,6 +145,102 @@ function GrowthHome({
     childProfile?.name?.trim() ||
     'Explorer'
 
+  const unifiedJourneyItemsForGuidance =
+    useMemo(
+      () =>
+        normalizeJourneyItems(
+          journeyItems
+        ),
+      [journeyItems]
+    )
+
+  const sharedIntelligenceRecommendationLoop =
+    useMemo(
+      () => {
+        try {
+          return (
+            buildIntelligenceRecommendationLoop({
+              childId:
+                childProfile?.id ||
+                childProfile?.name ||
+                null,
+
+              age:
+                childProfile?.age ||
+                null,
+
+              evidenceEvents,
+              journeyItems:
+                unifiedJourneyItemsForGuidance,
+
+              studentIntents,
+              parentIntents,
+
+              completedExperienceIds: [
+                ...unifiedJourneyItemsForGuidance
+                  .map(
+                    (item) =>
+                      item.experienceId
+                  ),
+                ...growthActivities
+                  .filter(
+                    (activity) =>
+                      ['completed', 'attended'].includes(
+                        activity.status
+                      )
+                  )
+                  .map(
+                    (activity) =>
+                      activity.experienceId
+                  ),
+              ].filter(Boolean),
+
+              recommendationLimit: 5,
+              actionLimit: 5,
+            })
+          )
+        } catch (error) {
+          console.error(
+            'SynapStride v0.13 shared recommendation loop failed safely.',
+            error
+          )
+
+          return null
+        }
+      },
+
+      [
+        childProfile?.id,
+        childProfile?.name,
+        childProfile?.age,
+        evidenceEvents,
+        unifiedJourneyItemsForGuidance,
+        studentIntents,
+        parentIntents,
+        growthActivities,
+      ]
+    )
+
+  const personalizedGuidance =
+    useMemo(
+      () =>
+        buildPersonalizedGuidance({
+          intelligenceLoop:
+            sharedIntelligenceRecommendationLoop,
+          journeyItems:
+            unifiedJourneyItemsForGuidance,
+          growthActivities,
+          fallbackRecommendations:
+            recommendations,
+        }),
+      [
+        sharedIntelligenceRecommendationLoop,
+        unifiedJourneyItemsForGuidance,
+        growthActivities,
+        recommendations,
+      ]
+    )
+
   const activeJourneyItems =
     journeyItems.filter(
       (item) => item.status !== 'completed'
@@ -146,13 +252,47 @@ function GrowthHome({
     )
 
   const currentJourney =
-    activeJourneyItems[0] || null
+    personalizedGuidance
+      ?.continueAction
+      ?.kind === 'journey'
+      ? personalizedGuidance
+          .continueAction
+          .item
+      : activeJourneyItems[0] || null
+
+  const currentGrowthActivity =
+    personalizedGuidance
+      ?.continueAction
+      ?.kind === 'growth_activity'
+      ? personalizedGuidance
+          .continueAction
+          .item
+      : null
+
+  const needsAttention =
+    personalizedGuidance
+      ?.needsAttention || null
+
+  const continueItem =
+    needsAttention?.item ||
+    currentJourney ||
+    currentGrowthActivity ||
+    null
 
   const topRecommendation =
-    recommendations?.[0] || null
+    personalizedGuidance
+      ?.tryNext
+      ?.recommendation ||
+    recommendations?.[0] ||
+    null
 
   const secondaryRecommendation =
-    recommendations?.[1] || null
+    sharedIntelligenceRecommendationLoop
+      ?.recommendations
+      ?.growthExperiences
+      ?.[1] ||
+    recommendations?.[1] ||
+    null
 
   const homeExplorePool = [
     ...(Array.isArray(exploreRecommendations) ? exploreRecommendations : []),
@@ -239,6 +379,32 @@ function GrowthHome({
   const openSchoolLearning = () =>
     openJourney(journeyPaths.SCHOOL_LEARNING)
 
+  const openContinueItem = () => {
+    if (needsAttention) {
+      openSchoolLearning()
+      return
+    }
+
+    if (currentJourney) {
+      openJourney(
+        currentJourney.path
+      )
+      return
+    }
+
+    if (currentGrowthActivity) {
+      onExplore?.()
+      return
+    }
+
+    if (!discoveryComplete) {
+      onDiscover?.()
+      return
+    }
+
+    onExplore?.()
+  }
+
   const runGuideRequest = (rawText) => {
     const text = String(rawText || '').trim()
     if (!text) return
@@ -274,16 +440,56 @@ function GrowthHome({
         actionLabel: 'Open My Growth →',
         action: onJourney,
       }
+    } else if (/(why.*(this|next|recommend)|why is this|why did you pick)/.test(normalized)) {
+      if (topRecommendation) {
+        reply = {
+          text:
+            personalizedGuidance
+              ?.tryNext
+              ?.reason ||
+            topRecommendation
+              ?.reasons
+              ?.[0] ||
+            'This matches the Growth Profile and interests SynapStride has enough evidence to use right now.',
+          actionLabel: 'Try it →',
+          action: () =>
+            onStartGrow?.(
+              topRecommendation
+            ),
+        }
+      } else {
+        reply = {
+          text:
+            personalizedGuidance
+              ?.explanation
+              ?.text ||
+            'SynapStride uses what you have actually done, what you have told us, and what is already in motion to decide what deserves attention next.',
+          actionLabel: null,
+          action: null,
+        }
+      }
     } else if (/(next|try|recommend|suggest|what should|guide me|something for me)/.test(normalized)) {
-      if (currentJourney) {
+      if (needsAttention) {
+        reply = {
+          text: `“${needsAttention.title}” still needs some attention. That is the most useful place to continue right now.`,
+          actionLabel: 'Open School & Learning →',
+          action: openSchoolLearning,
+        }
+      } else if (currentJourney) {
         reply = {
           text: `You already have “${currentJourney.title}” in motion. Continuing it could be a useful next step.`,
           actionLabel: 'Continue →',
           action: () => openJourney(currentJourney.path),
         }
+      } else if (currentGrowthActivity) {
+        reply = {
+          text: `You already saved “${currentGrowthActivity.title}”. Picking that back up is a useful next step.`,
+          actionLabel: 'Continue →',
+          action: onExplore,
+        }
       } else if (topRecommendation) {
         reply = {
-          text: `“${topRecommendation.title}” looks worth trying based on the clues SynapStride has so far.`,
+          text: `“${topRecommendation.title}” looks worth trying. ${personalizedGuidance?.tryNext?.reason || ''}`.trim(),
           actionLabel: 'Try it →',
           action: () => onStartGrow?.(topRecommendation),
         }
@@ -313,6 +519,9 @@ function GrowthHome({
           <JourneyPanel
             childName={childName}
             childProfile={childProfile}
+            sharedIntelligenceRecommendationLoop={
+              sharedIntelligenceRecommendationLoop
+            }
             studentIntents={studentIntents}
             parentIntents={parentIntents}
             journeyItems={journeyItems}
@@ -387,12 +596,19 @@ function GrowthHome({
               </div>
             </section>
 
-            {completedJourneyInsight && (
+            {(completedGrowthActivityInsight || completedJourneyInsight) && (
               <PostReflectionInsight
-                insight={completedJourneyInsight}
+                insight={
+                  completedGrowthActivityInsight ||
+                  completedJourneyInsight
+                }
                 nextRecommendation={topRecommendation}
                 onAddNext={onStartGrow}
-                onDismiss={onDismissJourneyInsight}
+                onDismiss={
+                  completedGrowthActivityInsight
+                    ? onDismissGrowthActivityInsight
+                    : onDismissJourneyInsight
+                }
               />
             )}
 
@@ -410,11 +626,22 @@ function GrowthHome({
                   <section className="synHomeGuideItemV0118 continue">
                     <span className="synHomeGuideItemIconV0118">📘</span>
                     <div className="synHomeGuideItemCopyV0118">
-                      <small>PICK UP WHERE YOU LEFT OFF</small>
-                      {currentJourney ? (
+                      <small>
+                        {needsAttention
+                          ? 'NEEDS YOUR ATTENTION'
+                          : 'PICK UP WHERE YOU LEFT OFF'}
+                      </small>
+                      {continueItem ? (
                         <>
-                          <strong>{currentJourney.title}</strong>
-                          <p>You were working on this recently.</p>
+                          <strong>{continueItem.title}</strong>
+                          <p>
+                            {needsAttention
+                              ?.reason ||
+                              personalizedGuidance
+                                ?.continueAction
+                                ?.reason ||
+                              'You were working on this recently.'}
+                          </p>
                         </>
                       ) : (
                         <>
@@ -425,9 +652,11 @@ function GrowthHome({
                     </div>
                     <button
                       type="button"
-                      onClick={currentJourney ? () => openJourney(currentJourney.path) : (discoveryComplete ? onExplore : onDiscover)}
+                      onClick={openContinueItem}
                     >
-                      {currentJourney ? 'Continue' : (discoveryComplete ? 'Explore' : 'Start')} →
+                      {continueItem
+                        ? (needsAttention ? 'Open' : 'Continue')
+                        : (discoveryComplete ? 'Explore' : 'Start')} →
                     </button>
                   </section>
 
@@ -436,7 +665,15 @@ function GrowthHome({
                     <div className="synHomeGuideItemCopyV0118">
                       <small>SOMETHING WORTH TRYING</small>
                       <strong>{topRecommendation?.title || 'Find something new to try'}</strong>
-                      <p>{topRecommendation?.reasons?.[0] || 'Explore an idea that matches what sounds interesting to you.'}</p>
+                      <p>
+                        {personalizedGuidance
+                          ?.tryNext
+                          ?.reason ||
+                          topRecommendation
+                            ?.reasons
+                            ?.[0] ||
+                          'Explore an idea that matches what sounds interesting to you.'}
+                      </p>
                     </div>
                     <div className="synHomeGuideItemActionsV0118">
                       {topRecommendation && (
@@ -559,7 +796,14 @@ function PostReflectionInsight({
   onDismiss,
 }) {
   const reflection = insight?.reflection || {}
-  const item = insight?.journeyItem
+  const item =
+    insight?.growthActivity ||
+    insight?.journeyItem ||
+    null
+  const isGrowthActivity =
+    Boolean(insight?.growthActivity)
+  const profileChanges =
+    insight?.profileChanges || []
 
   const enjoymentLabels = {
     not_for_me:
@@ -589,6 +833,12 @@ function PostReflectionInsight({
     )
   }
 
+  if (reflection.learned?.trim()) {
+    learningPoints.push(
+      `You learned: “${reflection.learned.trim()}”`
+    )
+  }
+
   if (reflection.wouldDoAgain === true) {
     learningPoints.push(
       'You would try something like this again.'
@@ -605,12 +855,29 @@ function PostReflectionInsight({
     <section className="postReflectionV06">
       <div className="postReflectionCopyV06">
         <span className="growthKickerV06">
-          YOUR PROFILE GREW
+          YOUR PICTURE GREW
         </span>
         <h2>
           We learned something new from{' '}
           {item?.title || 'this experience'}.
         </h2>
+        {isGrowthActivity && (
+          <>
+            <p>
+              {describeGrowthProfileDelta(profileChanges)}
+            </p>
+            {profileChanges.length > 0 && (
+              <div className="reflectionChipsV06">
+                {profileChanges.map((change) => (
+                  <span key={change.id}>
+                    {change.emoji} {change.label}
+                    {change.isNew ? ' · new clue' : ' · strengthened'}
+                  </span>
+                ))}
+              </div>
+            )}
+          </>
+        )}
         <div className="reflectionChipsV06">
           {learningPoints.map(
             (point, index) => (
@@ -1800,6 +2067,7 @@ function SchoolCalendar({
 function JourneyPanel({
   childName,
   childProfile = null,
+  sharedIntelligenceRecommendationLoop = null,
   studentIntents = [],
   parentIntents = [],
   journeyItems = [],
@@ -2317,7 +2585,7 @@ function JourneyPanel({
     }
 
 
-  const intelligenceRecommendationLoop =
+  const localIntelligenceRecommendationLoop =
     useMemo(
       () => {
         try {
@@ -2371,6 +2639,10 @@ function JourneyPanel({
         parentIntents,
       ]
     )
+
+  const intelligenceRecommendationLoop =
+    sharedIntelligenceRecommendationLoop ||
+    localIntelligenceRecommendationLoop
 
 
   const fallbackLearningNextSteps =
