@@ -1,0 +1,47 @@
+/* SynapStride v0.15 — School + contextual Companion presentation layer.
+   Intentionally scoped to the existing School assignment workspace. */
+
+.synAssignmentWorkspaceV098 .ssSchoolWorkspaceV015.assignment-only {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolWorkspaceV015.assignment-only .synWorkspaceContextV098 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolWorkspaceV015.assignment-only .synWorkspaceTodoV098 {
+  max-width: none;
+}
+
+/* Learning Progress remains in the data model but is not a primary assignment-workspace card. */
+.synAssignmentWorkspaceV098 .ssSchoolWorkspaceV015 .synWorkspaceProgressCardV098 {
+  display: none;
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolWorkspaceV015.help-open {
+  grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.6fr);
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolCompanionV015 {
+  border-color: #d9d2fb;
+  box-shadow: 0 12px 30px rgba(68, 48, 145, 0.08);
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolCompanionEyebrowV015 {
+  display: block;
+  margin-bottom: 3px;
+  color: #6b55c8;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+}
+
+@media (max-width: 820px) {
+  .synAssignmentWorkspaceV098 .ssSchoolWorkspaceV015.help-open {
+    grid-template-columns: 1fr;
+  }
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolCompanionV015.is-collapsed {
+  display: none;
+}

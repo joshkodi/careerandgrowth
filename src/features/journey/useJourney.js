@@ -69,6 +69,10 @@ import {
 } from '../../intelligence/learningOutcomeInterpreter'
 
 import {
+  buildLearningGuidancePlan,
+} from '../../intelligence/guidanceEngine'
+
+import {
   findJourneyByExperience,
   getJourneyItems,
   saveJourneyItem,
@@ -713,9 +717,19 @@ export default function useJourney({
               .estimatedTime ||
             null,
 
+          subjectId: learningItem.subjectId || null,
+          customSubject: learningItem.customSubject || null,
+          tasks: Array.isArray(learningItem.tasks) ? learningItem.tasks : [],
+          attachments: Array.isArray(learningItem.attachments) ? learningItem.attachments : [],
+          workPlan: learningItem.workPlan || null,
+          resumeContext: learningItem.resumeContext || null,
+          importSource: learningItem.importSource || null,
+          extractionMode: learningItem.extractionMode || null,
+
           metadata: {
+            ...(learningItem.metadata || {}),
             createdFrom:
-              'school_learning',
+              learningItem.metadata?.createdFrom || 'school_learning',
           },
         })
 
@@ -785,6 +799,13 @@ export default function useJourney({
       studentNote: helpRequest.studentNote || '',
     })
 
+    const guidancePlan = buildLearningGuidancePlan({
+      journeyItem: currentItem,
+      supportRequest,
+      previousOutcome:
+        currentItem?.learningSupportRequest?.outcome?.outcomeType || null,
+    })
+
     const researchBrief = buildLearningResearchBrief({
       journeyItem: currentItem,
       supportRequest,
@@ -806,6 +827,8 @@ export default function useJourney({
     const enrichedSupportRequest = {
       ...supportRequest,
 
+      guidancePlan,
+
       researchBrief,
 
       discoveryRequest,
@@ -822,10 +845,26 @@ export default function useJourney({
             : supportRequest.status,
     }
 
-    const updatedItem = attachLearningSupportRequest(
-      currentItem,
-      enrichedSupportRequest
-    )
+    const supportHistoryEvent = buildLearningHistoryEvent({
+      journeyItem: currentItem,
+      eventType: 'companion_guidance_started',
+      payload: {
+        helpMode: supportRequest.helpMode,
+        guidanceAction: guidancePlan?.action || null,
+        guidanceTitle: guidancePlan?.title || null,
+      },
+    })
+
+    const updatedItem = {
+      ...attachLearningSupportRequest(
+        currentItem,
+        enrichedSupportRequest
+      ),
+      learningHistory: [
+        ...(currentItem.learningHistory || []),
+        supportHistoryEvent,
+      ].filter(Boolean),
+    }
 
     saveJourneyItem(updatedItem)
 
@@ -974,6 +1013,13 @@ export default function useJourney({
           outcomeType,
         })
 
+      const adaptedGuidancePlan =
+        buildLearningGuidancePlan({
+          journeyItem: currentItem,
+          supportRequest: currentRequest,
+          previousOutcome: outcomeType,
+        })
+
       const updatedItem = {
         ...currentItem,
 
@@ -981,6 +1027,8 @@ export default function useJourney({
           ...currentRequest,
 
           outcome,
+
+          guidancePlan: adaptedGuidancePlan || currentRequest.guidancePlan || null,
 
           status:
             outcomeType ===

@@ -1,0 +1,98 @@
+/* SynapStride v0.15 — targeted School & Learning UX simplification.
+   Presentation-only layer: preserves the existing assignment/help/storage flows. */
+
+/* Keep the assignment workspace focused: work first, supporting detail second. */
+.synWorkspaceBodyV098 {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 18px !important;
+}
+
+.synWorkspaceContextV098 {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 14px !important;
+}
+
+/* The task/instruction card is the primary context card. */
+.synWorkspaceTodoV098 {
+  order: 1;
+}
+
+/* Progress duplicated the assignment plan and made the workspace feel like a dashboard. */
+.synWorkspaceProgressCardV098 {
+  display: none !important;
+}
+
+/* Help is a single clear entry point until the child asks for it. */
+.synWorkspaceHelpCalloutV0910 {
+  order: 2;
+  margin-top: 0 !important;
+}
+
+/* Do not show the full help workspace beside the assignment until Help is active. */
+.synWorkspaceHelpV098 {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Reduce the visual weight of the three status choices. */
+.synWorkspaceAssignmentStateV0910 {
+  padding: 14px 16px !important;
+  margin-bottom: 14px !important;
+}
+
+.synWorkspaceAssignmentStateHeadingV0910 span {
+  display: none !important;
+}
+
+.synWorkspaceAssignmentStateChoicesV0910 {
+  gap: 8px !important;
+}
+
+.synWorkspaceAssignmentStateChoicesV0910 button {
+  min-height: 54px !important;
+  padding: 10px 12px !important;
+}
+
+.synWorkspaceAssignmentStateChoicesV0910 button small {
+  display: none !important;
+}
+
+/* Make the active assignment itself read as one workspace rather than nested dashboards. */
+.synWorkspaceTodoV098,
+.synWorkspaceHelpCalloutV0910,
+.synWorkspaceHelpV098 {
+  border-radius: 16px !important;
+}
+
+/* Help choices stay available, but use a compact responsive grid. */
+.synWorkspaceHelpChoicesV098 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.synWorkspaceHelpChoicesV098 button {
+  min-height: 86px !important;
+  padding: 12px !important;
+}
+
+/* Resources are supporting material, not the dominant assignment experience. */
+.synWorkspaceHelpV098 [class*="Resource"],
+.synWorkspaceHelpV098 [class*="resource"] {
+  scroll-margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .synWorkspaceHelpChoicesV098 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Closed help should not consume half of the assignment workspace. */
+.synWorkspaceHelpV098.idle {
+  display: none !important;
+}
+
+.synWorkspaceHelpV098.active {
+  display: block !important;
+}

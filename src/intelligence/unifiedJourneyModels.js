@@ -446,6 +446,15 @@ export const createUnifiedJourneyItem =
     dueDate = null,
     estimatedTime = null,
 
+    subjectId = null,
+    customSubject = null,
+    tasks = [],
+    attachments = [],
+    workPlan = null,
+    resumeContext = null,
+    importSource = null,
+    extractionMode = null,
+
     status =
       journeyStatuses.PLANNED,
 
@@ -537,6 +546,15 @@ export const createUnifiedJourneyItem =
 
       dueDate,
       estimatedTime,
+
+      subjectId,
+      customSubject,
+      tasks: Array.isArray(tasks) ? tasks : [],
+      attachments: Array.isArray(attachments) ? attachments : [],
+      workPlan,
+      resumeContext,
+      importSource,
+      extractionMode,
 
       status:
         resolvedStatus,

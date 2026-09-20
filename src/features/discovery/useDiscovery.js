@@ -80,6 +80,11 @@ export default function useDiscovery({
     setDiscoverySessionId,
   ] = useState(null)
 
+  const [
+    discoveryStarted,
+    setDiscoveryStarted,
+  ] = useState(false)
+
 
   // ==========================================================
   // DERIVED DATA
@@ -108,6 +113,7 @@ export default function useDiscovery({
   const startDiscovery = () => {
     setCurrentQuestionIndex(0)
     setDiscoveryResponses([])
+    setDiscoveryStarted(true)
 
     setDiscoverySessionId(
       createSessionId()
@@ -282,6 +288,7 @@ export default function useDiscovery({
         setDiscoveryComplete(
           true
         )
+        setDiscoveryStarted(false)
 
         setScreen(
           'discoveryComplete'
@@ -315,6 +322,7 @@ export default function useDiscovery({
       setDiscoveryResponses([])
       setDiscoveryComplete(false)
       setDiscoverySessionId(null)
+      setDiscoveryStarted(false)
     }
 
 
@@ -330,6 +338,7 @@ export default function useDiscovery({
     discoveryResponses,
 
     discoveryComplete,
+    discoveryStarted,
 
     startDiscovery,
 

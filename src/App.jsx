@@ -10,14 +10,22 @@ import './SynapStrideV01110.css'
 import './FirstCustomerV01112.css'
 import './WhySynapStrideV0116.css'
 import './SynapStrideAuthV012.css'
+import './components/AvatarV014.css'
+import './components/ParentFirstUseV014.css'
+import './components/FamilyOnboardingV014.css'
+import './components/ParentSpaceV015.css'
 import synapStrideMark from './assets/synapstride-mark.png'
 
 import {
   createLocalAccount,
+  createLocalChildAccount,
   validateLocalCredentials,
+  validateLocalChildCredentials,
   createLocalSession,
+  createLocalChildSession,
   getLocalSession,
   getAccountForSession,
+  getChildAccountForSession,
   clearLocalSession,
 } from './services/localAuthStore'
 
@@ -31,7 +39,15 @@ import {
   buildPatternPromotionRegistry,
 } from './intelligence/growthPatternPromotionEngine'
 
+import {
+  buildFirstUseSignals,
+  explainRecommendation,
+} from './intelligence/firstUsePersonalization'
+
 import GrowthHome from './components/GrowthHome'
+import Avatar from './components/Avatar'
+import AvatarPicker from './components/AvatarPicker'
+import { getAvatarsForAge } from './data/avatarCatalog'
 import DiscoveryFlow from './components/DiscoveryFlow'
 import GrowthProfileView from './components/GrowthProfileView'
 import ParentPerspectiveFlow from './components/ParentPerspectiveFlow'
@@ -179,7 +195,24 @@ const defaultChildProfile = {
   name: '',
   age: '11',
   grade: '6th Grade',
+  avatarId: 'ethan-blue',
+  avatarSetupComplete: false,
 }
+
+const defaultParentIntent = {
+  goals: [],
+  note: '',
+  setupComplete: false,
+}
+
+const parentIntentGoals = [
+  'Discover interests',
+  'Support learning',
+  'Explore beyond school',
+  'Build confidence & independence',
+  'Understand strengths',
+  'Find direction',
+]
 
 
 const readStoredAppState = (familyId = null) => {
@@ -220,6 +253,9 @@ const storedAuthSession =
 const storedParentAccount =
   getAccountForSession(storedAuthSession)
 
+const storedChildAccount =
+  getChildAccountForSession(storedAuthSession)
+
 const storedAppState =
   readStoredAppState(
     storedAuthSession?.familyId || null
@@ -241,6 +277,10 @@ function App() {
     useState(() => {
       if (!storedAuthSession?.signedIn) {
         return 'landing'
+      }
+
+      if (storedAuthSession?.role === 'child') {
+        return storedChildAccount ? 'childSpace' : 'signIn'
       }
 
       if (!storedAppState?.childProfile?.name?.trim()) {
@@ -273,6 +313,14 @@ function App() {
   const [authMessage, setAuthMessage] =
     useState('')
 
+  const [childAccess, setChildAccess] = useState({
+    enabled: false,
+    username: '',
+    password: '',
+    confirmPassword: '',
+    message: '',
+  })
+
 
   const [
     childProfile,
@@ -281,6 +329,10 @@ function App() {
     storedAppState
       ?.childProfile ||
       defaultChildProfile
+  )
+
+  const [parentIntent, setParentIntent] = useState(
+    storedAppState?.parentIntent || defaultParentIntent
   )
 
   const [
@@ -1244,6 +1296,8 @@ function App() {
       const appState = {
         childProfile,
 
+        parentIntent,
+
         discoveryComplete,
 
         parentPerspectiveComplete,
@@ -1270,6 +1324,7 @@ function App() {
 
     [
       childProfile,
+      parentIntent,
       discoveryComplete,
       parentPerspectiveComplete,
       completedExplorations,
@@ -1306,6 +1361,7 @@ function App() {
     setChildProfile(
       defaultChildProfile
     )
+    setParentIntent(defaultParentIntent)
 
     resetDiscovery()
 
@@ -1384,27 +1440,60 @@ function App() {
   const handleEmailSignIn = async (event) => {
     event.preventDefault()
 
-    const email = authForm.email.trim().toLowerCase()
+    const identifier = authForm.email.trim()
     const password = authForm.password
 
-    if (!email || !password) {
-      setAuthMessage('Enter your email and password.')
+    if (!identifier || !password) {
+      setAuthMessage('Enter your email or child username and password.')
       return
     }
 
-    const result = await validateLocalCredentials({ email, password })
+    const looksLikeEmail = identifier.includes('@')
 
-    if (!result.ok && result.code === 'ACCOUNT_NOT_FOUND') {
-      setAuthMessage('No SynapStride account was found for that email. Choose Get Started to create one.')
+    if (!looksLikeEmail) {
+      const childResult = await validateLocalChildCredentials({
+        username: identifier,
+        password,
+      })
+
+      if (childResult.ok) {
+        const familyState = readStoredAppState(childResult.account.familyId)
+
+        if (!familyState?.childProfile?.name?.trim()) {
+          setAuthMessage(
+            'Your child sign-in exists, but the family workspace could not be restored. Sign in with the parent account once, then try again.'
+          )
+          return
+        }
+
+        createLocalChildSession(childResult.account)
+        window.location.reload()
+        return
+      }
+
+      setAuthMessage(
+        childResult.code === 'ACCOUNT_NOT_FOUND'
+          ? 'No child account was found for that username.'
+          : 'That password does not match the child account.'
+      )
       return
     }
 
-    if (!result.ok) {
-      setAuthMessage('That password does not match this account.')
+    const parentResult = await validateLocalCredentials({
+      email: identifier,
+      password,
+    })
+
+    if (parentResult.ok) {
+      completeLocalSignIn(parentResult.account)
       return
     }
 
-    completeLocalSignIn(result.account)
+    setAuthMessage(
+      parentResult.code === 'ACCOUNT_NOT_FOUND'
+        ? 'No parent account was found for that email.'
+        : 'That password does not match the parent account.'
+    )
   }
 
 
@@ -1456,26 +1545,133 @@ function App() {
       } = event.target
 
       setChildProfile(
-        (currentProfile) => ({
-          ...currentProfile,
-          [name]: value,
-        })
+        (currentProfile) => {
+          const nextProfile = {
+            ...currentProfile,
+            [name]: value,
+          }
+
+          if (name === 'age') {
+            const ageAvatars = getAvatarsForAge(value)
+            const currentStillFits = ageAvatars.some(
+              (avatar) => avatar.id === currentProfile.avatarId
+            )
+
+            if (!currentStillFits) {
+              nextProfile.avatarId = ageAvatars[0]?.id || currentProfile.avatarId
+            }
+          }
+
+          return nextProfile
+        }
       )
     }
 
 
   const handleParentSetupSubmit =
-    (event) => {
+    async (event) => {
       event.preventDefault()
 
-      if (
-        !childProfile.name.trim()
-      ) {
-        return
+      if (!childProfile.name.trim()) return
+
+      if (childAccess.enabled) {
+        const username = childAccess.username.trim().toLowerCase()
+
+        if (!/^[a-z0-9._-]{4,24}$/.test(username)) {
+          setChildAccess((current) => ({
+            ...current,
+            message: 'Use 4–24 letters, numbers, dots, dashes or underscores.',
+          }))
+          return
+        }
+
+        if (childAccess.password.length < 8) {
+          setChildAccess((current) => ({
+            ...current,
+            message: 'Use at least 8 characters for the child password.',
+          }))
+          return
+        }
+
+        if (childAccess.password !== childAccess.confirmPassword) {
+          setChildAccess((current) => ({
+            ...current,
+            message: 'The child passwords do not match.',
+          }))
+          return
+        }
+
+        const result = await createLocalChildAccount({
+          familyId: authSession?.familyId,
+          childId: getChildEvidenceId(childProfile),
+          childName: childProfile.name.trim(),
+          username,
+          password: childAccess.password,
+        })
+
+        if (!result.ok) {
+          setChildAccess((current) => ({
+            ...current,
+            message:
+              result.code === 'USERNAME_EXISTS'
+                ? 'That child username is already in use. Try another.'
+                : result.code === 'CHILD_ACCOUNT_VERIFICATION_FAILED'
+                  ? 'The child sign-in could not be verified. Please re-enter the password and try again.'
+                  : 'We could not create the child sign-in. Please try again.',
+          }))
+          return
+        }
+
+        // The account store has already re-validated these exact credentials.
+        // Persist only the username with the child profile; never persist the password.
+        setChildProfile((current) => ({
+          ...current,
+          childLoginUsername: result.account.username,
+          childLoginEnabled: true,
+          avatarSetupComplete: true,
+        }))
+      } else {
+        setChildProfile((current) => ({
+          ...current,
+          childLoginUsername: null,
+          childLoginEnabled: false,
+          avatarSetupComplete: true,
+        }))
       }
 
-      setScreen('childSpace')
+      // Do not move forward until child account creation + verification succeeded.
+      setScreen('parentIntentSetup')
     }
+
+
+  const toggleParentIntentGoal = (goal) => {
+    setParentIntent((current) => {
+      const selected = current.goals.includes(goal)
+
+      if (selected) {
+        return {
+          ...current,
+          goals: current.goals.filter((item) => item !== goal),
+        }
+      }
+
+      if (current.goals.length >= 3) return current
+
+      return {
+        ...current,
+        goals: [...current.goals, goal],
+      }
+    })
+  }
+
+
+  const finishParentIntentSetup = () => {
+    setParentIntent((current) => ({
+      ...current,
+      setupComplete: true,
+    }))
+    setScreen('parentHandoff')
+  }
 
 
   const goToChildSpace = () => {
@@ -1484,6 +1680,18 @@ function App() {
 
 
   const goToParentSpace = () => {
+    if (authSession?.role === 'child') {
+      // Parent Space remains protected. A child session must authenticate as
+      // the parent before entering it; do not silently ignore the click.
+      clearLocalSession()
+      setAuthSession(null)
+      setParentAccount(null)
+      setAuthForm({ email: '', password: '', confirmPassword: '' })
+      setAuthMessage('Parent Space is protected. Sign in with the parent email and password to continue.')
+      setScreen('signIn')
+      return
+    }
+
     setScreen('parentSpace')
   }
 
@@ -1643,6 +1851,7 @@ function App() {
           />
         ) : (
           <BppWorkspaceShell
+          authRole={authSession?.role}
             activeSection="why"
             childProfile={childProfile}
             activeJourneyCount={journeyItems.filter((item) => item.status !== 'completed').length}
@@ -1672,64 +1881,138 @@ function App() {
 
       {screen ===
         'parentSetup' && (
-        <section className="synChildSetupV012">
+        <section className="synChildSetupV012 synFamilySetupPageV014">
           <div className="synAuthBrandV012">
             <img src={synapStrideMark} alt="" />
             <strong>Synap<span>Stride</span></strong>
           </div>
 
-          <div className="synChildSetupCardV012">
-            <button
-              type="button"
-              className="synAuthBackV012"
-              onClick={handleSignOut}
-            >
-              ← Back
-            </button>
+          <div className="synChildSetupCardV012 synFamilySetupCardV014">
+            <button type="button" className="synAuthBackV012" onClick={handleSignOut}>← Back</button>
+            <div className="synFamilyStepV014">STEP 2 OF 3 · CHILD SETUP</div>
+            <h1>Set up your child&apos;s space</h1>
+            <p className="synAuthLeadV012">Just the essentials. SynapStride will learn the rest naturally from what they discover, learn and experience.</p>
 
-            <div className="synChildSetupIconV012" aria-hidden="true">🌱</div>
-            <p className="synAuthEyebrowV012">ONE QUICK STEP</p>
-            <h1>Let&apos;s create your child&apos;s space.</h1>
-            <p className="synAuthLeadV012">
-              Just the basics for now. SynapStride will learn naturally as they learn, explore and try things.
-            </p>
+            <form className="synAuthFormV012 synFamilySetupFormV014" onSubmit={handleParentSetupSubmit}>
+              <div className="synFamilyBasicsV014">
+                <label>
+                  First name or nickname
+                  <input type="text" name="name" value={childProfile.name} onChange={handleProfileChange} placeholder="Ethan" autoFocus required />
+                </label>
+                <label>
+                  Age
+                  <select name="age" value={childProfile.age} onChange={handleProfileChange}>
+                    {Array.from({ length: 11 }, (_, index) => {
+                      const age = index + 5
+                      return <option key={age} value={age}>{age}</option>
+                    })}
+                  </select>
+                </label>
+              </div>
 
-            <form className="synAuthFormV012" onSubmit={handleParentSetupSubmit}>
-              <label>
-                First name or nickname
-                <input
-                  type="text"
-                  name="name"
-                  value={childProfile.name}
-                  onChange={handleProfileChange}
-                  placeholder="Noah"
-                  autoFocus
-                  required
+              <div className="synFamilyAvatarSectionV014">
+                <AvatarPicker
+                  age={childProfile.age}
+                  value={childProfile.avatarId}
+                  compact
+                  onChange={(avatarId) => setChildProfile((current) => ({ ...current, avatarId }))}
                 />
-              </label>
+              </div>
 
-              <label>
-                Age
-                <select
-                  name="age"
-                  value={childProfile.age}
-                  onChange={handleProfileChange}
-                >
-                  {Array.from({ length: 13 }, (_, index) => {
-                    const age = index + 5
-                    return <option key={age} value={age}>{age}</option>
-                  })}
-                </select>
-              </label>
+              <fieldset className="synChildAccessV014">
+                <legend>How should {childProfile.name.trim() || 'your child'} sign in later?</legend>
 
-              <button className="synAuthPrimaryV012" type="submit">
-                {childProfile.name.trim() ? `Enter ${childProfile.name.trim()}'s Space →` : 'Enter Child Space →'}
-              </button>
+                <label className={!childAccess.enabled ? 'selected' : ''}>
+                  <input type="radio" name="childAccessMode" checked={!childAccess.enabled}
+                    onChange={() => setChildAccess((current) => ({ ...current, enabled: false, message: '' }))} />
+                  <span><strong>Through the family account</strong><small>Simple for younger children or a shared family device.</small></span>
+                </label>
+
+                <label className={childAccess.enabled ? 'selected' : ''}>
+                  <input type="radio" name="childAccessMode" checked={childAccess.enabled}
+                    onChange={() => setChildAccess((current) => ({ ...current, enabled: true, message: '' }))} />
+                  <span><strong>Give {childProfile.name.trim() || 'my child'} their own sign-in</strong><small>They can return directly to their space without using your parent credentials.</small></span>
+                </label>
+
+                {childAccess.enabled && (
+                  <div className="synChildCredentialsV014">
+                    <label>Child username
+                      <input type="text" value={childAccess.username}
+                        onChange={(event) => setChildAccess((current) => ({ ...current, username: event.target.value, message: '' }))}
+                        placeholder="ethan.k" autoComplete="off" />
+                    </label>
+                    <label>Password
+                      <input type="password" value={childAccess.password}
+                        onChange={(event) => setChildAccess((current) => ({ ...current, password: event.target.value, message: '' }))}
+                        placeholder="At least 8 characters" autoComplete="new-password" />
+                    </label>
+                    <label>Confirm password
+                      <input type="password" value={childAccess.confirmPassword}
+                        onChange={(event) => setChildAccess((current) => ({ ...current, confirmPassword: event.target.value, message: '' }))}
+                        placeholder="Repeat password" autoComplete="new-password" />
+                    </label>
+                    <p>Parent-managed access · Child sign-in opens only this child&apos;s space.</p>
+                  </div>
+                )}
+
+                {childAccess.message && <div className="synChildAccessMessageV014">{childAccess.message}</div>}
+              </fieldset>
+
+              <button className="synAuthPrimaryV012" type="submit">Continue to Parent Goals →</button>
             </form>
+          </div>
+        </section>
+      )}
 
-            <p className="synAuthFinePrintV012">
-              You can add interests, parent perspective, location and preferences later.
-            </p>
+      {screen === 'parentIntentSetup' && (
+        <section className="synParentIntentPageV014">
+          <div className="synAuthBrandV012"><img src={synapStrideMark} alt="" /><strong>Synap<span>Stride</span></strong></div>
+          <div className="synParentIntentCardV014">
+            <button type="button" className="synAuthBackV012" onClick={() => setScreen('parentSetup')}>← Back</button>
+            <div className="synFamilyStepV014">STEP 3 OF 3 · YOUR GOALS</div>
+            <h1>What would you like SynapStride to help {childProfile.name || 'your child'} with?</h1>
+            <p className="synParentIntentLeadV014">Choose up to three. Your goals guide what SynapStride emphasizes without defining who your child is.</p>
+            <div className="synParentIntentGridV014">
+              {parentIntentGoals.map((goal) => {
+                const selected = parentIntent.goals.includes(goal)
+                const disabled = !selected && parentIntent.goals.length >= 3
+                return (
+                  <button key={goal} type="button" className={selected ? 'selected' : ''} disabled={disabled} onClick={() => toggleParentIntentGoal(goal)}>
+                    <span>{selected ? '✓' : '+'}</span>{goal}
+                  </button>
+                )
+              })}
+            </div>
+            <label className="synParentIntentNoteV014">
+              Anything else you want us to keep in mind? <small>Optional</small>
+              <textarea value={parentIntent.note} maxLength={240}
+                onChange={(event) => setParentIntent((current) => ({ ...current, note: event.target.value }))}
+                placeholder="For example: I'd like them to become more confident trying new things." />
+            </label>
+            <div className="synParentIntentActionsV014">
+              <span>{parentIntent.goals.length}/3 selected</span>
+              <button type="button" className="synAuthPrimaryV012" onClick={finishParentIntentSetup}>Finish Setup →</button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {screen === 'parentHandoff' && (
+        <section className="synParentIntentPageV014">
+          <div className="synAuthBrandV012"><img src={synapStrideMark} alt="" /><strong>Synap<span>Stride</span></strong></div>
+          <div className="synParentHandoffCardV014">
+            <Avatar avatarId={childProfile.avatarId} size={76} />
+            <p className="synAuthEyebrowV012">YOU&apos;RE ALL SET</p>
+            <h1>{childProfile.name || 'Your child'}&apos;s SynapStride is ready.</h1>
+            <p>Now it&apos;s {childProfile.name || 'their'}&apos;s turn. SynapStride will start by listening to their own interests and preferences.</p>
+            <div className="synHandoffPrinciplesV014">
+              <span>🔎 They discover</span><span>🚀 They experience</span>
+              <span>🧠 SynapStride learns</span><span>❤️ You add perspective</span>
+            </div>
+            <p className="synHandoffGuardrailV014">Your goals help guide SynapStride, but they don&apos;t define {childProfile.name || 'your child'}.</p>
+            <button type="button" className="synAuthPrimaryV012" onClick={goToChildSpace}>Hand over to {childProfile.name || 'Child'} →</button>
+            <button type="button" className="synHandoffParentSpaceV014" onClick={goToParentSpace}>Go to Parent Space</button>
+            <button type="button" className="synParentIntentBackLinkV014" onClick={() => setScreen('parentIntentSetup')}>← Edit parent goals</button>
           </div>
         </section>
       )}
@@ -1737,6 +2020,7 @@ function App() {
       {(screen === 'childSpace' ||
         screen === 'journey') && (
         <BppWorkspaceShell
+          authRole={authSession?.role}
           activeSection={
             screen === 'journey'
               ? 'journey'
@@ -1969,6 +2253,7 @@ function App() {
       {screen ===
         'discovery' && (
         <BppWorkspaceShell
+          authRole={authSession?.role}
           activeSection="profile"
           childProfile={childProfile}
           activeJourneyCount={
@@ -2020,6 +2305,7 @@ function App() {
       {screen ===
         'discoveryComplete' && (
         <BppWorkspaceShell
+          authRole={authSession?.role}
           activeSection="profile"
           childProfile={childProfile}
           activeJourneyCount={
@@ -2100,6 +2386,7 @@ function App() {
       {screen ===
         'growthProfile' && (
         <BppWorkspaceShell
+          authRole={authSession?.role}
           activeSection="profile"
           childProfile={childProfile}
           activeJourneyCount={
@@ -2132,6 +2419,13 @@ function App() {
           <GrowthProfileView
                     childName={
                       childProfile.name.trim()
+                    }
+                    childProfile={childProfile}
+                    onAvatarChange={(avatarId) =>
+                      setChildProfile((current) => ({
+                        ...current,
+                        avatarId,
+                      }))
                     }
           
                     profile={
@@ -2201,6 +2495,7 @@ function App() {
       {screen ===
         'parentSpace' && (
         <BppWorkspaceShell
+          authRole={authSession?.role}
           activeSection="parent"
           activeParentSection="overview"
           childProfile={childProfile}
@@ -2232,6 +2527,9 @@ function App() {
             promotedPatterns={promotedGrowthPatterns}
             recommendations={growthRecommendations}
             journeyItems={journeyItems}
+            evidenceEvents={currentChildEvidenceEvents}
+            topTraits={intelligenceTraits}
+            topDomains={intelligenceDomains}
             parentPerspectiveComplete={parentPerspectiveComplete}
             onAddObservation={startParentPerspective}
             onWhySynapStride={() => { setWhyReturnScreen('parentSpace'); setScreen('whySynapStride') }}
@@ -2243,6 +2541,7 @@ function App() {
       {screen ===
         'parentPerspectiveIntro' && (
         <BppWorkspaceShell
+          authRole={authSession?.role}
           activeSection="parent"
           activeParentSection="observation"
           childProfile={childProfile}
@@ -2269,6 +2568,8 @@ function App() {
             questions={parentPerspectiveQuestions}
             currentQuestionIndex={parentQuestionIndex}
             currentQuestion={currentParentQuestion}
+            mode="intro"
+            onBegin={beginParentPerspective}
             onBack={handleParentPerspectiveBack}
             onAnswer={handleParentAnswer}
             onFinish={goToParentSpace}
@@ -2280,6 +2581,7 @@ function App() {
       {screen ===
         'parentPerspective' && (
         <BppWorkspaceShell
+          authRole={authSession?.role}
           activeSection="parent"
           activeParentSection="observation"
           childProfile={childProfile}
@@ -2317,6 +2619,7 @@ function App() {
       {screen ===
         'parentPerspectiveComplete' && (
         <BppWorkspaceShell
+          authRole={authSession?.role}
           activeSection="parent"
           activeParentSection="observation"
           childProfile={childProfile}
@@ -2354,6 +2657,7 @@ function App() {
       {screen ===
         'settings' && (
         <BppWorkspaceShell
+          authRole={authSession?.role}
           activeSection="settings"
           childProfile={childProfile}
           activeJourneyCount={
@@ -2864,14 +3168,14 @@ function AuthAccountScreen({
 
         <form className="synAuthFormV012" onSubmit={onSubmit}>
           <label>
-            Email address
+            {isSignUp ? 'Email address' : 'Email or child username'}
             <input
-              type="email"
+              type={isSignUp ? 'email' : 'text'}
               name="email"
               value={authForm.email}
               onChange={onChange}
-              placeholder="you@example.com"
-              autoComplete="email"
+              placeholder={isSignUp ? 'you@example.com' : 'you@example.com or ethan.k'}
+              autoComplete={isSignUp ? 'email' : 'username'}
               required
             />
           </label>
@@ -3074,6 +3378,7 @@ function SettingsView({
 function BppWorkspaceShell({
   activeSection,
   childProfile,
+  authRole,
   activeJourneyCount = 0,
   activeGrowthSection = 'overview',
   activeParentSection = 'overview',
@@ -3093,6 +3398,7 @@ function BppWorkspaceShell({
   const childName = childProfile?.name?.trim() || 'Explorer'
   const childInitial = childName.charAt(0).toUpperCase()
   const childAge = childProfile?.age ? `Age ${childProfile.age}` : 'My Growth Space'
+  const sessionLabel = authRole === 'parent' ? `Parent session · viewing ${childName}` : `${childAge} · Child session`
 
   const growthOpen = activeSection === 'journey'
   const parentOpen = activeSection === 'parent'
@@ -3156,7 +3462,7 @@ function BppWorkspaceShell({
             {parentOpen && (
               <div className="synSubnavV0116 parentSub">
                 <button type="button" className={activeParentSection === 'overview' ? 'active' : ''} onClick={() => onParentSection?.('overview')}><span><SynIcon name="observation" /></span>Overview</button>
-                <button type="button" className={activeParentSection === 'observation' ? 'active' : ''} onClick={() => onParentSection?.('observation')}><span><SynIcon name="plus" /></span>Add an Observation</button>
+                <button type="button" className={activeParentSection === 'observation' ? 'active' : ''} onClick={() => onParentSection?.('observation')}><span><SynIcon name="plus" /></span>Share Perspective</button>
               </div>
             )}
           </div>
@@ -3177,8 +3483,8 @@ function BppWorkspaceShell({
           {childMenuOpen && (
             <div className="synChildAccountMenuV0122" role="menu" aria-label={`${childName} account menu`}>
               <div className="synChildAccountMenuHeadV0122">
-                <div className="synChildAvatarV0116">{childInitial}</div>
-                <div><strong>{childName}</strong><small>{childAge}</small></div>
+                <div className="synChildAvatarV0116 synChildAvatarImageV014"><Avatar avatarId={childProfile?.avatarId} size={40} /></div>
+                <div><strong>{childName}</strong><small>{sessionLabel}</small></div>
               </div>
 
               <div className="synChildAccountMenuDividerV0122" />
@@ -3189,6 +3495,15 @@ function BppWorkspaceShell({
               <button type="button" role="menuitem" disabled title="Multi-child family setup is coming next">
                 <span>＋</span><span><strong>Add Child</strong><small>Coming with multi-child support</small></span>
               </button>
+              {authRole === 'child' ? (
+                <button type="button" role="menuitem" onClick={onParent}>
+                  <span>🔐</span><span><strong>Parent sign in</strong><small>Authenticate to open Parent Space</small></span>
+                </button>
+              ) : (
+                <button type="button" role="menuitem" onClick={onHome}>
+                  <span>↔</span><span><strong>Open child space</strong><small>Stay signed in as parent</small></span>
+                </button>
+              )}
               <button type="button" role="menuitem" onClick={openAccountSettings}>
                 <span>⚙</span><span><strong>Account Settings</strong><small>Family and account details</small></span>
               </button>
@@ -3208,8 +3523,8 @@ function BppWorkspaceShell({
             aria-expanded={childMenuOpen}
             onClick={() => setChildMenuOpen((open) => !open)}
           >
-            <div className="synChildAvatarV0116">{childInitial}</div>
-            <div><strong>{childName}</strong><small>{childAge}</small></div>
+            <div className="synChildAvatarV0116 synChildAvatarImageV014"><Avatar avatarId={childProfile?.avatarId} size={40} /></div>
+            <div><strong>{childName}</strong><small>{sessionLabel}</small></div>
             <span className="synChildMenuChevronV0122">⌃</span>
           </button>
         </div>
@@ -3218,7 +3533,7 @@ function BppWorkspaceShell({
       <div className="synCanvasV0116">
         <header className="synMobileHeaderV0116">
           <button type="button" onClick={onHome} className="synMobileBrandV0116"><img src={synapStrideMark} alt="" /><span className="synMobileBrandTextV01181">Synap<span>Stride</span><i>✦</i></span></button>
-          <button type="button" onClick={onProfile} className="synMobileAvatarV0116">{childInitial}</button>
+          <button type="button" onClick={onProfile} className="synMobileAvatarV0116 synMobileAvatarImageV014"><Avatar avatarId={childProfile?.avatarId} size={34} /></button>
         </header>
         {children}
       </div>
@@ -3243,188 +3558,176 @@ function ParentOverview({
   promotedPatterns = [],
   recommendations = [],
   journeyItems = [],
+  evidenceEvents = [],
+  topTraits = [],
+  topDomains = [],
   parentPerspectiveComplete,
   onAddObservation,
   onWhySynapStride,
 }) {
-  const childName =
-    childProfile?.name?.trim() ||
-    'Your child'
+  const childName = childProfile?.name?.trim() || 'Your child'
+  const parentContributionCount = profileUnderstanding?.sources?.parentContributionCount || 0
+  const topPattern = promotedPatterns[0] || null
+  const nextRecommendation = recommendations[0] || null
 
-  const parentContributionCount =
-    profileUnderstanding
-      ?.sources
-      ?.parentContributionCount ||
-    0
+  const firstUseSignals = buildFirstUseSignals({
+    evidenceEvents,
+    topTraits,
+    topDomains,
+    limit: 3,
+  })
 
-  const topPattern =
-    promotedPatterns[0] ||
-    null
+  const nextRecommendationReason = explainRecommendation(
+    nextRecommendation,
+    firstUseSignals
+  )
 
-  const nextRecommendation =
-    recommendations[0] ||
-    null
+  const recentJourney = [...journeyItems]
+    .sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))
+    .slice(0, 3)
 
-  const recentJourney =
-    [...journeyItems]
-      .sort(
-        (a, b) =>
-          new Date(
-            b.updatedAt ||
-            b.createdAt ||
-            0
-          ) -
-          new Date(
-            a.updatedAt ||
-            a.createdAt ||
-            0
-          )
-      )
-      .slice(0, 3)
+  const activeJourney = recentJourney.filter((item) => item.status !== 'completed')
+
+  const recentParentPerspectives = evidenceEvents
+    .filter((event) =>
+      event.source?.type === evidenceSourceTypes.PARENT_OBSERVATION &&
+      event.source?.experienceId === 'parent_perspective' &&
+      event.metadata?.responseText
+    )
+    .sort((a, b) => new Date(b.createdAt || b.timestamp || 0) - new Date(a.createdAt || a.timestamp || 0))
+    .slice(0, 4)
 
   return (
-    <section className="synParentOverviewV01110">
-      <header className="synParentOverviewHeroV01110">
-        <div>
-          <span className="synParentKickerV01110">
-            PARENT SPACE
-          </span>
-
-          <h1>{childName}&apos;s Growth</h1>
-
-          <p>
-            See what SynapStride is beginning to understand, what may be worth encouraging,
-            and where your perspective can add useful context.
-          </p>
+    <section className="ss-parent-v015">
+      <header className="ss-parent-v015__hero">
+        <div className="ss-parent-v015__identity">
+          <Avatar avatarId={childProfile?.avatarId} size={58} />
+          <div>
+            <span className="ss-parent-v015__eyebrow">PARENT SPACE</span>
+            <h1>{childName}&apos;s week at a glance</h1>
+            <p>
+              A simple view of what {childName} is working on, what SynapStride is beginning
+              to notice, and where your perspective may help.
+            </p>
+          </div>
         </div>
-
-        <div className="synParentOverviewSignalV01110">
-          <span>🌱</span>
-          <strong>
-            One evolving picture
-          </strong>
-          <small>
-            Child voice + real experiences + parent perspective
-          </small>
-          <button
-            type="button"
-            className="synParentWhyLinkV0115"
-            onClick={onWhySynapStride}
-          >
-            How SynapStride helps →
-          </button>
-        </div>
+        <button type="button" className="ss-parent-v015__quietLink" onClick={onWhySynapStride}>
+          How SynapStride helps →
+        </button>
       </header>
 
-      <div className="synParentOverviewGridV01110">
-        <article className="synParentInsightCardV01110 synParentInsightPrimaryV01110">
-          <span className="synParentKickerV01110">
-            WHAT&apos;S EMERGING
-          </span>
-
-          {topPattern ? (
-            <>
-              <h2>
-                {topPattern.emoji ? `${topPattern.emoji} ` : ''}
-                {topPattern.label}
-              </h2>
-              <p>
-                This pattern has enough support across SynapStride evidence to be worth watching.
-                It is still a clue, not a permanent label.
-              </p>
-            </>
-          ) : (
-            <>
-              <h2>We&apos;re still gathering clues.</h2>
-              <p>
-                As {childName} learns, explores, reflects, and tries new things, stronger patterns
-                can begin to emerge across different contexts.
-              </p>
-            </>
-          )}
-        </article>
-
-        <article className="synParentInsightCardV01110">
-          <span className="synParentKickerV01110">
-            WHAT MIGHT HELP NEXT
-          </span>
-
-          {nextRecommendation ? (
-            <>
-              <h2>
-                {nextRecommendation.emoji || '🧭'}{' '}
-                {nextRecommendation.title}
-              </h2>
-              <p>
-                {nextRecommendation.reasons?.[0] ||
-                  'This could be a useful next experience based on what SynapStride understands so far.'}
-              </p>
-            </>
-          ) : (
-            <>
-              <h2>Keep the journey moving.</h2>
-              <p>
-                SynapStride will suggest stronger next steps as it gets more evidence from real activity.
-              </p>
-            </>
-          )}
-        </article>
-
-        <article className="synParentInsightCardV01110">
-          <span className="synParentKickerV01110">
-            HOW YOU CAN HELP
-          </span>
-
-          <h2>👀 Add what you&apos;ve noticed.</h2>
-          <p>
-            Everyday observations can reveal context SynapStride may not see during learning or activities.
-          </p>
-
-          <button
-            type="button"
-            className="synParentPrimaryActionV01110"
-            onClick={onAddObservation}
-          >
-            Add an Observation →
-          </button>
-
-          <small className="synParentObservationCountV01110">
-            {parentContributionCount > 0
-              ? `${parentContributionCount} parent observation${parentContributionCount === 1 ? '' : 's'} contributing`
-              : parentPerspectiveComplete
-                ? 'Parent perspective has contributed to the Profile'
-                : 'No parent observations yet'}
-          </small>
-        </article>
-
-        <article className="synParentInsightCardV01110">
-          <span className="synParentKickerV01110">
-            RECENT GROWTH
-          </span>
-
-          {recentJourney.length > 0 ? (
-            <div className="synParentRecentListV01110">
-              {recentJourney.map((item) => (
-                <div key={item.id}>
-                  <span>{item.emoji || '•'}</span>
+      <div className="ss-parent-v015__grid">
+        <article className="ss-parent-v015__card ss-parent-v015__card--wide">
+          <span className="ss-parent-v015__eyebrow">WHAT {childName.toUpperCase()} IS WORKING ON</span>
+          {activeJourney.length > 0 ? (
+            <div className="ss-parent-v015__workList">
+              {activeJourney.map((item) => (
+                <div className="ss-parent-v015__workItem" key={item.id}>
+                  <span className="ss-parent-v015__workEmoji">{item.emoji || '•'}</span>
                   <div>
                     <strong>{item.title}</strong>
-                    <small>
-                      {item.status === 'completed'
-                        ? 'Completed'
-                        : 'In progress'}
-                    </small>
+                    <small>{item.status === 'completed' ? 'Completed' : 'In progress'}</small>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p>
-              Recent learning and exploration will appear here as {childName}&apos;s Journey grows.
-            </p>
+            <div className="ss-parent-v015__empty">
+              <strong>No active work yet.</strong>
+              <p>School work, activities, and experiences will appear here as {childName} uses SynapStride.</p>
+            </div>
+          )}
+        </article>
+
+        <article className="ss-parent-v015__card ss-parent-v015__card--signal">
+          <span className="ss-parent-v015__eyebrow">SYNAPSTRIDE IS BEGINNING TO NOTICE</span>
+          {topPattern ? (
+            <>
+              <h2>{topPattern.emoji ? `${topPattern.emoji} ` : '🌱 '}{topPattern.label}</h2>
+              <p>This pattern has support across more than one piece of evidence. It is still an evolving clue, not a permanent label.</p>
+            </>
+          ) : firstUseSignals.length > 0 ? (
+            <>
+              <h2>🌱 Early clues are taking shape</h2>
+              <p>These are starting points from {childName}&apos;s own choices. SynapStride will wait for real experiences to strengthen or change them.</p>
+              <div className="ss-parent-v015__chips">
+                {firstUseSignals.map((signal) => (
+                  <span key={signal.id}>{signal.emoji || '✨'} {signal.label}</span>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <h2>We&apos;re still gathering clues</h2>
+              <p>Understanding will grow as {childName} learns, explores, reflects, and tries new things.</p>
+            </>
+          )}
+        </article>
+
+        <article className="ss-parent-v015__card">
+          <span className="ss-parent-v015__eyebrow">HOW YOU COULD HELP</span>
+          <h2>🤝 Share your perspective</h2>
+          <p>You see interests, struggles, motivations, and everyday moments SynapStride may not. Your perspective adds useful context to the evolving picture.</p>
+          <button type="button" className="ss-parent-v015__primary" onClick={onAddObservation}>
+            Share Perspective →
+          </button>
+          <small className="ss-parent-v015__meta">
+            {parentContributionCount > 0
+              ? `${parentContributionCount} parent perspective contribution${parentContributionCount === 1 ? '' : 's'}`
+              : parentPerspectiveComplete
+                ? 'Parent perspective is contributing to the Profile'
+                : 'No parent perspective shared yet'}
+          </small>
+        </article>
+
+        <article className="ss-parent-v015__card ss-parent-perspective-history-v015">
+          <span className="ss-parent-v015__eyebrow">RECENT PERSPECTIVE</span>
+          {recentParentPerspectives.length > 0 ? (
+            <>
+              <h2>What you&apos;ve shared</h2>
+              <div className="ss-parent-perspective-history-v015__list">
+                {recentParentPerspectives.map((event, index) => (
+                  <div key={event.id || `${event.source?.questionId}-${index}`}>
+                    <span>💬</span>
+                    <div>
+                      <strong>{event.metadata?.responseText}</strong>
+                      <small>{event.metadata?.questionText || 'Parent perspective'}</small>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="ss-parent-perspective-history-v015__note">
+                These are pieces of context — not labels. SynapStride looks for corroboration across {childName}&apos;s own voice and real experiences.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2>Your perspective grows over time</h2>
+              <p>As you share what you notice, recent perspectives will appear here so you can see the context you&apos;ve contributed.</p>
+            </>
+          )}
+        </article>
+
+        <article className="ss-parent-v015__card">
+          <span className="ss-parent-v015__eyebrow">SOMETHING WORTH CONSIDERING</span>
+          {nextRecommendation ? (
+            <>
+              <h2>{nextRecommendation.emoji || '🧭'} {nextRecommendation.title}</h2>
+              <p>{nextRecommendation.reasons?.[0] || nextRecommendationReason || 'This may be a useful next experience based on what SynapStride understands so far.'}</p>
+            </>
+          ) : (
+            <>
+              <h2>🧭 Keep the journey moving</h2>
+              <p>SynapStride will surface a stronger suggestion after it has more evidence from real activity.</p>
+            </>
           )}
         </article>
       </div>
+
+      <footer className="ss-parent-v015__note">
+        <span>🔒</span>
+        <p><strong>Parent perspective adds context.</strong> It does not overwrite {childName}&apos;s voice or turn an early clue into a label.</p>
+      </footer>
     </section>
   )
 }

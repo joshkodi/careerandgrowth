@@ -1,0 +1,69 @@
+/* v0.15 UX consolidation: simple child-facing information architecture. */
+.synNavV015 { gap: 6px; }
+.synNavV015 > button { min-height: 50px; border-radius: 14px; }
+.synNavV015 .synParentNavV015 { margin-top: 14px; border-top: 1px solid #ececf6; border-radius: 0 0 14px 14px; padding-top: 15px; }
+
+/* School workspace: work + next step + companion. Secondary machinery stays available but quiet. */
+.synAssignmentWorkspaceV098 { max-width: 1120px; margin-inline: auto; }
+.synWorkspaceAssignmentHeaderV098 { border-radius: 20px !important; padding: 22px 24px !important; }
+.synWorkspaceAssignmentStateV0910 { margin-top: 14px !important; }
+.synWorkspaceAssignmentStateHeadingV0910 { display:none !important; }
+.synWorkspaceAssignmentStateChoicesV0910 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+.synWorkspaceAssignmentStateChoicesV0910 .working { display:none !important; }
+.synWorkspaceAssignmentStateChoicesV0910 button { min-height: 64px !important; border-radius: 16px !important; }
+.synWorkspaceAssignmentStateChoicesV0910 .help strong::before { content:'Ask SynapStride'; font-size: 0; }
+.synWorkspaceBodyV098 { grid-template-columns: minmax(0, 1fr) !important; gap: 16px !important; }
+.synWorkspaceContextV098 { display:grid !important; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:start; }
+.synWorkspaceTodoV098 { grid-column:1; border-radius:20px !important; padding:22px !important; }
+.synWorkspaceTodoV098 .synWorkspaceMiniHeadingV098 h3 { font-size:0 !important; }
+.synWorkspaceTodoV098 .synWorkspaceMiniHeadingV098 h3::after { content:'Your plan'; font-size:18px; }
+.synWorkspaceProgressCardV098 { display:none !important; }
+.synWorkspaceHelpCalloutV0910 { grid-column:1/-1; border-radius:18px !important; padding:16px 18px !important; }
+.synWorkspaceHelpCalloutV0910 h3 { font-size:0 !important; }
+.synWorkspaceHelpCalloutV0910 h3::after { content:'Need help?'; font-size:18px; }
+.synWorkspaceHelpCalloutV0910 p { margin:3px 0 0 !important; }
+.synAssignmentAttachmentsV0916 { margin-top:12px !important; }
+.synAssignmentActualPreviewV0919, .synAssignmentTextPreviewV0919 { max-height:170px; overflow:hidden; }
+.synWorkspaceHelpV098 { border-radius:22px !important; box-shadow:0 18px 45px rgba(42,38,98,.10); }
+.synWorkspaceHelpHeroV098 h3 { font-size:0 !important; }
+.synWorkspaceHelpHeroV098 h3::after { content:'Ask SynapStride'; font-size:28px; }
+
+/* Hide the legacy resource wall in v0.15. Resources return in v0.16 via contextual AI orchestration. */
+.synWorkspaceHelpV098 .synLearningResourceRecommendationsV09,
+.synWorkspaceHelpV098 .synLearningResourceDiversityV09,
+.synWorkspaceHelpV098 [class*="ResourceRecommendation"],
+.synWorkspaceHelpV098 [class*="ResourceDiversity"] { display:none !important; }
+
+/* Global density / hierarchy cleanup */
+.synShellV0116 { background:#fbfcff; }
+.synSidebarV0116 { border-right:1px solid #eceef7; }
+.synNavV0116 strong { font-weight:700; }
+.synBottomNavV0116 { margin-top:8px; }
+@media (max-width: 980px) {
+  .synWorkspaceContextV098 { grid-template-columns:1fr; }
+}
+
+/* Activities: lighter browse surface, fewer competing containers. */
+.exploreV0102 { max-width:1180px !important; margin-inline:auto !important; }
+.exploreV0102 .v0102TwinSections { gap:18px !important; }
+.exploreV0102 .v0102CompactGrid,
+.exploreV0102 .v0102NearbyGrid { gap:14px !important; }
+.exploreV0102 .iaExploreCardV0104D,
+.exploreV0102 .v0102NearbyCard { border-radius:18px !important; box-shadow:none !important; }
+.exploreV0102 .bppExploreReassurance { display:none !important; }
+
+/* Discover: one question is the hero; supporting explanation is secondary. */
+.synDiscoverV09 { max-width:1050px !important; margin-inline:auto !important; }
+.synDiscoverHeroV09 { padding-bottom:12px !important; }
+.synDiscoverLayoutV09 { grid-template-columns:minmax(0,1fr) !important; }
+.synDiscoverContextV09 { order:2; opacity:.82; }
+.synDiscoverQuestionV09 { order:1; border-radius:22px !important; }
+.synDiscoverAnswerV09 { border-radius:16px !important; min-height:62px !important; }
+
+/* Me: child-readable profile, not an analytics dashboard. */
+.synProfileV0117 { max-width:1080px !important; margin-inline:auto !important; }
+.synProfileHeroV0117, .synProfileAboutV0117, .synProfileStoryV0117 { border-radius:22px !important; box-shadow:none !important; }
+.synProfileV0117 .synProfileEyebrowV011 { letter-spacing:.08em; }
+
+/* Parent space remains visually distinct from the child's work area. */
+.synParentPerspectiveV09, [class*="ParentPerspective"] { max-width:1120px; margin-inline:auto; }

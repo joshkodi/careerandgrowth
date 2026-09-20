@@ -143,6 +143,7 @@ export const validateLocalCredentials = async ({ email, password }) => {
 export const createLocalSession = (account) => {
   const session = {
     signedIn: true,
+    role: 'parent',
     parentId: account.id,
     familyId: account.familyId,
     email: account.email,
@@ -156,7 +157,10 @@ export const createLocalSession = (account) => {
 
 export const getLocalSession = () => {
   const session = readJson(SESSION_KEY)
-  if (session?.signedIn && session?.email) return session
+  if (
+    session?.signedIn &&
+    (session?.email || session?.username)
+  ) return session
 
   const legacy = readJson(LEGACY_SESSION_KEY)
   if (!legacy?.signedIn || !legacy?.email) return null
@@ -166,7 +170,7 @@ export const getLocalSession = () => {
 }
 
 export const getAccountForSession = (session) => {
-  if (!session?.signedIn) return null
+  if (!session?.signedIn || session?.role === 'child') return null
   return getLocalAccounts().find((account) =>
     account.id === session.parentId || account.email === normalizeEmail(session.email)
   ) || null
@@ -177,7 +181,135 @@ export const clearLocalSession = () => {
   localStorage.removeItem(LEGACY_SESSION_KEY)
 }
 
+
+const CHILD_ACCOUNTS_KEY = 'synapstride.v014.childAccounts'
+const normalizeUsername = (username = '') => username.trim().toLowerCase()
+
+export const getLocalChildAccounts = () => {
+  const accounts = readJson(CHILD_ACCOUNTS_KEY, [])
+  return Array.isArray(accounts) ? accounts : []
+}
+
+export const findLocalChildAccount = (username) => {
+  const normalized = normalizeUsername(username)
+  return getLocalChildAccounts().find((account) => account.username === normalized) || null
+}
+
+export const createLocalChildAccount = async ({
+  familyId,
+  childId,
+  childName,
+  username,
+  password,
+}) => {
+  const normalized = normalizeUsername(username)
+
+  if (!familyId || !childId || !normalized || !password) {
+    return { ok: false, code: 'INVALID_CHILD_ACCOUNT' }
+  }
+
+  const existing = findLocalChildAccount(normalized)
+
+  // A username belonging to another family/child is a real conflict.
+  if (
+    existing &&
+    (
+      existing.familyId !== familyId ||
+      existing.childId !== childId
+    )
+  ) {
+    return { ok: false, code: 'USERNAME_EXISTS' }
+  }
+
+  const salt = randomHex(16)
+  const passwordHash = await digestPassword(password, salt)
+  const now = new Date().toISOString()
+
+  const account = existing
+    ? {
+        ...existing,
+        role: 'child',
+        familyId,
+        childId,
+        childName: childName || existing.childName || 'Child',
+        username: normalized,
+        passwordHash,
+        passwordSalt: salt,
+        updatedAt: now,
+      }
+    : {
+        id: `child_${randomHex(8)}`,
+        role: 'child',
+        familyId,
+        childId,
+        childName: childName || 'Child',
+        username: normalized,
+        passwordHash,
+        passwordSalt: salt,
+        createdAt: now,
+        updatedAt: now,
+      }
+
+  const accounts = existing
+    ? getLocalChildAccounts().map((item) =>
+        item.id === existing.id ? account : item
+      )
+    : [...getLocalChildAccounts(), account]
+
+  writeJson(CHILD_ACCOUNTS_KEY, accounts)
+
+  // Verify the exact credential pair before reporting success.
+  const verification = await validateLocalChildCredentials({
+    username: normalized,
+    password,
+  })
+
+  if (!verification.ok) {
+    return { ok: false, code: 'CHILD_ACCOUNT_VERIFICATION_FAILED' }
+  }
+
+  return { ok: true, account: verification.account }
+}
+
+export const validateLocalChildCredentials = async ({ username, password }) => {
+  const account = findLocalChildAccount(username)
+  if (!account) return { ok: false, code: 'ACCOUNT_NOT_FOUND' }
+  const candidate = await digestPassword(password, account.passwordSalt)
+  return candidate === account.passwordHash
+    ? { ok: true, account }
+    : { ok: false, code: 'INVALID_PASSWORD' }
+}
+
+export const getChildAccountForSession = (session) => {
+  if (!session?.signedIn || session?.role !== 'child') return null
+
+  return getLocalChildAccounts().find((account) =>
+    account.id === session.childAccountId ||
+    (
+      account.familyId === session.familyId &&
+      account.username === normalizeUsername(session.username)
+    )
+  ) || null
+}
+
+
+export const createLocalChildSession = (account) => {
+  const session = {
+    signedIn: true,
+    role: 'child',
+    childAccountId: account.id,
+    childId: account.childId,
+    familyId: account.familyId,
+    username: account.username,
+    signedInAt: new Date().toISOString(),
+  }
+  writeJson(SESSION_KEY, session)
+  localStorage.removeItem(LEGACY_SESSION_KEY)
+  return session
+}
+
 export const localAuthStorageKeys = {
   accounts: ACCOUNTS_KEY,
   session: SESSION_KEY,
+  childAccounts: CHILD_ACCOUNTS_KEY,
 }

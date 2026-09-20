@@ -1,249 +1,152 @@
-// ============================================================
-// SynapStride
-// MVP v0.11 — Parent Space Observation
-//
-// Parent Space answers:
-// "How is my child growing, and how can I help?"
-//
-// Presentation-only. Parent answers, evidence generation,
-// persistence and profile intelligence remain owned by App.jsx.
-// ============================================================
+import './ParentPerspectiveV015.css'
+
+// SynapStride v0.15 — Parent Perspective
+// Presentation-only evolution of the existing Parent Perspective flow.
+// Evidence generation, weighting, persistence, and Growth Intelligence remain unchanged.
 
 function ParentPerspectiveFlow({
   childProfile,
   questions,
   currentQuestionIndex,
   currentQuestion,
+  mode = 'questions',
+  onBegin,
   onBack,
   onAnswer,
   onFinish,
 }) {
-  const childName =
-    childProfile?.name?.trim() || 'your child'
-
+  const childName = childProfile?.name?.trim() || 'your child'
   const totalQuestions = questions?.length || 0
   const currentNumber = currentQuestionIndex + 1
   const progressPercentage = totalQuestions
     ? (currentNumber / totalQuestions) * 100
     : 0
 
-  if (!currentQuestion || !totalQuestions) {
+  if (mode === 'intro') {
+    const perspectiveTypes = [
+      ['✨', 'Something they’re interested in', 'Interests that keep coming back or spark unusual energy.'],
+      ['🧩', 'Something they’re struggling with', 'Moments of frustration, hesitation, or where support seems useful.'],
+      ['🌱', 'Something that seems to help', 'Approaches, environments, or encouragement that appear to work well.'],
+      ['🔎', 'Something new you noticed', 'A behavior, choice, or moment that made you stop and notice.'],
+      ['🚀', 'Something they want to try', 'Activities, skills, topics, or experiences they keep mentioning.'],
+      ['🤝', 'Something you want help with', 'An area where you would like SynapStride to support their growth.'],
+    ]
+
     return (
-      <section className="synParentV09">
-        <header className="synParentHeroV09">
+      <section className="ss-parent-perspective-v015">
+        <header className="ss-parent-perspective-v015__hero">
           <div>
-            <span className="synParentEyebrowV09">
-              PARENT SPACE
-            </span>
-
-            <h1>
-              Add another perspective on {childName}.
-            </h1>
-
+            <span className="ss-parent-perspective-v015__eyebrow">PARENT PERSPECTIVE</span>
+            <h1>What are you noticing about {childName}?</h1>
             <p>
-              Your everyday observations help SynapStride understand
-              patterns that may not show up in a questionnaire or a single activity.
+              You see parts of everyday life SynapStride cannot. Sharing that perspective helps build a richer,
+              more balanced understanding over time.
             </p>
           </div>
-
-          <div className="synParentHeroMarkV09" aria-hidden="true">
+          <div className="ss-parent-perspective-v015__hero-note">
             <span>👨‍👩‍👦</span>
-            <strong>Another point of view</strong>
+            <strong>Your perspective adds context</strong>
+            <small>It complements — never replaces — {childName}&apos;s own voice and experiences.</small>
           </div>
         </header>
 
-        <section className="synParentEmptyV09">
-          <span>✓</span>
+        <section className="ss-parent-perspective-v015__types">
+          <div className="ss-parent-perspective-v015__section-heading">
+            <span>WHAT CAN I SHARE?</span>
+            <h2>Anything that may help SynapStride understand {childName} better.</h2>
+          </div>
+          <div className="ss-parent-perspective-v015__type-grid">
+            {perspectiveTypes.map(([emoji, title, description]) => (
+              <article key={title}>
+                <span>{emoji}</span>
+                <div><strong>{title}</strong><p>{description}</p></div>
+              </article>
+            ))}
+          </div>
+        </section>
 
+        <section className="ss-parent-perspective-v015__guided">
           <div>
-            <span className="synParentEyebrowV09">
-              PERSPECTIVE COMPLETE
-            </span>
-
-            <h2>Thanks for sharing what you notice.</h2>
-
+            <span className="ss-parent-perspective-v015__eyebrow">GUIDED PERSPECTIVE</span>
+            <h2>Start with a few quick prompts</h2>
             <p>
-              SynapStride will use these observations as one source of context
-              alongside what {childName} says and does.
+              For this release, SynapStride uses {totalQuestions} short prompts about things a parent can actually
+              notice. In v0.16, this expands to natural-language sharing and intelligent follow-up questions.
             </p>
           </div>
+          <button type="button" onClick={onBegin}>Share my perspective <span>→</span></button>
+        </section>
 
-          <button
-            type="button"
-            className="synParentActionV09"
-            onClick={onFinish}
-          >
-            Back to Parent Overview
-            <span>→</span>
-          </button>
+        <footer className="ss-parent-perspective-v015__principle">
+          <strong>One child, multiple perspectives.</strong>
+          <span> SynapStride looks for patterns across child voice, real experiences, reflections, and parent perspective.</span>
+        </footer>
+      </section>
+    )
+  }
+
+  if (!currentQuestion || !totalQuestions) {
+    return (
+      <section className="ss-parent-perspective-v015">
+        <section className="ss-parent-perspective-v015__complete">
+          <span>✓</span>
+          <div>
+            <span className="ss-parent-perspective-v015__eyebrow">PERSPECTIVE SHARED</span>
+            <h1>Thanks for adding your perspective.</h1>
+            <p>
+              SynapStride will consider it alongside what {childName} says and does. No single perspective defines them.
+            </p>
+          </div>
+          <button type="button" onClick={onFinish}>Back to Parent Space →</button>
         </section>
       </section>
     )
   }
 
   return (
-    <section className="synParentV09">
-
-      <header className="synParentHeroV09">
+    <section className="ss-parent-perspective-v015">
+      <header className="ss-parent-perspective-v015__question-hero">
         <div>
-          <span className="synParentEyebrowV09">
-            PARENT SPACE
-          </span>
-
-          <h1>
-            What are you noticing about {childName}?
-          </h1>
-
-          <p>
-            You see moments SynapStride can't — what holds attention,
-            what creates energy, what causes frustration, and what keeps
-            coming back in everyday life.
-          </p>
+          <button type="button" className="ss-parent-perspective-v015__back" onClick={onBack}>← Back</button>
+          <span className="ss-parent-perspective-v015__eyebrow">PARENT PERSPECTIVE</span>
+          <h1>Share what you actually notice.</h1>
+          <p>Think about recent, everyday examples rather than what the “right” answer might be.</p>
         </div>
-
-        <div className="synParentHeroMarkV09" aria-hidden="true">
-          <span>👨‍👩‍👦</span>
-          <strong>Your observations matter</strong>
+        <div className="ss-parent-perspective-v015__progress-copy">
+          <strong>{currentNumber} of {totalQuestions}</strong>
+          <span>Each answer adds one small piece of context.</span>
         </div>
       </header>
 
-
-      <section className="synParentProgressV09">
-        <div>
-          <span className="synParentEyebrowV09">
-            PARENT PERSPECTIVE
-          </span>
-
-          <strong>
-            {currentNumber} of {totalQuestions}
-          </strong>
-        </div>
-
-        <div className="synParentProgressTrackV09">
-          <div
-            className="synParentProgressBarV09"
-            style={{
-              width: `${progressPercentage}%`,
-            }}
-          />
-        </div>
-      </section>
-
-
-      <div className="synParentLayoutV09">
-
-        <aside className="synParentContextV09">
-          <div className="synParentContextIconV09">
-            🔎
-          </div>
-
-          <span className="synParentEyebrowV09">
-            WHAT HELPS
-          </span>
-
-          <h2>
-            Share what you actually notice — not what you think the answer should be.
-          </h2>
-
-          <p>
-            Parent observations are useful because they add context from
-            real life. They do not override {childName}'s own voice.
-          </p>
-
-          <div className="synParentPrinciplesV09">
-            <div>
-              <span>1</span>
-              <p>Think about recent, everyday examples.</p>
-            </div>
-
-            <div>
-              <span>2</span>
-              <p>Patterns matter more than one perfect moment.</p>
-            </div>
-
-            <div>
-              <span>3</span>
-              <p>There is no “best” answer for a child.</p>
-            </div>
-          </div>
-
-          <div className="synParentEvidenceNoteV09">
-            <span>PARENT → PROFILE</span>
-
-            <p>
-              Your observations become one perspective in {childName}'s
-              evolving Profile — alongside Discover and Journey.
-            </p>
-          </div>
-        </aside>
-
-
-        <main className="synParentQuestionV09">
-          <div className="synParentQuestionMetaV09">
-            <span className="synParentQuestionNumberV09">
-              {String(currentNumber).padStart(2, '0')}
-            </span>
-
-            <span>
-              Your observation
-            </span>
-          </div>
-
-          <h2>
-            {currentQuestion.question}
-          </h2>
-
-          <p className="synParentQuestionHelpV09">
-            Choose the answer that best matches what you've been seeing lately.
-          </p>
-
-
-          <div className="synParentAnswersV09">
-            {currentQuestion.answers.map(
-              (answer, index) => (
-                <button
-                  type="button"
-                  key={answer.id}
-                  className="synParentAnswerV09"
-                  onClick={() => onAnswer(answer)}
-                >
-                  <span className="synParentAnswerLetterV09">
-                    {String.fromCharCode(65 + index)}
-                  </span>
-
-                  <span>
-                    {answer.label}
-                  </span>
-
-                  <span
-                    className="synParentAnswerArrowV09"
-                    aria-hidden="true"
-                  >
-                    →
-                  </span>
-                </button>
-              )
-            )}
-          </div>
-        </main>
-
+      <div className="ss-parent-perspective-v015__progress-track">
+        <div style={{ width: `${progressPercentage}%` }} />
       </div>
 
+      <main className="ss-parent-perspective-v015__question-card">
+        <div className="ss-parent-perspective-v015__question-meta">
+          <span>{String(currentNumber).padStart(2, '0')}</span>
+          <small>WHAT HAVE YOU BEEN SEEING LATELY?</small>
+        </div>
+        <h2>{currentQuestion.question}</h2>
+        <p>Choose the option that comes closest. This is a clue, not a permanent label.</p>
 
-      <footer className="synParentFooterV09">
-        <span aria-hidden="true">🤝</span>
+        <div className="ss-parent-perspective-v015__answers">
+          {currentQuestion.answers.map((answer, index) => (
+            <button type="button" key={answer.id} onClick={() => onAnswer(answer)}>
+              <span>{String.fromCharCode(65 + index)}</span>
+              <strong>{answer.label}</strong>
+              <b aria-hidden="true">→</b>
+            </button>
+          ))}
+        </div>
+      </main>
 
-        <p>
-          <strong>One child, multiple perspectives.</strong>
-          {' '}
-          SynapStride looks for patterns across the child's voice,
-          real experiences, reflections, and parent observations.
-        </p>
+      <footer className="ss-parent-perspective-v015__principle">
+        <strong>Perspective, not verdict.</strong>
+        <span> SynapStride combines this with {childName}&apos;s own choices and real experiences before stronger patterns emerge.</span>
       </footer>
-
     </section>
   )
 }
-
 
 export default ParentPerspectiveFlow

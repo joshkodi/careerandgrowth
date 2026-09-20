@@ -21,6 +21,13 @@ import './GrowthCalendarV0103.css'
 import './InterestsActivitiesV0104D.css'
 import './ChildHomeV0118.css'
 import './SchoolLearningFormV013.css'
+import './SchoolCompanionV015.css'
+import SchoolWorkIntakeV015 from './SchoolWorkIntakeV015'
+import { buildSchoolWorkPlan } from '../intelligence/schoolWorkPlanningEngine'
+import './FirstUseHomeV014.css'
+import './AvatarV014.css'
+import Avatar from './Avatar'
+import ChildCoreHomeV015 from './ChildCoreHomeV015'
 
 import ExperienceResearchPanel from './ExperienceResearchPanel'
 import AdventuresHub from './AdventuresHub'
@@ -55,6 +62,10 @@ import {
 import {
   buildPersonalizedGuidance,
 } from '../intelligence/personalizedGuidanceEngine'
+
+import {
+  buildCompanionGuidance,
+} from '../intelligence/guidanceEngine'
 
 import {
   describeGrowthProfileDelta,
@@ -410,100 +421,41 @@ function GrowthHome({
     const text = String(rawText || '').trim()
     if (!text) return
 
-    const normalized = text.toLowerCase()
-    let reply = {
-      text: 'I can help you learn, explore, understand your growth, or figure out what might be worth trying next.',
-      actionLabel: null,
-      action: null,
+    const activeItem =
+      needsAttention?.item ||
+      currentJourney ||
+      null
+
+    const guidance = buildCompanionGuidance({
+      message: text,
+      activeItem,
+      recommendation: topRecommendation,
+      needsAttention,
+    })
+
+    const actionMap = {
+      open_school: openSchoolLearning,
+      open_school_help: openSchoolLearning,
+      continue_work: () => {
+        if (!activeItem) return onJourney?.()
+        if (activeItem.path === journeyPaths.SCHOOL_LEARNING) return openSchoolLearning()
+        if (activeItem.path === journeyPaths.ACTIVITIES_INTERESTS) return onExplore?.()
+        return openJourney(activeItem.path)
+      },
+      explore: onExplore,
+      profile: onGrowthProfile,
+      try_recommendation: topRecommendation
+        ? () => onStartGrow?.(topRecommendation)
+        : onExplore,
     }
 
-    if (/(homework|school|study|test|fraction|math|reading|science|history|learn)/.test(normalized)) {
-      reply = {
-        text: 'Let’s work on it in School & Learning so we can understand what you need and keep track of what helps.',
-        actionLabel: 'Open School & Learning →',
-        action: openSchoolLearning,
-      }
-    } else if (/(build|make|robot|activity|activities|explore|interest|project|fun|bored)/.test(normalized)) {
-      reply = {
-        text: 'Let’s look for something worth trying based on what sounds interesting to you.',
-        actionLabel: 'Explore ideas →',
-        action: onExplore,
-      }
-    } else if (/(profile|about me|good at|strength|what.*learning.*me|know about me)/.test(normalized)) {
-      reply = {
-        text: 'I can show you the clues SynapStride is beginning to connect about how you learn, explore, and engage.',
-        actionLabel: 'See My Profile →',
-        action: onGrowthProfile,
-      }
-    } else if (/(growth|history|progress|done|doing|journey|continue)/.test(normalized)) {
-      reply = {
-        text: 'Let’s open My Growth so you can see what you have in motion and what you have already completed.',
-        actionLabel: 'Open My Growth →',
-        action: onJourney,
-      }
-    } else if (/(why.*(this|next|recommend)|why is this|why did you pick)/.test(normalized)) {
-      if (topRecommendation) {
-        reply = {
-          text:
-            personalizedGuidance
-              ?.tryNext
-              ?.reason ||
-            topRecommendation
-              ?.reasons
-              ?.[0] ||
-            'This matches the Growth Profile and interests SynapStride has enough evidence to use right now.',
-          actionLabel: 'Try it →',
-          action: () =>
-            onStartGrow?.(
-              topRecommendation
-            ),
-        }
-      } else {
-        reply = {
-          text:
-            personalizedGuidance
-              ?.explanation
-              ?.text ||
-            'SynapStride uses what you have actually done, what you have told us, and what is already in motion to decide what deserves attention next.',
-          actionLabel: null,
-          action: null,
-        }
-      }
-    } else if (/(next|try|recommend|suggest|what should|guide me|something for me)/.test(normalized)) {
-      if (needsAttention) {
-        reply = {
-          text: `“${needsAttention.title}” still needs some attention. That is the most useful place to continue right now.`,
-          actionLabel: 'Open School & Learning →',
-          action: openSchoolLearning,
-        }
-      } else if (currentJourney) {
-        reply = {
-          text: `You already have “${currentJourney.title}” in motion. Continuing it could be a useful next step.`,
-          actionLabel: 'Continue →',
-          action: () => openJourney(currentJourney.path),
-        }
-      } else if (currentGrowthActivity) {
-        reply = {
-          text: `You already saved “${currentGrowthActivity.title}”. Picking that back up is a useful next step.`,
-          actionLabel: 'Continue →',
-          action: onExplore,
-        }
-      } else if (topRecommendation) {
-        reply = {
-          text: `“${topRecommendation.title}” looks worth trying. ${personalizedGuidance?.tryNext?.reason || ''}`.trim(),
-          actionLabel: 'Try it →',
-          action: () => onStartGrow?.(topRecommendation),
-        }
-      } else {
-        reply = {
-          text: 'We are still gathering clues. Exploring something that catches your attention is a great next move.',
-          actionLabel: 'Explore ideas →',
-          action: onExplore,
-        }
-      }
-    }
-
-    setGuideReply({ question: text, ...reply })
+    setGuideReply({
+      question: text,
+      text: guidance.text,
+      actionLabel: guidance.actionLabel || null,
+      action: actionMap[guidance.action] || null,
+      contextual: guidance.contextual || false,
+    })
     setGuideInput('')
   }
 
@@ -511,6 +463,20 @@ function GrowthHome({
     event.preventDefault()
     runGuideRequest(guideInput)
   }
+
+  // ============================================================
+  // MVP v0.14 — FIRST-USE HOME
+  // ============================================================
+  // A brand-new child should see an honest product overview, not a
+  // returning-user dashboard with synthetic recommendations. Keep this
+  // state derived from real product activity rather than persisting a
+  // second onboarding flag.
+  const isFirstUseHome =
+    !discoveryComplete &&
+    evidenceEventCount === 0 &&
+    completedExplorations.length === 0 &&
+    journeyItems.length === 0 &&
+    growthActivities.length === 0
 
   return (
     <div className="growthHomeV06 growthHomeV09">
@@ -573,214 +539,207 @@ function GrowthHome({
             initialPath={journeyStartPath}
             requestedGrowthView={requestedGrowthView}
           />
+        ) : isFirstUseHome ? (
+          <FirstUseHomeV014
+            childName={childName}
+            childProfile={childProfile}
+            onLearn={openSchoolLearning}
+            onExplore={onExplore}
+            onGrow={onGrowthProfile}
+            onDiscover={onDiscover}
+            guideReply={guideReply}
+            guideInput={guideInput}
+            setGuideInput={setGuideInput}
+            runGuideRequest={runGuideRequest}
+            handleGuideSubmit={handleGuideSubmit}
+          />
         ) : (
-          <div className="synChildHomeV0118">
-            <section className="synHomeWelcomeV0118">
-              <div>
-                <span className="synHomeKickerV0118">YOUR SPACE</span>
-                <h1>Hi {childName}! <span aria-hidden="true">👋</span></h1>
-                <h2>What would you like to do today?</h2>
-                <p>Learn something, explore an interest, or ask your guide for help deciding what to do next.</p>
-              </div>
-
-              <div className="synHomeQuickActionsV0118" aria-label="Start something">
-                <button type="button" className="synHomeQuickActionV0118 learn" onClick={openSchoolLearning}>
-                  <span className="synHomeQuickIconV0118">📘</span>
-                  <span><strong>Learn</strong><small>Work on something</small></span>
-                  <b>→</b>
-                </button>
-                <button type="button" className="synHomeQuickActionV0118 explore" onClick={onExplore}>
-                  <span className="synHomeQuickIconV0118">🚀</span>
-                  <span><strong>Explore</strong><small>Find something interesting</small></span>
-                  <b>→</b>
-                </button>
-              </div>
-            </section>
-
-            {(completedGrowthActivityInsight || completedJourneyInsight) && (
-              <PostReflectionInsight
-                insight={
-                  completedGrowthActivityInsight ||
-                  completedJourneyInsight
-                }
-                nextRecommendation={topRecommendation}
-                onAddNext={onStartGrow}
-                onDismiss={
-                  completedGrowthActivityInsight
-                    ? onDismissGrowthActivityInsight
-                    : onDismissJourneyInsight
-                }
-              />
-            )}
-
-            <section className="synHomeMainGridV0118">
-              <article className="synHomeGuideCardV0118">
-                <div className="synHomeGuideHeadV0118">
-                  <div>
-                    <div className="synHomeCardLabelV0118"><span>✨</span> YOUR GROWTH GUIDE</div>
-                    <h2>Things that might be worth your attention</h2>
-                  </div>
-                  <span className="synHomeGuideBadgeV0118">Picked for {childName}</span>
-                </div>
-
-                <div className="synHomeGuideStackV0118">
-                  <section className="synHomeGuideItemV0118 continue">
-                    <span className="synHomeGuideItemIconV0118">📘</span>
-                    <div className="synHomeGuideItemCopyV0118">
-                      <small>
-                        {needsAttention
-                          ? 'NEEDS YOUR ATTENTION'
-                          : 'PICK UP WHERE YOU LEFT OFF'}
-                      </small>
-                      {continueItem ? (
-                        <>
-                          <strong>{continueItem.title}</strong>
-                          <p>
-                            {needsAttention
-                              ?.reason ||
-                              personalizedGuidance
-                                ?.continueAction
-                                ?.reason ||
-                              'You were working on this recently.'}
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <strong>{discoveryComplete ? 'Nothing waiting right now' : 'Start by telling me a little about you'}</strong>
-                          <p>{discoveryComplete ? 'You are all caught up. Pick something new whenever you are ready.' : 'A few quick answers help SynapStride start guiding you.'}</p>
-                        </>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={openContinueItem}
-                    >
-                      {continueItem
-                        ? (needsAttention ? 'Open' : 'Continue')
-                        : (discoveryComplete ? 'Explore' : 'Start')} →
-                    </button>
-                  </section>
-
-                  <section className="synHomeGuideItemV0118 try">
-                    <span className="synHomeGuideItemIconV0118">{topRecommendation?.emoji || '✨'}</span>
-                    <div className="synHomeGuideItemCopyV0118">
-                      <small>SOMETHING WORTH TRYING</small>
-                      <strong>{topRecommendation?.title || 'Find something new to try'}</strong>
-                      <p>
-                        {personalizedGuidance
-                          ?.tryNext
-                          ?.reason ||
-                          topRecommendation
-                            ?.reasons
-                            ?.[0] ||
-                          'Explore an idea that matches what sounds interesting to you.'}
-                      </p>
-                    </div>
-                    <div className="synHomeGuideItemActionsV0118">
-                      {topRecommendation && (
-                        <button type="button" className="why" onClick={() => runGuideRequest('Why is this a good next step?')}>Why this?</button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={topRecommendation ? () => onStartGrow?.(topRecommendation) : onExplore}
-                      >
-                        {topRecommendation ? 'Try it' : 'Explore'} →
-                      </button>
-                    </div>
-                  </section>
-                </div>
-
-                <div className="synHomeAlsoLabelV0118">YOU MIGHT ALSO LIKE</div>
-                <div className="synHomeDiscoveryGridV0118">
-                  <button type="button" className="synHomeDiscoveryCardV0118 near" onClick={onExplore}>
-                    <span className="synHomeDiscoveryTypeV0118">📍 NEAR YOU</span>
-                    <strong>{candidateTitle(nearYouCandidate, 'See what’s happening near you')}</strong>
-                    <small>{candidateMeta(nearYouCandidate, 'Activities and experiences nearby')}</small>
-                    <b>See activity →</b>
-                  </button>
-
-                  <button type="button" className="synHomeDiscoveryCardV0118 explore" onClick={onExplore}>
-                    <span className="synHomeDiscoveryTypeV0118">⭐ WORTH EXPLORING</span>
-                    <strong>{candidateTitle(worthExploringCandidate, 'Find something that catches your interest')}</strong>
-                    <small>{worthExploringCandidate?.reasons?.[0] || candidateMeta(worthExploringCandidate, 'Ideas picked around what you enjoy')}</small>
-                    <b>Explore →</b>
-                  </button>
-                </div>
-              </article>
-
-              <aside className="synHomeAgentV0118" aria-label="SynapStride Guide">
-                <div className="synHomeAgentHeaderV0118">
-                  <span className="synHomeBotV0118" aria-hidden="true">🤖</span>
-                  <span>
-                    <strong>SynapStride Guide <em>AI</em></strong>
-                    <small>Your guide for learning, exploring, and what comes next.</small>
-                  </span>
-                </div>
-
-                {guideReply ? (
-                  <div className="synHomeAgentConversationV0118" aria-live="polite">
-                    <div className="synHomeAgentQuestionV0118">{guideReply.question}</div>
-                    <div className="synHomeAgentReplyV0118">
-                      <p>{guideReply.text}</p>
-                      {guideReply.actionLabel && guideReply.action && (
-                        <button type="button" onClick={guideReply.action}>{guideReply.actionLabel}</button>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="synHomeAgentIntroV0118">
-                    <strong>Ask me anything.</strong>
-                    <p>I can help you get unstuck, find something to try, or take you to the right place in SynapStride.</p>
-                  </div>
-                )}
-
-                <div className="synHomeAgentPromptsV0118">
-                  <button type="button" onClick={() => runGuideRequest('Help me with my homework')}>Help with homework</button>
-                  <button type="button" onClick={() => runGuideRequest('What can I build?')}>What can I build?</button>
-                  <button type="button" onClick={() => runGuideRequest('What should I try next?')}>What should I try?</button>
-                </div>
-
-                <form className="synHomeAgentInputV0118" onSubmit={handleGuideSubmit}>
-                  <input
-                    type="text"
-                    value={guideInput}
-                    onChange={(event) => setGuideInput(event.target.value)}
-                    placeholder="Ask me anything..."
-                    aria-label="Ask SynapStride Guide"
-                  />
-                  <button type="submit" disabled={!guideInput.trim()} aria-label="Send to SynapStride Guide">→</button>
-                </form>
-                <small className="synHomeAgentFootV0118">✨ I can answer briefly, guide you, and open the right part of SynapStride.</small>
-              </aside>
-            </section>
-
-            <section className="synHomePictureV0118">
-              <div className="synHomePictureLeadV0118">
-                <span className="synHomeCardLabelV0118"><span>🌱</span> YOUR PICTURE IS GROWING</span>
-                <h2>We’re beginning to notice what you keep coming back to.</h2>
-                <p>These are clues, not labels. They can change as you learn and try more things.</p>
-              </div>
-
-              <div className="synHomeSignalsV0118">
-                {strongestTraits.length > 0 ? (
-                  strongestTraits.slice(0, 3).map((trait) => (
-                    <span key={trait.id}><b>{trait.emoji || '🌱'}</b>{trait.label}</span>
-                  ))
-                ) : (
-                  <>
-                    <span><b>🔎</b>Curious</span>
-                    <span><b>🧩</b>Problem Solver</span>
-                    <span><b>🛠</b>Builder</span>
-                  </>
-                )}
-              </div>
-
-              <button type="button" className="synHomeProfileLinkV0118" onClick={onGrowthProfile}>See My Profile →</button>
-            </section>
-          </div>
+          <ChildCoreHomeV015
+            childProfile={childProfile}
+            journeyItems={unifiedJourneyItemsForGuidance}
+            needsAttention={needsAttention}
+            recommendation={topRecommendation}
+            personalizedGuidance={personalizedGuidance}
+            guideInput={guideInput}
+            guideReply={guideReply}
+            setGuideInput={setGuideInput}
+            handleGuideSubmit={handleGuideSubmit}
+            runGuideRequest={runGuideRequest}
+            onSchool={openSchoolLearning}
+            onJourney={openJourney}
+            onExplore={onExplore}
+            onGrowthProfile={onGrowthProfile}
+            onStartGrow={onStartGrow}
+          />
         )}
 
       </main>
+    </div>
+  )
+}
+
+
+// ============================================================
+// MVP v0.14 — FIRST-USE HOME
+// ============================================================
+
+function FirstUseHomeV014({
+  childName,
+  childProfile,
+  onLearn,
+  onExplore,
+  onGrow,
+  onDiscover,
+  guideReply,
+  guideInput,
+  setGuideInput,
+  runGuideRequest,
+  handleGuideSubmit,
+}) {
+  return (
+    <div className="synFirstUseHomeV014">
+      <section className="synFirstUseHeroV014">
+        <div className="synFirstUseHeroCopyV014">
+          <span className="synFirstUseEyebrowV014">WELCOME TO YOUR SPACE</span>
+          <div className="synFirstUseGreetingV014">
+            <Avatar avatarId={childProfile?.avatarId} size={68} />
+            <h1>Hi {childName}! <span aria-hidden="true">👋</span></h1>
+          </div>
+          <h2>What do you want to do today?</h2>
+          <p>
+            Learn something, explore your interests, or discover more about yourself.
+            SynapStride is here to help you grow.
+          </p>
+        </div>
+        <div className="synFirstUseHeroArtV014" aria-hidden="true">
+          <span className="synFirstUseHeroSunV014">☀️</span>
+          <span className="synFirstUseHeroMountainV014">⛰️</span>
+          <span className="synFirstUseHeroKidV014">🎒</span>
+          <strong>Curiosity today.<br />A brighter tomorrow.</strong>
+        </div>
+      </section>
+
+      <section className="synFirstUseWorkspaceV014">
+        <div className="synFirstUseMainV014">
+          <div className="synFirstUseCapabilityGridV014" aria-label="Things you can do in SynapStride">
+            <button type="button" className="synFirstUseCapabilityV014 learn" onClick={onLearn}>
+              <span className="synFirstUseCapabilityIconV014">📘</span>
+              <strong>Learn</strong>
+              <p>Get help with school, explore topics, and build new skills.</p>
+              <b>Start Learning <span>→</span></b>
+            </button>
+
+            <button type="button" className="synFirstUseCapabilityV014 explore" onClick={onExplore}>
+              <span className="synFirstUseCapabilityIconV014">🚀</span>
+              <strong>Explore</strong>
+              <p>Find activities, ideas, and experiences that spark your curiosity.</p>
+              <b>Explore Now <span>→</span></b>
+            </button>
+
+            <button type="button" className="synFirstUseCapabilityV014 grow" onClick={onGrow}>
+              <span className="synFirstUseCapabilityIconV014">🌱</span>
+              <strong>Grow</strong>
+              <p>See your progress, strengths, and the picture taking shape over time.</p>
+              <b>See My Growth <span>→</span></b>
+            </button>
+          </div>
+
+          <section className="synFirstUseDiscoverV014">
+            <div className="synFirstUseDiscoverCopyV014">
+              <span className="synFirstUseEyebrowV014">✨ MAKE SYNAPSTRIDE YOURS</span>
+              <h2>Let&apos;s discover what makes you, you.</h2>
+              <p>
+                Tell me what you like, what you&apos;re curious about, and how you like to learn.
+                I&apos;ll use what I learn to find better ideas for you — not just give everyone the same suggestions.
+              </p>
+              <div className="synFirstUseDiscoverActionsV014">
+                <button type="button" onClick={onDiscover}>Discover Me <span>→</span></button>
+                <small>◷ About 2 minutes</small>
+              </div>
+            </div>
+            <div className="synFirstUseDiscoverArtV014" aria-hidden="true">
+              <span>🚀</span><span>🪐</span><span>⚽</span><span>🎮</span><span>🎵</span>
+              <strong><Avatar avatarId={childProfile?.avatarId} size={94} /></strong>
+            </div>
+          </section>
+
+          <section className="synFirstUseDifferenceV014">
+            <header>
+              <span className="synFirstUseEyebrowV014">WHY SYNAPSTRIDE IS DIFFERENT</span>
+              <h2>More than just answers. A guide that grows with you.</h2>
+            </header>
+            <div className="synFirstUseDifferenceGridV014">
+              <div>
+                <span>🧠</span>
+                <strong>Learns about you</strong>
+                <p>Your answers, activities, and experiences help SynapStride understand what matters to you.</p>
+              </div>
+              <div>
+                <span>✨</span>
+                <strong>Picks ideas for you</strong>
+                <p>Suggestions become more personal as SynapStride learns your interests, learning, and goals.</p>
+              </div>
+              <div>
+                <span>📈</span>
+                <strong>Grows with you</strong>
+                <p>The more you learn and try, the better your Growth Guide becomes at helping you choose what&apos;s next.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside className="synFirstUseAgentV014" aria-label="SynapStride Guide">
+          <div className="synFirstUseAgentHeadV014">
+            <span>🤖</span>
+            <div>
+              <strong>SynapStride Guide <em>AI</em></strong>
+              <small>Your learning and growth companion.</small>
+            </div>
+          </div>
+
+          {guideReply ? (
+            <div className="synFirstUseAgentConversationV014" aria-live="polite">
+              <div>{guideReply.question}</div>
+              <section>
+                <p>{guideReply.text}</p>
+                {guideReply.actionLabel && guideReply.action && (
+                  <button type="button" onClick={guideReply.action}>{guideReply.actionLabel}</button>
+                )}
+              </section>
+            </div>
+          ) : (
+            <div className="synFirstUseAgentIntroV014">
+              <strong>Hi {childName}! 👋</strong>
+              <p>
+                I can help you learn, explore, and grow. Ask me about homework,
+                something to build, or an idea you want to explore.
+              </p>
+            </div>
+          )}
+
+          <div className="synFirstUseAgentPromptsV014">
+            <button type="button" onClick={() => runGuideRequest('Help me with my homework')}>Help with my homework</button>
+            <button type="button" onClick={() => runGuideRequest('What can I build?')}>What can I build?</button>
+            <button type="button" onClick={() => runGuideRequest('What should I try next?')}>What should I try?</button>
+          </div>
+
+          <form className="synFirstUseAgentInputV014" onSubmit={handleGuideSubmit}>
+            <input
+              type="text"
+              value={guideInput}
+              onChange={(event) => setGuideInput(event.target.value)}
+              placeholder="Ask me anything..."
+              aria-label="Ask SynapStride Guide"
+            />
+            <button type="submit" disabled={!guideInput.trim()} aria-label="Send to SynapStride Guide">→</button>
+          </form>
+        </aside>
+      </section>
+
+      <footer className="synFirstUseFooterV014">
+        <strong>Discover who you are. Experience what&apos;s possible. Thrive in your own way.</strong>
+        <span>Small steps. Big possibilities.</span>
+      </footer>
     </div>
   )
 }
@@ -961,6 +920,8 @@ function LearningResourceRecommendations({
     request?.modeId ||
     ''
 
+  const guidancePlan = request?.guidancePlan || null
+
   const normalizedHelpMode =
     String(helpMode).toLowerCase()
 
@@ -1133,11 +1094,11 @@ function LearningResourceRecommendations({
           </span>
 
           <h4>
-            {helpModePresentation.title}
+            {guidancePlan?.title || helpModePresentation.title}
           </h4>
 
           <p>
-            {helpModePresentation.description}
+            {guidancePlan?.message || helpModePresentation.description}
           </p>
         </div>
       </section>
@@ -2140,6 +2101,11 @@ function JourneyPanel({
   ] = useState(false)
 
   const [
+    showSchoolIntake,
+    setShowSchoolIntake,
+  ] = useState(false)
+
+  const [
     uploadPreview,
     setUploadPreview,
   ] = useState(null)
@@ -2230,6 +2196,7 @@ function JourneyPanel({
         setEditingJourneyId(null)
         setAssignmentEditDraft(null)
         setShowLearningForm(false)
+        setShowSchoolIntake(false)
         setShowAddMenu(false)
         setShowUploadReview(false)
       }
@@ -2783,20 +2750,9 @@ function JourneyPanel({
         journeyPaths.SCHOOL_LEARNING
       )
       setExpandedJourneyId(null)
-      setShowLearningForm(addNew)
-
-      if (addNew) {
-        window.requestAnimationFrame(
-          () => {
-            learningFormRef
-              .current
-              ?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-              })
-          }
-        )
-      }
+      setShowLearningForm(false)
+      setShowSchoolIntake(addNew)
+      setShowAddMenu(false)
     }
 
   const openSchoolItem =
@@ -2998,6 +2954,7 @@ function JourneyPanel({
 
       setShowAddMenu(false)
       setShowLearningForm(false)
+      setShowSchoolIntake(false)
       setShowUploadReview(true)
       setSchoolView('tracker')
       setActiveUploadCandidateIndex(0)
@@ -3130,6 +3087,8 @@ function JourneyPanel({
             candidate.customSubject || '',
         })
 
+      const workPlan = buildSchoolWorkPlan(candidate)
+
       onAddLearningItem?.({
         ...candidate,
         ...normalizedSubject,
@@ -3146,6 +3105,12 @@ function JourneyPanel({
         description:
           candidate.description?.trim() ||
           '',
+
+        workPlan,
+        resumeContext: {
+          summary: 'You added this assignment from a picture.',
+          nextAction: workPlan.nextStep || 'Get started',
+        },
 
         importSource:
           'assignment_image',
@@ -3232,6 +3197,8 @@ function JourneyPanel({
                 candidate.customSubject || '',
             })
 
+          const workPlan = buildSchoolWorkPlan(candidate)
+
           onAddLearningItem?.({
             ...candidate,
             ...normalizedSubject,
@@ -3246,6 +3213,11 @@ function JourneyPanel({
             description:
               candidate.description?.trim() ||
               '',
+            workPlan,
+            resumeContext: {
+              summary: 'You added this assignment from a picture.',
+              nextAction: workPlan.nextStep || 'Get started',
+            },
             importSource:
               'assignment_image',
             attachments:
@@ -4026,18 +3998,19 @@ function JourneyPanel({
                 <button
                   type="button"
                   className="mgSchoolAddButtonV092"
-                  onClick={() =>
-                    setShowAddMenu(
-                      (current) => !current
-                    )
-                  }
+                  onClick={() => {
+                    setShowAddMenu(false)
+                    setShowLearningForm(false)
+                    setShowUploadReview(false)
+                    setShowSchoolIntake(true)
+                  }}
                 >
                   <span>＋</span>
                   Add schoolwork
                   <b>{showAddMenu ? '⌃' : '⌄'}</b>
                 </button>
 
-                {showAddMenu && (
+                {false && showAddMenu && (
                   <div className="mgSchoolAddMenuV092">
                     <button
                       type="button"
@@ -4096,6 +4069,31 @@ function JourneyPanel({
               </label>
             </div>
           </div>
+
+          {showSchoolIntake && (
+            <SchoolWorkIntakeV015
+              onCancel={() => setShowSchoolIntake(false)}
+              onUpload={(event) => {
+                setShowSchoolIntake(false)
+                handleAssignmentUpload(event)
+              }}
+              onCreate={(draft) => {
+                const created = onAddLearningItem?.({
+                  ...draft,
+                  source: journeySources.SCHOOL,
+                  metadata: {
+                    ...(draft.metadata || {}),
+                    createdFrom: 'school_work_intake_v015',
+                    intakeMode: draft.intakeMode || 'tell',
+                  },
+                })
+                setShowSchoolIntake(false)
+                if (created?.id) {
+                  window.requestAnimationFrame(() => openSchoolItem(created.id))
+                }
+              }}
+            />
+          )}
 
           <nav
             className="mgSchoolLocalTabsV092"
@@ -5076,7 +5074,13 @@ function JourneyPanel({
                         )}
                       </section>
 
-                      <div className="synWorkspaceBodyV098">
+                      <div
+                        className={
+                          helpJourneyId === item.id || item.learningSupportRequest
+                            ? 'synWorkspaceBodyV098 ssSchoolWorkspaceV015 help-open'
+                            : 'synWorkspaceBodyV098 ssSchoolWorkspaceV015 assignment-only'
+                        }
+                      >
                         <aside className="synWorkspaceContextV098">
                           <section className="synWorkspaceTodoV098">
                             <div className="synWorkspaceMiniHeadingV098">
@@ -5331,24 +5335,29 @@ function JourneyPanel({
                             <section className="synWorkspaceHelpCalloutV0910">
                               <span className="synWorkspaceHelpCalloutIconV0910">💡</span>
                               <div>
-                                <h3>Stuck or need some help?</h3>
+                                <h3>Need help with this?</h3>
                                 <p>
-                                  SynapStride can explain something, show an example,
-                                  help you get started, or give you practice.
+                                  Your SynapStride Companion already knows which assignment you’re working on. Ask for help without starting over.
                                 </p>
                               </div>
                               <button
                                 type="button"
                                 onClick={() => beginLearningHelp(item.id)}
                               >
-                                ✨ I need help
+                                ✨ Ask SynapStride
                               </button>
                             </section>
                           )}
                         </aside>
 
                         {item.status !== journeyStatuses.COMPLETED ? (
-                        <main className="synWorkspaceHelpV098">
+                        <main
+                          className={
+                            helpJourneyId === item.id || item.learningSupportRequest
+                              ? 'synWorkspaceHelpV098 ssSchoolCompanionV015'
+                              : 'synWorkspaceHelpV098 ssSchoolCompanionV015 is-collapsed'
+                          }
+                        >
                           <div className="synWorkspaceHelpTopV098">
                             <button type="button" className="synWorkspaceBackToAssignmentV0910" onClick={() => setHelpJourneyId(null)}>← <span>Back to assignment</span></button>
                             <span>I need help</span>
@@ -5357,7 +5366,7 @@ function JourneyPanel({
 
                           <div className="synWorkspaceHelpHeroV098">
                             <span className="synWorkspaceBotV098">🤖</span>
-                            <div><h3>How can SynapStride help?</h3><p>Choose what would be most useful.</p></div>
+                            <div><span className="ssSchoolCompanionEyebrowV015">YOUR COMPANION</span><h3>How can I help with this?</h3><p>I already have the assignment context. Choose what would help right now.</p></div>
                           </div>
 
                           {helpJourneyId === item.id && (

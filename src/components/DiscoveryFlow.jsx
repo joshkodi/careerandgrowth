@@ -1,11 +1,13 @@
 // ============================================================
 // SynapStride
-// MVP v0.9 — Discover
+// MVP v0.15 — Discover UX refresh
 //
-// Discover answers: "Who am I?"
-// Presentation-only. Discovery state, evidence, scoring,
-// persistence and profile inference remain owned by App.jsx.
+// Presentation-only. Existing discovery questions, answer callbacks,
+// evidence translation, scoring, persistence and profile inference
+// remain owned by the existing application pipeline.
 // ============================================================
+
+import './DiscoverExperienceV015.css'
 
 function DiscoveryFlow({
   childProfile,
@@ -15,213 +17,82 @@ function DiscoveryFlow({
   onBack,
   onAnswer,
 }) {
-  if (!currentQuestion || !questions?.length) {
-    return null
-  }
+  if (!currentQuestion || !questions?.length) return null
 
-  const childName =
-    childProfile?.name?.trim() || 'Explorer'
-
-  const currentNumber =
-    currentQuestionIndex + 1
-
-  const progressPercentage =
-    (currentNumber / questions.length) * 100
-
-  const currentTopic =
-    currentQuestion.shortLabel ||
-    'Getting to know you'
+  const childName = childProfile?.name?.trim() || 'Explorer'
+  const currentNumber = currentQuestionIndex + 1
+  const progressPercentage = (currentNumber / questions.length) * 100
+  const currentTopic = currentQuestion.shortLabel || 'Getting to know you'
 
   return (
-    <section className="synDiscoverV09">
-
-      <div
-        style={{
-          marginBottom: '14px',
-        }}
+    <section className="ss-discover-v015">
+      <button
+        type="button"
+        className="ss-discover-v015__back"
+        onClick={onBack}
       >
-        <button
-          type="button"
-          className="backButton"
-          onClick={onBack}
-        >
-          ← My Profile
-        </button>
-      </div>
+        ← My Profile
+      </button>
 
-      <header className="synDiscoverHeroV09">
-        <div>
-          <span className="synDiscoverEyebrowV09">
-            DISCOVER
-          </span>
-
-          <h1>
-            Discover more about you, {childName}.
-          </h1>
-
+      <div className="ss-discover-v015__shell">
+        <header className="ss-discover-v015__top">
+          <span className="ss-discover-v015__eyebrow">Discover</span>
+          <h1>Let’s get to know you, {childName}.</h1>
           <p>
-            What you tell SynapStride gives us important clues about
-            what you enjoy, how you like to think, and what makes you curious.
-          </p>
-        </div>
-
-        <div className="synDiscoverHeroMarkV09" aria-hidden="true">
-          <span>🧭</span>
-          <strong>Your voice matters</strong>
-        </div>
-      </header>
-
-
-      <section className="synDiscoverProgressPanelV09">
-
-        <div className="synDiscoverProgressHeadingV09">
-          <div>
-            <span className="synDiscoverEyebrowV09">
-              DISCOVERING YOU
-            </span>
-
-            <h2>
-              One small question at a time
-            </h2>
-          </div>
-
-          <strong>
-            {currentNumber} of {questions.length}
-          </strong>
-        </div>
-
-        <div
-          className="synDiscoverProgressTrackV09"
-          aria-label={`Question ${currentNumber} of ${questions.length}`}
-        >
-          <div
-            className="synDiscoverProgressBarV09"
-            style={{
-              width: `${progressPercentage}%`,
-            }}
-          />
-        </div>
-
-      </section>
-
-
-      <div className="synDiscoverLayoutV09">
-
-        <aside className="synDiscoverContextV09">
-
-          <div className="synDiscoverContextIconV09">
-            ✨
-          </div>
-
-          <span className="synDiscoverEyebrowV09">
-            WHY DISCOVER?
-          </span>
-
-          <h2>
-            You know things about yourself that activities alone can't tell us.
-          </h2>
-
-          <p>
-            Your answers are one part of your evolving Profile.
-            What you try in Journey and what you reflect on add other clues.
+            There are no right answers. Pick what feels most like you today —
+            SynapStride will keep learning with you as you grow.
           </p>
 
-          <div className="synDiscoverContextNotesV09">
-            <div>
-              <span>✓</span>
-              <p>No right or wrong answers.</p>
+          <div className="ss-discover-v015__progress">
+            <div
+              className="ss-discover-v015__track"
+              aria-label={`Question ${currentNumber} of ${questions.length}`}
+            >
+              <div
+                className="ss-discover-v015__bar"
+                style={{ width: `${progressPercentage}%` }}
+              />
             </div>
-
-            <div>
-              <span>♡</span>
-              <p>Choose what feels most like you today.</p>
-            </div>
-
-            <div>
-              <span>↻</span>
-              <p>Your answers can evolve as you grow.</p>
-            </div>
-          </div>
-
-          <div className="synDiscoverProfileLinkV09">
-            <span>DISCOVER → PROFILE</span>
-            <p>
-              What you share here helps SynapStride understand you more clearly.
-            </p>
-          </div>
-
-        </aside>
-
-
-        <main className="synDiscoverQuestionV09">
-
-          <div className="synDiscoverQuestionMetaV09">
-            <span className="synDiscoverQuestionNumberV09">
-              {String(currentNumber).padStart(2, '0')}
-            </span>
-
-            <span className="synDiscoverTopicV09">
-              {currentTopic}
+            <span className="ss-discover-v015__count">
+              {currentNumber} of {questions.length}
             </span>
           </div>
+        </header>
 
-          <h2>
-            {currentQuestion.question}
-          </h2>
-
-          <p className="synDiscoverQuestionHelpV09">
-            Pick the answer that sounds most like you.
-            Don't overthink it.
-          </p>
-
-
-          <div className="synDiscoverAnswersV09">
-
-            {currentQuestion.answers.map(
-              (answer, index) => (
-                <button
-                  type="button"
-                  key={answer.id}
-                  className="synDiscoverAnswerV09"
-                  onClick={() => onAnswer(answer)}
-                >
-                  <span className="synDiscoverAnswerLetterV09">
-                    {String.fromCharCode(65 + index)}
-                  </span>
-
-                  <span>
-                    {answer.label}
-                  </span>
-
-                  <span
-                    className="synDiscoverAnswerArrowV09"
-                    aria-hidden="true"
-                  >
-                    →
-                  </span>
-                </button>
-              )
-            )}
-
+        <main className="ss-discover-v015__body">
+          <div className="ss-discover-v015__question">
+            <span className="ss-discover-v015__topic">✨ {currentTopic}</span>
+            <h2>{currentQuestion.question}</h2>
+            <p>Choose the one that sounds most like you. Don’t overthink it.</p>
           </div>
 
+          <div className="ss-discover-v015__answers">
+            {currentQuestion.answers.map((answer) => (
+              <button
+                type="button"
+                key={answer.id}
+                className="ss-discover-v015__answer"
+                onClick={() => onAnswer(answer)}
+              >
+                <span className="ss-discover-v015__answerText">
+                  {answer.label}
+                </span>
+                <span className="ss-discover-v015__arrow" aria-hidden="true">→</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="ss-discover-v015__note">
+            <span className="ss-discover-v015__spark" aria-hidden="true">🌱</span>
+            <span>
+              <strong>This is just one clue.</strong> What you choose, try and reflect on
+              over time helps SynapStride understand you better.
+            </span>
+          </div>
         </main>
-
       </div>
-
-
-      <footer className="synDiscoverFooterV09">
-        <span aria-hidden="true">🌱</span>
-        <p>
-          <strong>Discover is just one source of clues.</strong>
-          {' '}
-          Your Journey, reflections, and parent observations help the picture grow.
-        </p>
-      </footer>
-
     </section>
   )
 }
-
 
 export default DiscoveryFlow

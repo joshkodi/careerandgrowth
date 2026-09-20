@@ -1,4 +1,7 @@
 import './GrowthProfileView.css'
+import './AvatarV014.css'
+import Avatar from './Avatar'
+import AvatarPicker from './AvatarPicker'
 
 // ============================================================
 // SynapStride
@@ -169,6 +172,8 @@ function StorySignal({
 
 function GrowthProfileView({
   childName,
+  childProfile = null,
+  onAvatarChange = null,
   profile,
   topTraits = [],
   topDomains = [],
@@ -291,9 +296,12 @@ function GrowthProfileView({
             MY PROFILE
           </span>
 
-          <h1>
-            Hi {safeName}. Here&apos;s the picture that&apos;s taking shape.
-          </h1>
+          <div className="synProfileHeroIdentityV014">
+            <Avatar avatarId={childProfile?.avatarId} size={64} />
+            <h1>
+              Hi {safeName}. Here&apos;s the picture that&apos;s taking shape.
+            </h1>
+          </div>
 
           <p>
             SynapStride connects what you tell us, what you try,
@@ -372,6 +380,18 @@ function GrowthProfileView({
           </button>
         ) : null}
       </section>
+
+      {onAvatarChange ? (
+        <details className="synProfileAvatarEditV014">
+          <summary>Change my avatar</summary>
+          <AvatarPicker
+            compact
+            age={childProfile?.age}
+            value={childProfile?.avatarId}
+            onChange={onAvatarChange}
+          />
+        </details>
+      ) : null}
 
 
       <section className="synProfileStoryV011 synProfileStoryV0117">
