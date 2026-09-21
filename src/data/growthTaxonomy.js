@@ -182,6 +182,7 @@ export const evidenceSourceTypes = {
   ADVENTURE_CHOICE: 'adventure_choice',
   REFLECTION: 'reflection',
   COMPLETION: 'completion',
+  COMPANION_OUTCOME: 'companion_outcome',
 }
 
 export const evidenceStreamBySourceType = {
@@ -202,6 +203,11 @@ export const evidenceStreamBySourceType = {
 
   [evidenceSourceTypes.COMPLETION]:
     evidenceStreams.SYSTEM_EVIDENCE,
+
+  // v0.16 adaptive learning loop: child responses to delivered guidance.
+  // These remain evidence, never direct profile facts.
+  [evidenceSourceTypes.COMPANION_OUTCOME]:
+    evidenceStreams.KID_EXPERIENCE,
 }
 
 export function getEvidenceStreamForSourceType(sourceType) {

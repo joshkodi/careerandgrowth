@@ -22,6 +22,7 @@ import './InterestsActivitiesV0104D.css'
 import './ChildHomeV0118.css'
 import './SchoolLearningFormV013.css'
 import './SchoolCompanionV015.css'
+import './AssignmentJourneyV0165.css'
 import SchoolWorkIntakeV015 from './SchoolWorkIntakeV015'
 import { buildSchoolWorkPlan } from '../intelligence/schoolWorkPlanningEngine'
 import './FirstUseHomeV014.css'
@@ -66,6 +67,15 @@ import {
 import {
   buildCompanionGuidance,
 } from '../intelligence/guidanceEngine'
+
+import {
+  runGuidanceOrchestration,
+  recordGuidanceOutcome,
+} from '../intelligence/intelligenceRuntimeV016'
+
+import {
+  generateContextualCompanionResponse,
+} from '../intelligence/companionReasoningEngineV016'
 
 import {
   describeGrowthProfileDelta,
@@ -417,7 +427,7 @@ function GrowthHome({
     onExplore?.()
   }
 
-  const runGuideRequest = (rawText) => {
+  const runGuideRequest = async (rawText) => {
     const text = String(rawText || '').trim()
     if (!text) return
 
@@ -426,7 +436,9 @@ function GrowthHome({
       currentJourney ||
       null
 
-    const guidance = buildCompanionGuidance({
+    // v0.15 remains the safe presentation/navigation fallback while v0.16
+    // becomes the primary semantic decision path.
+    const legacyGuidance = buildCompanionGuidance({
       message: text,
       activeItem,
       recommendation: topRecommendation,
@@ -449,13 +461,81 @@ function GrowthHome({
         : onExplore,
     }
 
-    setGuideReply({
-      question: text,
-      text: guidance.text,
-      actionLabel: guidance.actionLabel || null,
-      action: actionMap[guidance.action] || null,
-      contextual: guidance.contextual || false,
-    })
+    try {
+      const runtime = await runGuidanceOrchestration({
+        childId: childProfile?.id || childProfile?.name || null,
+        age: childProfile?.age || null,
+        role: 'child',
+        experience: activeItem
+          ? {
+              id: activeItem.id || null,
+              title: activeItem.title || activeItem.topic || null,
+              topic: activeItem.topic || null,
+              path: activeItem.path || null,
+              currentStep: activeItem.currentStep || activeItem.nextStep || null,
+            }
+          : null,
+        interaction: { message: text, source: 'growth_home_companion' },
+        semanticConcepts: [activeItem?.topic, activeItem?.title].filter(Boolean),
+        growthContext: sharedIntelligenceRecommendationLoop || null,
+        companionContext: activeItem ? { activeItem } : null,
+        fallbackDecision: {
+          action: ['continue_work', 'explore', 'profile'].includes(legacyGuidance.action)
+            ? legacyGuidance.action
+            : 'explain',
+          reason: 'Preserve the proven v0.15 guidance path when model reasoning is unavailable.',
+          confidence: 0,
+        },
+      })
+
+      const companion = await generateContextualCompanionResponse({
+        decision: runtime.decision,
+        semanticContext: runtime.semanticContext,
+        legacyGuidance,
+      })
+
+      // Capture the delivered guidance as episodic outcome memory. This is not
+      // promoted directly into the Growth Profile; Growth Intelligence remains
+      // responsible for corroboration/promotion.
+      await recordGuidanceOutcome({
+        childId: childProfile?.id || childProfile?.name || null,
+        semanticContext: runtime.semanticContext,
+        decision: runtime.decision,
+        userMessage: text,
+        companionText: companion.text,
+        outcome: 'guidance_delivered',
+      })
+
+      // Navigation remains controlled by SynapStride. The model chooses only
+      // from allowed guidance actions and never receives arbitrary callbacks.
+      const navigableAction = actionMap[runtime.decision?.action]
+        ? runtime.decision.action
+        : legacyGuidance.action
+
+      setGuideReply({
+        question: text,
+        text: companion.text,
+        actionLabel: legacyGuidance.actionLabel || null,
+        action: actionMap[navigableAction] || null,
+        contextual: companion.contextual || legacyGuidance.contextual || false,
+        intelligence: {
+          version: '0.16.0',
+          decision: runtime.decision,
+          model: runtime.model,
+          usedFallback: runtime.usedFallback,
+        },
+      })
+    } catch (error) {
+      console.error('SynapStride v0.16 Companion orchestration failed safely.', error)
+      setGuideReply({
+        question: text,
+        text: legacyGuidance.text,
+        actionLabel: legacyGuidance.actionLabel || null,
+        action: actionMap[legacyGuidance.action] || null,
+        contextual: legacyGuidance.contextual || false,
+      })
+    }
+
     setGuideInput('')
   }
 
@@ -1371,115 +1451,32 @@ function LearningResourceRecommendations({
           </div>
         </div>
 
-        <div className="synWorkspaceOutcomeChoicesV098">
+        <div className="synWorkspaceOutcomeChoicesV098 synOutcomeSimpleV0165">
           <button
             type="button"
-            className={
-              request
-                ?.outcome
-                ?.outcomeType ===
-              'resolved'
-                ? 'active resolved'
-                : 'resolved'
-            }
+            className={request?.outcome?.outcomeType === 'resolved' ? 'active resolved' : 'resolved'}
             onClick={() => {
-              if (resource.id) {
-                onFeedback?.(
-                  item.id,
-                  resource.id,
-                  'helpful'
-                )
-              }
-
-              onDone?.(
-                item.id,
-                'resolved'
-              )
+              if (resource.id) onFeedback?.(item.id, resource.id, 'helpful')
+              onDone?.(item.id, 'resolved')
             }}
           >
             <span>👍</span>
-
-            <strong>
-              Yes, I get it now
-            </strong>
-
-            <small>
-              Back to working on it
-            </small>
+            <strong>Yes, I get it</strong>
+            <small>Go back to my assignment</small>
           </button>
 
           <button
             type="button"
-            className={
-              request
-                ?.outcome
-                ?.outcomeType ===
-              'continue_work'
-                ? 'active practice'
-                : 'practice'
-            }
+            className={request?.outcome?.outcomeType === 'more_help' ? 'active more' : 'more'}
             onClick={() => {
-              if (resource.id) {
-                onFeedback?.(
-                  item.id,
-                  resource.id,
-                  'helpful'
-                )
-              }
-
-              onDone?.(
-                item.id,
-                'continue_work'
-              )
-            }}
-          >
-            <span>🙂</span>
-
-            <strong>
-              A little — I want to keep practicing
-            </strong>
-
-            <small>
-              Keep this topic going
-            </small>
-          </button>
-
-          <button
-            type="button"
-            className={
-              request
-                ?.outcome
-                ?.outcomeType ===
-              'more_help'
-                ? 'active more'
-                : 'more'
-            }
-            onClick={() => {
-              if (resource.id) {
-                onFeedback?.(
-                  item.id,
-                  resource.id,
-                  'not_useful'
-                )
-              }
-
-              onDone?.(
-                item.id,
-                'more_help'
-              )
-
+              if (resource.id) onFeedback?.(item.id, resource.id, 'not_useful')
+              onDone?.(item.id, 'more_help')
               switchToNextResource()
             }}
           >
-            <span>😕</span>
-
-            <strong>
-              Not really — try something different
-            </strong>
-
-            <small>
-              Switch to another approach
-            </small>
+            <span>🤔</span>
+            <strong>Not yet</strong>
+            <small>Try another way</small>
           </button>
         </div>
 
@@ -1584,6 +1581,16 @@ function getLearningHelpPresentation(option) {
       shortLabel: 'Help me get started',
       description: 'I’m not sure how to begin.',
       shortDescription: 'First step or hint',
+    }
+  }
+
+  if (text.includes('stuck')) {
+    return {
+      emoji: '🚀',
+      label: 'Help me get started',
+      shortLabel: 'Help me get started',
+      description: 'I’m not sure what to do first.',
+      shortDescription: 'Find the next step',
     }
   }
 
@@ -2153,6 +2160,11 @@ function JourneyPanel({
   const [
     expandedJourneyId,
     setExpandedJourneyId,
+  ] = useState(null)
+
+  const [
+    activeAssignmentStep,
+    setActiveAssignmentStep,
   ] = useState(null)
 
 
@@ -2862,6 +2874,23 @@ function JourneyPanel({
         modeId: '',
         studentNote: '',
       })
+
+      // Completion should feel like a real transition, not a silent status write.
+      // Close the active journey and take the child to Completed work immediately.
+      setExpandedJourneyId(null)
+      setActiveAssignmentStep(null)
+      setSchoolView('completed')
+
+      window.requestAnimationFrame(
+        () => {
+          schoolDetailRef
+            .current
+            ?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            })
+        }
+      )
     }
 
 
@@ -3643,6 +3672,385 @@ function JourneyPanel({
       setAttachmentTargetItemId(null)
     }
 
+
+  const getAssignmentWorkPlan = (item = {}) => {
+    const source = item.workPlan?.steps?.length
+      ? item.workPlan
+      : buildSchoolWorkPlan(item)
+
+    let steps = (source.steps || []).map((step, index) => ({
+      ...step,
+      id: step.id || `step_${index + 1}`,
+      label: step.label || step.text || `Step ${index + 1}`,
+    }))
+
+    // v0.16.11: collapse the old project Understand + Pick stages into one
+    // child-facing Get Started stage without discarding saved progress.
+    const looksLikeLegacyProjectPlan =
+      steps.length === 5 &&
+      /understand/i.test(steps[0]?.label || '') &&
+      /(choose|pick|focus)/i.test(steps[1]?.label || '')
+
+    if (looksLikeLegacyProjectPlan) {
+      const first = steps[0]
+      const pick = steps[1]
+      const getStartedStatus =
+        first.status === 'completed' && pick.status === 'completed'
+          ? 'completed'
+          : first.status === 'current' || pick.status === 'current'
+            ? 'current'
+            : first.status || pick.status || 'upcoming'
+
+      steps = [
+        { ...first, label: 'Get Started', status: getStartedStatus },
+        { ...steps[2], label: 'Learn' },
+        { ...steps[3], label: 'Create' },
+        { ...steps[4], label: 'Finish' },
+      ]
+    } else if (steps.length === 4 && /project/i.test(String(item.activityType || ''))) {
+      const labels = ['Get Started', 'Learn', 'Create', 'Finish']
+      steps = steps.map((step, index) => ({ ...step, label: labels[index] || step.label }))
+    }
+
+    const explicitCurrent = steps.find((step) => step.status === 'current')
+    const firstIncomplete = steps.find((step) => step.status !== 'completed')
+    const storedCurrent = steps.find((step) => step.id === source.currentStepId)
+
+    const currentStepId =
+      explicitCurrent?.id ||
+      firstIncomplete?.id ||
+      (storedCurrent && storedCurrent.status !== 'completed' ? storedCurrent.id : null) ||
+      (looksLikeLegacyProjectPlan && source.currentStepId === 'step_2' ? steps[0]?.id : null) ||
+      steps[steps.length - 1]?.id ||
+      null
+
+    return { ...source, steps, currentStepId }
+  }
+
+  const openAssignmentStep = (item, stepId = null) => {
+    const plan = getAssignmentWorkPlan(item)
+    const requestedId = stepId || plan.currentStepId
+    const targetId =
+      requestedId === 'step_2' && !plan.steps.some((step) => step.id === 'step_2')
+        ? plan.steps[0]?.id
+        : requestedId
+    const target = plan.steps.find((step) => step.id === targetId) || plan.steps[0]
+    if (!target) return
+
+    setHelpJourneyId(null)
+    setActiveAssignmentStep({ itemId: item.id, stepId: target.id })
+    onLearningItemStatus?.(item.id, journeyStatuses.IN_PROGRESS)
+  }
+
+
+  const navigateAssignmentStep = (item, direction) => {
+    const plan = getAssignmentWorkPlan(item)
+    if (!plan.steps.length) return
+
+    const selectedStepId =
+      activeAssignmentStep?.itemId === item.id
+        ? activeAssignmentStep.stepId
+        : plan.currentStepId
+
+    const currentIndex = Math.max(
+      0,
+      plan.steps.findIndex((step) => step.id === selectedStepId)
+    )
+
+    const targetIndex =
+      direction === 'previous'
+        ? Math.max(0, currentIndex - 1)
+        : Math.min(plan.steps.length - 1, currentIndex + 1)
+
+    const target = plan.steps[targetIndex]
+    if (!target) return
+
+    setHelpJourneyId(null)
+    setActiveAssignmentStep({ itemId: item.id, stepId: target.id })
+  }
+
+  const returnToActiveAssignmentStep = (item) => {
+    const plan = getAssignmentWorkPlan(item)
+    const stepId =
+      activeAssignmentStep?.itemId === item.id
+        ? activeAssignmentStep.stepId
+        : plan.currentStepId || plan.steps[0]?.id
+
+    setHelpJourneyId(null)
+    if (stepId) {
+      setActiveAssignmentStep({ itemId: item.id, stepId })
+    }
+  }
+
+  const handleLearningSupportOutcomeV0166 = (item, outcomeType) => {
+    onLearningSupportOutcome?.(item.id, outcomeType)
+
+    if (outcomeType === 'resolved') {
+      returnToActiveAssignmentStep(item)
+    }
+  }
+
+  const getStepWorkspaceState = (item = {}) => ({
+    focus: '',
+    researchNotes: {},
+    creationNotes: '',
+    reviewChecks: {},
+    inlineCoach: null,
+    inlineQuestion: '',
+    ...(item.stepWorkspaceState || {}),
+  })
+
+  const updateStepWorkspaceState = (item, patch = {}) => {
+    const current = getStepWorkspaceState(item)
+    onUpdateJourneyItem?.(item.id, {
+      stepWorkspaceState: {
+        ...current,
+        ...patch,
+      },
+    })
+  }
+
+  const getAssignmentRequirementsV0168 = (item = {}) => {
+    const source = String(item.description || item.topic || item.title || '').trim()
+    const sentences = source
+      .split(/\n+|(?<=[.!?])\s+/)
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .slice(0, 4)
+
+    return sentences.length
+      ? sentences
+      : [
+          `Complete ${item.title || 'this assignment'}.`,
+          item.dueDate ? `Finish it by ${item.dueDate}.` : 'Follow the assignment instructions.',
+        ]
+  }
+
+  const getResearchActivitiesV0168 = (item = {}) => {
+    const state = getStepWorkspaceState(item)
+    const focus = state.focus || item.topic || item.title || 'your topic'
+
+    return [
+      { id: 'basics', title: `What is ${focus}?`, hint: 'Learn the basic idea in your own words.' },
+      { id: 'how', title: `How does ${focus} work?`, hint: 'Find the important parts or steps.' },
+      { id: 'examples', title: `Where do we see ${focus}?`, hint: 'Look for useful examples or real-world connections.' },
+      { id: 'pros_cons', title: `What is important to know about ${focus}?`, hint: 'Capture strengths, challenges, or key facts.' },
+    ]
+  }
+
+  const getProjectChoiceOptionsV0169 = (item = {}) => {
+    const text = `${item.title || ''} ${item.topic || ''} ${item.description || ''}`.toLowerCase()
+    if (text.includes('renewable') || text.includes('energy')) {
+      return [
+        ['Solar Energy', '☀️', 'Energy from the sun'],
+        ['Wind Energy', '💨', 'Power from the wind'],
+        ['Hydroelectric', '💧', 'Energy from moving water'],
+        ['Geothermal', '🌋', 'Heat from inside Earth'],
+        ['Biomass', '🌱', 'Energy from plants and materials'],
+        ['__other__', '⭐', 'I have another idea'],
+      ]
+    }
+    return [[item.topic || item.title || 'My topic', '🎯', 'Use the assignment topic'], ['__other__', '⭐', 'Choose something more specific']]
+  }
+
+  const shouldOfferProjectChoiceV0171 = (item = {}) => {
+    const text = `${item.title || ''} ${item.topic || ''} ${item.description || ''}`.toLowerCase()
+    return /\b(choose|pick|select|one type|one kind|your choice|any topic|any type)\b/.test(text)
+  }
+
+  const getGetStartedRoadmapV0172 = (item = {}, plan = {}, focus = '') => {
+    const type = String(item.activityType || '').toLowerCase()
+    const subject = String(item.subject || '').toLowerCase()
+
+    if (type.includes('project')) {
+      return [
+        { icon: '🔎', title: 'First, we’ll learn', text: focus ? `We’ll learn the important things about ${focus} that you’ll need for your project.` : 'We’ll learn the important things you’ll need for your project.' },
+        { icon: '🛠️', title: 'Then, we’ll create', text: 'We’ll use what you learned to build your work one part at a time.' },
+        { icon: '✅', title: 'Finally, we’ll check it', text: 'We’ll compare your work with what your teacher asked for before you finish.' },
+      ]
+    }
+
+    if (type.includes('reading')) {
+      return [
+        { icon: '📖', title: 'Read the next part', text: 'We’ll keep the reading manageable and focus on what matters.' },
+        { icon: '💡', title: 'Capture the big ideas', text: 'We’ll notice important details, characters, ideas, or evidence.' },
+        { icon: '✅', title: 'Answer & check', text: 'We’ll use what you understood to finish and check your work.' },
+      ]
+    }
+
+    if (type.includes('test') || type.includes('quiz') || type.includes('study')) {
+      return [
+        { icon: '🧠', title: 'See what you need to know', text: 'We’ll identify the ideas that matter most.' },
+        { icon: '✏️', title: 'Practice the tricky parts', text: 'We’ll work on what needs more practice without doing the thinking for you.' },
+        { icon: '✅', title: 'Do a final check', text: 'We’ll make sure you feel ready before you finish.' },
+      ]
+    }
+
+    return [
+      { icon: subject.includes('math') ? '➗' : '✏️', title: 'Work through it', text: 'We’ll break the assignment into manageable parts.' },
+      { icon: '🤖', title: 'Get help when you need it', text: 'If you get stuck, I can explain the idea or help you get started.' },
+      { icon: '✅', title: 'Check your work', text: 'We’ll look for anything you may want to fix before you finish.' },
+    ]
+  }
+
+  const getInlineCoachResponseV0173 = ({ mode, focus = '', activity = {}, section = {} }) => {
+    const topic = focus || 'this topic'
+    if (mode === 'example') {
+      if (activity.id === 'how') return `Think of a simple cause-and-effect example for ${topic}: what starts the process, what happens next, and what result you get. Try explaining those three parts in your own words.`
+      if (activity.id === 'examples') return `Look for one place you might actually see ${topic} being used. Ask yourself: where is it, who uses it, and what does it help them do?`
+      return `Try connecting ${topic} to something you already know or have seen. A real example can make the idea much easier to explain.`
+    }
+    if (mode === 'ideas') return `Try making a short list first. What are the 2–3 most important things someone should understand in "${section.title || 'this section'}"? Pick one and start there.`
+    if (mode === 'write') return `Start with one simple sentence in your own words. You can use this pattern: “One important thing about ${topic} is …” Then add a detail or example.`
+    return `Let’s make it simpler. For ${activity.title || topic}, focus on just one question: what is the most important idea you would want to explain to a friend?`
+  }
+
+  const showInlineCoachV0173 = (item, payload) => {
+    updateStepWorkspaceState(item, {
+      inlineCoach: {
+        ...payload,
+        activityId: payload.activityId || payload.activity?.id || null,
+        sectionId: payload.sectionId || payload.section?.id || null,
+        response: getInlineCoachResponseV0173(payload),
+      },
+    })
+  }
+
+  const renderIntelligentStepWorkspaceV0168 = (item, plan, selectedStep) => {
+    const stepIndex = plan.steps.findIndex((step) => step.id === selectedStep.id)
+    const state = getStepWorkspaceState(item)
+    const requirements = getAssignmentRequirementsV0168(item)
+    const focus = state.focus || item.topic || ''
+    const researchActivities = [
+      { id:'basics', icon:'💡', title:`What is ${focus || 'your topic'}?`, short:'What is it?', hint:'Understand the basic idea in your own words.', lesson:`Start with the big idea: explain what ${focus || 'your topic'} is in a simple way. Think about what it does and why people use it.` },
+      { id:'how', icon:'⚙️', title:`How does ${focus || 'it'} work?`, short:'How it works', hint:'Learn the important parts or steps.', lesson:`Look for the main steps that make ${focus || 'it'} work. Try to explain the process in an order that another kid could follow.` },
+      { id:'examples', icon:'🏠', title:`Where is ${focus || 'it'} used?`, short:'Real-world uses', hint:'Find useful real-world examples.', lesson:`Find a few places or situations where ${focus || 'it'} is used in real life. Specific examples will make your project easier to understand.` },
+      { id:'pros_cons', icon:'⚖️', title:'Good things & challenges', short:'Benefits & challenges', hint:'Explore benefits, challenges, and key facts.', lesson:`Think about both sides: what makes ${focus || 'this topic'} useful, and what problems or limitations can come with it?` },
+    ]
+    const activeLearn = researchActivities.find(a=>a.id===(state.activeLearnId||'basics')) || researchActivities[0]
+    const researchDone = researchActivities.filter(a=>String(state.researchNotes?.[a.id]||'').trim()).length
+
+    const createSections = [
+      {id:'title',icon:'🏷️',title:'Title',prompt:`Give your ${focus || 'project'} a clear title.`,noteId:null},
+      {id:'basics',icon:'💡',title:`What is ${focus || 'it'}?`,prompt:'Explain the main idea in your own words.',noteId:'basics'},
+      {id:'how',icon:'⚙️',title:'How does it work?',prompt:'Explain the important steps or parts.',noteId:'how'},
+      {id:'examples',icon:'🏠',title:'Real-world uses',prompt:'Add useful examples or real-world connections.',noteId:'examples'},
+      {id:'pros_cons',icon:'⚖️',title:'Benefits & challenges',prompt:'Share both good things and challenges.',noteId:'pros_cons'},
+      {id:'conclusion',icon:'🎉',title:'Conclusion',prompt:'Wrap up with the main thing you want someone to remember.',noteId:null},
+    ]
+    const activeCreate = createSections.find(s=>s.id===(state.activeCreateId||'basics')) || createSections[1]
+    const activeCreateText = state.creationSections?.[activeCreate.id] ?? (activeCreate.id==='basics' ? state.creationNotes : '') ?? ''
+    const sourceLearning = activeCreate.noteId ? String(state.researchNotes?.[activeCreate.noteId]||'').trim() : ''
+    const createDone = createSections.filter(s=>String(state.creationSections?.[s.id] ?? (s.id==='basics'?state.creationNotes:'') ?? '').trim()).length
+
+    const reviewItems=[...requirements.slice(0,3), focus?`My project is about ${focus}.`:'My project has a clear focus.','I checked spelling, visuals, and my final work.']
+    const reviewDone=reviewItems.filter((_,i)=>state.reviewChecks?.[`check_${i}`]).length
+
+    if(stepIndex===0)return <div className="synVStage">
+      <div className="synVMission"><div><span>GET STARTED 🚀</span><h4>{item.title||'Your project'}</h4><p>Here’s your assignment in a simpler way.</p></div><div className="synVArt">☀️ 🌎 🌱</div></div>
+      <div className="synVRequirements"><strong>Your project needs:</strong>{requirements.map((r,i)=><div key={i}><b>✓</b><span>{r}</span></div>)}</div>
+      {shouldOfferProjectChoiceV0171(item) ? <>
+        <div className="synGetStartedChoiceV0171"><span>YOUR STARTING POINT 🎯</span><h5>What will your project focus on?</h5><p>Pick one so we can help you learn the right things next.</p></div>
+        <div className="synVChoices">{getProjectChoiceOptionsV0169(item).map(([value,icon,desc])=>{const sel=value!=='__other__'&&state.focus===value;return <button key={value} className={sel?'selected':''} onClick={()=>updateStepWorkspaceState(item,{focus:value==='__other__'?'':value})}><em>{icon}</em><strong>{value==='__other__'?'Something else':value}</strong><small>{desc}</small>{sel&&<b>✓ Picked</b>}</button>})}</div>
+        {!getProjectChoiceOptionsV0169(item).some(([v])=>v===state.focus)&&<input className="synVCustom" value={state.focus} placeholder="Type your idea…" onChange={e=>updateStepWorkspaceState(item,{focus:e.target.value})}/>}
+        {state.focus&&<div className="synVSuccess">🎉 <p><strong>Great — {state.focus}!</strong><small>Now you know what you’ll be working on.</small></p></div>}
+      </> : null}
+
+      {(!shouldOfferProjectChoiceV0171(item) || state.focus) && <section className="synGetStartedRoadmapV0172">
+        <div className="synGetStartedRoadmapHeadingV0172">
+          <span>HERE’S HOW WE’LL DO IT 🗺️</span>
+          <h5>Your game plan</h5>
+          <p>You don’t have to figure out the whole assignment at once.</p>
+        </div>
+        <div className="synGetStartedRoadmapCardsV0172">
+          {getGetStartedRoadmapV0172(item, plan, state.focus).map((part,index)=><div key={`${item.id}_roadmap_${index}`}><em>{part.icon}</em><p><strong>{part.title}</strong><small>{part.text}</small></p></div>)}
+        </div>
+        <div className="synGetStartedCompanionV0172">
+          <span>🤖</span>
+          <p><strong>I’ll be here along the way.</strong><small>If something doesn’t make sense, ask me. I’ll help you understand it and make your own work — not do the assignment for you.</small></p>
+          <button type="button" onClick={()=>beginLearningHelp(item.id)}>{shouldOfferProjectChoiceV0171(item)&&!state.focus?'Help me choose':'Ask me anything'}</button>
+        </div>
+      </section>}
+
+      {shouldOfferProjectChoiceV0171(item) && !state.focus && <div className="synGetStartedPromptV0172"><span>👆</span><p><strong>Pick a starting point first.</strong><small>Then I’ll show you the simple game plan for the rest of the project.</small></p><button onClick={()=>beginLearningHelp(item.id)}>✨ Help me choose</button></div>}
+    </div>
+
+    if(stepIndex===1)return <div className="synVStage">
+      <div className="synVHeading"><span>EXPLORE & LEARN 🔎</span><h4>{focus?`Let’s learn about ${focus}!`:'Pick your focus first'}</h4><p>Choose something to explore. We’ll work on one idea at a time.</p></div>
+      <div className="synLearnTopicsV0170">{researchActivities.map((a,i)=>{const done=!!String(state.researchNotes?.[a.id]||'').trim();return <button key={a.id} className={`${activeLearn.id===a.id?'active':''} ${done?'done':''}`} onClick={()=>updateStepWorkspaceState(item,{activeLearnId:a.id})}><span>{a.icon}</span><p><strong>{a.short}</strong><small>{a.hint}</small></p>{done?<b>✓</b>:<b>{i+1}</b>}</button>})}</div>
+      <div className="synLearnWorkspaceV0170">
+        <div className="synLearnLessonV0170"><span>{activeLearn.icon}</span><div><small>LEARN</small><h5>{activeLearn.title}</h5><p>{activeLearn.lesson}</p></div></div>
+        <div className="synLearnActionsV0170"><button onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{mode:'ask',scope:'learn',activityId:activeLearn.id},inlineQuestion:''})}>💬 Ask SynapStride</button><button onClick={()=>showInlineCoachV0173(item,{mode:'explain',scope:'learn',focus,activity:activeLearn})}>📖 Explain more</button><button onClick={()=>showInlineCoachV0173(item,{mode:'example',scope:'learn',focus,activity:activeLearn})}>🌎 Show me an example</button></div>
+        {state.inlineCoach?.scope==='learn' && state.inlineCoach?.activityId===activeLearn.id && <div className="synInlineCoachV0173">
+          <div className="synInlineCoachHeadV0173"><span>🤖</span><p><strong>SynapStride</strong><small>Right here with you</small></p><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null,inlineQuestion:''})}>×</button></div>
+          {state.inlineCoach.mode==='ask' ? <div className="synInlineAskV0173"><p>What do you want to know about <strong>{activeLearn.short.toLowerCase()}</strong>?</p><div><input value={state.inlineQuestion||''} placeholder="Type your question…" onChange={e=>updateStepWorkspaceState(item,{inlineQuestion:e.target.value})}/><button type="button" disabled={!String(state.inlineQuestion||'').trim()} onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{...state.inlineCoach,mode:'answer',response:`Good question. Think about “${state.inlineQuestion}” by connecting it to the main idea of ${focus||'your topic'}. Start with what you already know, then identify the one part that is still unclear.`}})}>Ask →</button></div></div> : <><p className="synInlineCoachResponseV0173">{state.inlineCoach.response}</p><div className="synInlineCoachFollowV0173"><button type="button" onClick={()=>showInlineCoachV0173(item,{mode:'explain',scope:'learn',focus,activity:activeLearn})}>Explain another way</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{mode:'ask',scope:'learn',activityId:activeLearn.id},inlineQuestion:''})}>I have a question</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null,inlineQuestion:''})}>✓ Got it</button></div></>}
+        </div>}
+        <label className="synTakeawayV0170"><strong>What I learned</strong><small>Save one useful thought in your own words.</small><textarea rows="3" value={state.researchNotes?.[activeLearn.id]||''} placeholder="One thing I learned is…" onChange={e=>updateStepWorkspaceState(item,{researchNotes:{...(state.researchNotes||{}),[activeLearn.id]:e.target.value}})}/></label>
+      </div>
+      <div className="synVProgress"><p><strong>Your learning progress</strong><span>{researchDone} of 4 explored</span></p><div><i style={{width:`${researchDone*25}%`}}/></div></div>
+    </div>
+
+    if(stepIndex===2)return <div className="synVStage">
+      <div className="synVHeading"><span>CREATE 🛠️</span><h4>Let’s make your {focus||'project'}!</h4><p>Pick a section and build it using what you learned.</p></div>
+      <div className="synVBuilder"><div className="synVSections">{createSections.map((s,i)=>{const text=String(state.creationSections?.[s.id] ?? (s.id==='basics'?state.creationNotes:'') ?? '').trim();return <button type="button" className={`${activeCreate.id===s.id?'active':''} ${text?'done':''}`} key={s.id} onClick={()=>updateStepWorkspaceState(item,{activeCreateId:s.id})}><em>{s.icon}</em><p><strong>{i+1}. {s.title}</strong><small>{text?'Saved':s.prompt}</small></p><b>{text?'✓':'›'}</b></button>})}</div>
+        <div className="synVEditor"><span>SECTION {createSections.findIndex(s=>s.id===activeCreate.id)+1} OF 6</span><h5>{activeCreate.icon} {activeCreate.title}</h5><p className="synCreatePromptV0170">{activeCreate.prompt}</p>
+          {sourceLearning&&<aside className="synCarryForwardV0170"><strong>📝 From what you learned</strong><p>{sourceLearning}</p><button type="button" onClick={()=>updateStepWorkspaceState(item,{creationSections:{...(state.creationSections||{}),[activeCreate.id]:sourceLearning}})}>Use this as a starting point</button></aside>}
+          <textarea rows="8" value={activeCreateText} placeholder={`Add your ${activeCreate.title.toLowerCase()} here…`} onChange={e=>updateStepWorkspaceState(item,{creationSections:{...(state.creationSections||{}),[activeCreate.id]:e.target.value},...(activeCreate.id==='basics'?{creationNotes:e.target.value}:{})})}/>
+          <div><button onClick={()=>showInlineCoachV0173(item,{mode:'write',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>✨ Help me write</button><button onClick={()=>showInlineCoachV0173(item,{mode:'ideas',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>💡 Give me ideas</button>{sourceLearning&&<button type="button" onClick={()=>updateStepWorkspaceState(item,{creationSections:{...(state.creationSections||{}),[activeCreate.id]:sourceLearning}})}>📝 Use my learning</button>}</div>
+          {state.inlineCoach?.scope==='create' && state.inlineCoach?.sectionId===activeCreate.id && <div className="synInlineCoachV0173 synInlineCoachCreateV0173"><div className="synInlineCoachHeadV0173"><span>🤖</span><p><strong>SynapStride</strong><small>Helping with {activeCreate.title}</small></p><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null})}>×</button></div><p className="synInlineCoachResponseV0173">{state.inlineCoach.response}</p><div className="synInlineCoachFollowV0173"><button type="button" onClick={()=>showInlineCoachV0173(item,{mode:'ideas',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>Another idea</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null})}>✓ I’ll try it</button></div></div>}
+          <div className="synSectionProgressV0170">{createDone} of 6 sections started</div>
+        </div>
+      </div>
+    </div>
+
+    return <div className="synVStage">
+      <div className="synVHeading"><span>FINAL CHECK ✅</span><h4>You’re almost done! 🎉</h4><p>Let’s make sure your project has everything your teacher asked for.</p></div>
+      <div className="synVFinish"><div className="synVCheck"><header><strong>Project checklist</strong><span>{reviewDone} of {reviewItems.length} complete</span></header><div className="synVBar"><i style={{width:`${Math.round(reviewDone/Math.max(reviewItems.length,1)*100)}%`}}/></div>{reviewItems.map((r,i)=>{const k=`check_${i}`,c=!!state.reviewChecks?.[k];return <label className={c?'done':''} key={k}><input type="checkbox" checked={c} onChange={e=>updateStepWorkspaceState(item,{reviewChecks:{...(state.reviewChecks||{}),[k]:e.target.checked}})}/><span>{r}</span>{!c&&<small>Fix this →</small>}</label>})}</div><aside className="synVCelebrate"><div>🤖🎉</div><strong>{reviewDone===reviewItems.length?'You did it!':'You’re doing great!'}</strong><p>{reviewDone===reviewItems.length?'Everything looks ready.':'Just a few more things and you’ll be ready.'}</p><button onClick={()=>beginLearningHelp(item.id)}>Ask SynapStride</button></aside></div>
+    </div>
+  }
+
+  const completeAssignmentStep = (item, stepId) => {
+    const plan = getAssignmentWorkPlan(item)
+    const index = plan.steps.findIndex((step) => step.id === stepId)
+    if (index < 0) return
+
+    const next = plan.steps[index + 1] || null
+    const steps = plan.steps.map((step, stepIndex) => ({
+      ...step,
+      status:
+        stepIndex <= index
+          ? 'completed'
+          : next && step.id === next.id
+            ? 'current'
+            : 'upcoming',
+    }))
+
+    const workPlan = {
+      ...plan,
+      version: '0.16.5',
+      steps,
+      currentStepId: next?.id || null,
+      nextStep: next?.label || null,
+    }
+
+    onUpdateJourneyItem?.(item.id, {
+      workPlan,
+      tasks: steps,
+      resumeContext: {
+        ...(item.resumeContext || {}),
+        summary: next
+          ? `You're ready for: ${next.label}`
+          : 'You finished all of the SynapStride steps for this assignment.',
+        nextAction: next?.label || 'Mark the assignment complete',
+      },
+    })
+
+    if (next) {
+      setActiveAssignmentStep({ itemId: item.id, stepId: next.id })
+    } else {
+      setActiveAssignmentStep(null)
+    }
+  }
 
   const beginLearningHelp =
     (journeyId) => {
@@ -4960,7 +5368,12 @@ function JourneyPanel({
                         className={
                           item.status === journeyStatuses.COMPLETED
                             ? 'synWorkspaceAssignmentStateV0910 synAssignmentCompletedStateV0913'
-                            : 'synWorkspaceAssignmentStateV0910'
+                            : `synWorkspaceAssignmentStateV0910${
+                                helpJourneyId === item.id ||
+                                (item.learningSupportRequest && item.learningSupportRequest?.outcome?.outcomeType !== 'resolved')
+                                  ? ' help-active-v0165'
+                                  : ''
+                              }`
                         }
                         aria-label="Assignment status and help actions"
                       >
@@ -5009,64 +5422,101 @@ function JourneyPanel({
                           </div>
                         ) : (
                           <>
-                            <div className="synWorkspaceAssignmentStateHeadingV0910">
-                              <strong>Where are you with this assignment?</strong>
-                              <span>Choose what fits right now.</span>
-                            </div>
+                            <div className="synAssignmentJourneyHeaderV0165">
+                              <div>
+                                <span className="synAssignmentStatusPillV0165">● In progress</span>
+                                <strong>Keep moving on this assignment</strong>
+                                <small>Continue your work, or ask SynapStride when you get stuck.</small>
+                              </div>
 
-                            <div className="synWorkspaceAssignmentStateChoicesV0910">
                               <button
                                 type="button"
-                                className={
-                                  item.status === journeyStatuses.IN_PROGRESS
-                                    ? 'active working'
-                                    : 'working'
-                                }
-                                onClick={() => {
-                                  onLearningItemStatus?.(
-                                    item.id,
-                                    journeyStatuses.IN_PROGRESS
-                                  )
-                                  setHelpJourneyId(null)
-                                }}
+                                className="synAssignmentCompleteActionV0165"
+                                onClick={() => completeSchoolAssignment(item.id)}
+                              >
+                                ✓ Mark complete
+                              </button>
+                            </div>
+
+
+                            {(() => {
+                              const plan = getAssignmentWorkPlan(item)
+                              const selectedStepId =
+                                activeAssignmentStep?.itemId === item.id
+                                  ? activeAssignmentStep.stepId
+                                  : plan.currentStepId
+                              const selectedIndex = Math.max(
+                                0,
+                                plan.steps.findIndex((step) => step.id === selectedStepId)
+                              )
+
+                              return plan.steps.length > 0 ? (
+                                <nav
+                                  className="synAssignmentBreadcrumbV0166"
+                                  aria-label="Assignment journey"
+                                >
+                                  <div className="synAssignmentBreadcrumbTitleV0166">
+                                    <span>YOUR JOURNEY</span>
+                                    <small>
+                                      Step {selectedIndex + 1} of {plan.steps.length}
+                                    </small>
+                                  </div>
+
+                                  <div className="synAssignmentBreadcrumbTrackV0166">
+                                    {plan.steps.map((step, index) => {
+                                      const isSelected = step.id === selectedStepId
+                                      const isDone = step.status === 'completed'
+                                      const isCurrent = step.id === plan.currentStepId
+
+                                      return (
+                                        <button
+                                          type="button"
+                                          key={`crumb_${item.id}_${step.id}`}
+                                          className={`${isSelected ? 'selected' : ''} ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}`}
+                                          onClick={() => openAssignmentStep(item, step.id)}
+                                          aria-current={isSelected ? 'step' : undefined}
+                                          title={`Step ${index + 1}: ${step.label}`}
+                                        >
+                                          <span className="synAssignmentBreadcrumbDotV0166">
+                                            {isDone ? '✓' : index + 1}
+                                          </span>
+                                          <span className="synAssignmentBreadcrumbLabelV0166">
+                                            {step.label}
+                                          </span>
+                                        </button>
+                                      )
+                                    })}
+                                  </div>
+                                </nav>
+                              ) : null
+                            })()}
+
+                            <div
+                              className={`synAssignmentPrimaryActionsV0165 ${
+                                activeAssignmentStep?.itemId === item.id ? 'journey-active-v0167' : ''
+                              }`}
+                            >
+                              <button
+                                type="button"
+                                className="primary"
+                                onClick={() => openAssignmentStep(item)}
                               >
                                 <span>▶</span>
                                 <span>
-                                  <strong>Working on it</strong>
-                                  <small>I’m making progress</small>
+                                  <strong>Continue working</strong>
+                                  <small>Pick up where you left off</small>
                                 </span>
                               </button>
 
                               <button
                                 type="button"
-                                className={
-                                  item.status === journeyStatuses.NEED_HELP ||
-                                  helpJourneyId === item.id
-                                    ? 'active help'
-                                    : 'help'
-                                }
-                                onClick={() =>
-                                  beginLearningHelp(item.id)
-                                }
+                                className="help"
+                                onClick={() => beginLearningHelp(item.id)}
                               >
                                 <span>✨</span>
                                 <span>
                                   <strong>I need help</strong>
-                                  <small>Get SynapStride support</small>
-                                </span>
-                              </button>
-
-                              <button
-                                type="button"
-                                className="completed"
-                                onClick={() =>
-                                  completeSchoolAssignment(item.id)
-                                }
-                              >
-                                <span>✓</span>
-                                <span>
-                                  <strong>Completed</strong>
-                                  <small>Mark as finished</small>
+                                  <small>Get support for this step</small>
                                 </span>
                               </button>
                             </div>
@@ -5076,30 +5526,109 @@ function JourneyPanel({
 
                       <div
                         className={
-                          helpJourneyId === item.id || item.learningSupportRequest
+                          helpJourneyId === item.id ||
+                          (item.learningSupportRequest && item.learningSupportRequest?.outcome?.outcomeType !== 'resolved')
                             ? 'synWorkspaceBodyV098 ssSchoolWorkspaceV015 help-open'
                             : 'synWorkspaceBodyV098 ssSchoolWorkspaceV015 assignment-only'
                         }
                       >
                         <aside className="synWorkspaceContextV098">
-                          <section className="synWorkspaceTodoV098">
+                          <section
+                            id={`assignment-plan-${item.id}`}
+                            className={`synWorkspaceTodoV098 synAssignmentPlanV0165 ${
+                              activeAssignmentStep?.itemId === item.id ? 'journey-active-v0167' : ''
+                            }`}
+                          >
                             <div className="synWorkspaceMiniHeadingV098">
                               <span>📋</span><h3>What you need to do</h3>
                             </div>
 
-                            {item.tasks?.length > 0 ? (
-                              <ul>
-                                {item.tasks.map((task, index) => (
-                                  <li key={`${item.id}_task_${index}`}>
-                                    {typeof task === 'string' ? task : task.label || task.text || `Task ${index + 1}`}
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : item.description ? (
-                              <p>{item.description}</p>
-                            ) : (
-                              <p className="synWorkspaceMutedV098">No assignment instructions were added yet.</p>
-                            )}
+                            {(() => {
+                              const plan = getAssignmentWorkPlan(item)
+                              const selectedStepId =
+                                activeAssignmentStep?.itemId === item.id
+                                  ? activeAssignmentStep.stepId
+                                  : plan.currentStepId
+                              const selectedStep = plan.steps.find((step) => step.id === selectedStepId)
+
+                              return plan.steps.length > 0 ? (
+                                <>
+                                  <div className="synJourneyStepListV0165">
+                                    {plan.steps.map((step, index) => {
+                                      const isCurrent = step.id === plan.currentStepId
+                                      const isSelected =
+                                        activeAssignmentStep?.itemId === item.id &&
+                                        activeAssignmentStep.stepId === step.id
+                                      const isDone = step.status === 'completed'
+                                      return (
+                                        <button
+                                          type="button"
+                                          key={`${item.id}_${step.id}`}
+                                          className={`${isCurrent ? 'current' : ''} ${isSelected ? 'selected' : ''} ${isDone ? 'done' : ''}`}
+                                          onClick={() => openAssignmentStep(item, step.id)}
+                                        >
+                                          <span>{isDone ? '✓' : index + 1}</span>
+                                          <div>
+                                            <strong>{step.label}</strong>
+                                            <small>{isDone ? 'Completed' : isCurrent ? 'Current step' : 'Open step'}</small>
+                                          </div>
+                                        </button>
+                                      )
+                                    })}
+                                  </div>
+
+                                  {activeAssignmentStep?.itemId === item.id && selectedStep && (
+                                    <div className="synCurrentStepWorkspaceV0165">
+                                      <span className="synCurrentStepKickerV0165">
+                                        STEP {plan.steps.findIndex((step) => step.id === selectedStep.id) + 1} OF {plan.steps.length}
+                                      </span>
+                                      <h3>{selectedStep.label}</h3>
+                                      {renderIntelligentStepWorkspaceV0168(item, plan, selectedStep)}
+                                      <div className="synCurrentStepActionsV0165 synCurrentStepNavV0166">
+                                        <button
+                                          type="button"
+                                          disabled={plan.steps.findIndex((step) => step.id === selectedStep.id) === 0}
+                                          onClick={() => navigateAssignmentStep(item, 'previous')}
+                                        >
+                                          ← Previous
+                                        </button>
+
+                                        {selectedStep.status !== 'completed' ? (
+                                          <button
+                                            type="button"
+                                            className="primary"
+                                            onClick={() => completeAssignmentStep(item, selectedStep.id)}
+                                          >
+                                            ✓ Finish step & continue →
+                                          </button>
+                                        ) : plan.steps.findIndex((step) => step.id === selectedStep.id) === plan.steps.length - 1 ? (
+                                          <button
+                                            type="button"
+                                            className="primary"
+                                            onClick={() => completeSchoolAssignment(item.id)}
+                                          >
+                                            Finish assignment ✓
+                                          </button>
+                                        ) : (
+                                          <button
+                                            type="button"
+                                            className="primary"
+                                            onClick={() => navigateAssignmentStep(item, 'next')}
+                                          >
+                                            Next step →
+                                          </button>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                </>
+                              ) : item.description ? (
+                                <p>{item.description}</p>
+                              ) : (
+                                <p className="synWorkspaceMutedV098">No assignment instructions were added yet.</p>
+                              )
+                            })()}
+
 
                             {(() => {
                               const primaryAttachment =
@@ -5175,25 +5704,20 @@ function JourneyPanel({
                               )
                             })()}
 
-                            <button
-                              type="button"
-                              className="synWorkspaceViewAssignmentV098"
-                              onClick={() => {
-                                const primaryAttachment =
-                                  getPrimaryAssignmentAttachment(item)
-
-                                if (primaryAttachment) {
-                                  openAssignmentAttachment(
-                                    item,
-                                    primaryAttachment
-                                  )
-                                } else {
-                                  setAssignmentViewerItem(item)
-                                }
-                              }}
-                            >
-                              View assignment
-                            </button>
+                            {getPrimaryAssignmentAttachment(item) ? (
+                              <button
+                                type="button"
+                                className="synWorkspaceViewAssignmentV098"
+                                onClick={() => openAssignmentAttachment(item, getPrimaryAssignmentAttachment(item))}
+                              >
+                                View original assignment
+                              </button>
+                            ) : (
+                              <details className="synTeacherInstructionsV0165">
+                                <summary>Teacher instructions</summary>
+                                <p>{item.description || 'No original teacher instructions were attached.'}</p>
+                              </details>
+                            )}
 
                             <section className="synAssignmentAttachmentsV0916">
                               <div className="synAssignmentAttachmentsHeaderV0916">
@@ -5331,38 +5855,40 @@ function JourneyPanel({
                             </div>
                           </section>
 
-                          {item.status !== journeyStatuses.COMPLETED && (
-                            <section className="synWorkspaceHelpCalloutV0910">
-                              <span className="synWorkspaceHelpCalloutIconV0910">💡</span>
-                              <div>
-                                <h3>Need help with this?</h3>
-                                <p>
-                                  Your SynapStride Companion already knows which assignment you’re working on. Ask for help without starting over.
-                                </p>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => beginLearningHelp(item.id)}
-                              >
-                                ✨ Ask SynapStride
-                              </button>
-                            </section>
-                          )}
+
                         </aside>
 
                         {item.status !== journeyStatuses.COMPLETED ? (
                         <main
                           className={
-                            helpJourneyId === item.id || item.learningSupportRequest
+                            helpJourneyId === item.id ||
+                            (item.learningSupportRequest && item.learningSupportRequest?.outcome?.outcomeType !== 'resolved')
                               ? 'synWorkspaceHelpV098 ssSchoolCompanionV015'
                               : 'synWorkspaceHelpV098 ssSchoolCompanionV015 is-collapsed'
                           }
                         >
                           <div className="synWorkspaceHelpTopV098">
-                            <button type="button" className="synWorkspaceBackToAssignmentV0910" onClick={() => setHelpJourneyId(null)}>← <span>Back to assignment</span></button>
+                            <button type="button" className="synWorkspaceBackToAssignmentV0910" onClick={() => returnToActiveAssignmentStep(item)}>← <span>Back to my step</span></button>
                             <span>I need help</span>
-                            <button type="button" aria-label="Close help" onClick={() => setHelpJourneyId(null)}>×</button>
+                            <button type="button" aria-label="Close help" onClick={() => returnToActiveAssignmentStep(item)}>×</button>
                           </div>
+
+                          {(() => {
+                            const plan = getAssignmentWorkPlan(item)
+                            const stepId =
+                              activeAssignmentStep?.itemId === item.id
+                                ? activeAssignmentStep.stepId
+                                : plan.currentStepId
+                            const step = plan.steps.find((candidate) => candidate.id === stepId)
+                            const index = plan.steps.findIndex((candidate) => candidate.id === stepId)
+
+                            return step ? (
+                              <div className="synHelpStepContextV0166">
+                                <span>YOU'RE WORKING ON</span>
+                                <strong>Step {index + 1} of {plan.steps.length} · {step.label}</strong>
+                              </div>
+                            ) : null
+                          })()}
 
                           <div className="synWorkspaceHelpHeroV098">
                             <span className="synWorkspaceBotV098">🤖</span>
@@ -5372,9 +5898,14 @@ function JourneyPanel({
                           {helpJourneyId === item.id && (
                             <>
                               <div className="synWorkspaceHelpChoicesV098">
-                                {learningHelpModeOptions.map((option) => {
-                                  const view =
-                                    getLearningHelpPresentation(option)
+                                {learningHelpModeOptions
+                                  .filter((option) => {
+                                    const view = getLearningHelpPresentation(option)
+                                    return ['Help me understand', 'Show me an example', 'Help me get started'].includes(view.label)
+                                  })
+                                  .slice(0, 3)
+                                  .map((option) => {
+                                  const view = getLearningHelpPresentation(option)
 
                                   return (
                                     <button
@@ -5413,90 +5944,38 @@ function JourneyPanel({
                             </>
                           )}
 
-                          {item.learningSupportRequest && helpJourneyId !== item.id && (
+                          {item.learningSupportRequest &&
+                            item.learningSupportRequest?.outcome?.outcomeType !== 'resolved' &&
+                            helpJourneyId !== item.id && (
                             <>
-                              <div className="synWorkspaceSelectedHelpV098">
+                              <div className="synFocusedHelpHeaderV0165">
+                                <button type="button" onClick={() => beginLearningHelp(item.id)}>← Change help</button>
                                 <div>
-                                  <span>You asked for</span>
+                                  <span>
+                                    GETTING HELP · {(() => {
+                                      const plan = getAssignmentWorkPlan(item)
+                                      const stepId =
+                                        activeAssignmentStep?.itemId === item.id
+                                          ? activeAssignmentStep.stepId
+                                          : plan.currentStepId
+                                      const index = plan.steps.findIndex((step) => step.id === stepId)
+                                      return index >= 0 ? `ASSIGNMENT STEP ${index + 1} OF ${plan.steps.length}` : 'CURRENT STEP'
+                                    })()}
+                                  </span>
                                   <strong>{item.learningSupportRequest.helpLabel}</strong>
                                   {item.learningSupportRequest.studentNote && (
                                     <p>{item.learningSupportRequest.studentNote}</p>
                                   )}
                                 </div>
-
-                                <button
-                                  type="button"
-                                  onClick={() => beginLearningHelp(item.id)}
-                                >
-                                  Change
-                                </button>
                               </div>
-
-                              <section className="synWorkspaceOtherHelpV0912">
-                                <div className="synWorkspaceOtherHelpHeaderV0912">
-                                  <div>
-                                    <span>✦</span>
-                                    <strong>Other ways I can help</strong>
-                                  </div>
-
-                                  <small>
-                                    Switch anytime
-                                  </small>
-                                </div>
-
-                                <div className="synWorkspaceOtherHelpGridV0912">
-                                  {learningHelpModeOptions
-                                    .filter(
-                                      (option) =>
-                                        option.id !==
-                                        (
-                                          item.learningSupportRequest.helpMode ||
-                                          item.learningSupportRequest.modeId
-                                        )
-                                    )
-                                    .map((option) => {
-                                      const view =
-                                        getLearningHelpPresentation(option)
-
-                                      return (
-                                        <button
-                                          type="button"
-                                          key={option.id}
-                                          onClick={() => {
-                                            onLearningItemStatus?.(
-                                              item.id,
-                                              journeyStatuses.NEED_HELP
-                                            )
-
-                                            onLearningHelpRequest?.(
-                                              item.id,
-                                              {
-                                                modeId: option.id,
-                                                studentNote:
-                                                  item.learningSupportRequest.studentNote || '',
-                                              }
-                                            )
-
-                                            setHelpJourneyId(null)
-                                          }}
-                                        >
-                                          <span>{view.emoji}</span>
-
-                                          <span>
-                                            <strong>{view.shortLabel}</strong>
-                                            <small>{view.shortDescription}</small>
-                                          </span>
-                                        </button>
-                                      )
-                                    })}
-                                </div>
-                              </section>
 
                               <LearningResourceRecommendations
                                 item={item}
                                 childProfile={childProfile}
                                 onFeedback={onLearningResourceFeedback}
-                                onDone={onLearningSupportOutcome}
+                                onDone={(_, outcomeType) =>
+                                  handleLearningSupportOutcomeV0166(item, outcomeType)
+                                }
                               />
                             </>
                           )}
@@ -7513,6 +7992,9 @@ function GrowthAreaWorkspaceV0103({
   onBack,
 }) {
   const [localView, setLocalView] = useState('tracker')
+  const [selectedInterestV0182, setSelectedInterestV0182] = useState(null)
+  const [expandedIdeasV0182, setExpandedIdeasV0182] = useState(false)
+  const [ideaDetailV0182, setIdeaDetailV0182] = useState(null)
   const [editActivity, setEditActivity] = useState(null)
   const [editDraft, setEditDraft] = useState({ title: '', type: 'activity', notes: '', date: '', time: '', durationMinutes: '60' })
 
@@ -7615,87 +8097,157 @@ function GrowthAreaWorkspaceV0103({
     })
   }
 
+  const allHomeIdeasV0182 = visibleIntelligenceOpportunities.length > 0
+    ? visibleIntelligenceOpportunities
+    : [
+        { id: 'starter-space', title: 'Explore how rockets work', emoji: '🚀', interests: ['space','science'], description: 'See what makes rockets launch, steer, and travel through space.', provider: 'SynapStride starter idea' },
+        { id: 'starter-code', title: 'Make a simple animation', emoji: '💻', interests: ['coding','art'], description: 'Use simple code blocks to make a character move and tell a story.', provider: 'SynapStride starter idea' },
+        { id: 'starter-animals', title: 'Amazing animal adaptations', emoji: '🐢', interests: ['animals','science'], description: 'Discover how animals survive in very different environments.', provider: 'SynapStride starter idea' },
+      ]
+
+  const selectedKeyV0182 = String(selectedInterestV0182 || '').toLowerCase()
+  const matchingIdeasV0182 = selectedKeyV0182
+    ? allHomeIdeasV0182.filter((candidate) => [
+        candidate.title, candidate.description, ...(candidate.interests || []),
+        ...(candidate.domains || []), ...(candidate.develops || [])
+      ].filter(Boolean).join(' ').toLowerCase().includes(selectedKeyV0182))
+    : allHomeIdeasV0182
+  const homeIdeasV0182 = (matchingIdeasV0182.length ? matchingIdeasV0182 : allHomeIdeasV0182)
+    .slice(0, expandedIdeasV0182 ? 6 : 3)
+
+  const chooseInterestV0182 = (label) => {
+    setSelectedInterestV0182(label)
+    setExpandedIdeasV0182(false)
+    setIdeaDetailV0182(null)
+    requestAnimationFrame(() => document.getElementById('ia-ideas-v0182')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }
+
+  const addIdeaV0182 = (candidate) => {
+    saveIntelligenceOpportunity(candidate)
+    setIdeaDetailV0182(null)
+  }
+
   return (
     <section className="gaWorkspaceV0103">
-      <header className="gaHeaderV0103">
-        <div className="gaHeaderTitleV0103">
-          <span className="gaHeaderIconV0103">{emoji}</span>
-          <div>
-            <span className="cgEyebrowV09">{eyebrow}</span>
-            <h2>{title}</h2>
-            <p>{description}</p>
+      {area !== 'activities' && (
+        <header className="gaHeaderV0103">
+          <div className="gaHeaderTitleV0103">
+            <span className="gaHeaderIconV0103">{emoji}</span>
+            <div>
+              <span className="cgEyebrowV09">{eyebrow}</span>
+              <h2>{title}</h2>
+              <p>{description}</p>
+            </div>
           </div>
-        </div>
-        <button type="button" className="gaBackV0103" onClick={onBack}>← My Growth</button>
-      </header>
+          <button type="button" className="gaBackV0103" onClick={onBack}>← My Growth</button>
+        </header>
+      )}
 
-      <nav className="mgSchoolLocalTabsV092 gaLocalTabsV0103" aria-label={`${title} views`}>
-        <button type="button" className={localView === 'tracker' ? 'active' : ''} onClick={() => setLocalView('tracker')}>
-          Tracker
-          {activeGrowthActivities.length + activeJourneyItems.length > 0 && (
-            <span className="gaTabCountV0103">{activeGrowthActivities.length + activeJourneyItems.length}</span>
-          )}
-        </button>
-        <button type="button" className={localView === 'calendar' ? 'active' : ''} onClick={() => setLocalView('calendar')}>
-          Calendar
-          {scheduledActivities.length > 0 && <span className="gaTabCountV0103">{scheduledActivities.length}</span>}
-        </button>
-        <button type="button" className={localView === 'explore' ? 'active' : ''} onClick={() => setLocalView('explore')}>
-          Explore More
-        </button>
-        <button type="button" className={localView === 'completed' ? 'active' : ''} onClick={() => setLocalView('completed')}>
-          Completed
-          {completedGrowthActivities.length + completedJourneyItems.length > 0 && (
-            <span className="gaTabCountV0103">{completedGrowthActivities.length + completedJourneyItems.length}</span>
-          )}
-        </button>
-      </nav>
+      {area !== 'activities' && (
+        <nav className="mgSchoolLocalTabsV092 gaLocalTabsV0103" aria-label={`${title} views`}>
+          <button type="button" className={localView === 'tracker' ? 'active' : ''} onClick={() => setLocalView('tracker')}>Home</button>
+          <button type="button" className={localView === 'calendar' ? 'active' : ''} onClick={() => setLocalView('calendar')}>Calendar</button>
+          <button type="button" className={localView === 'explore' ? 'active' : ''} onClick={() => setLocalView('explore')}>Discover</button>
+          <button type="button" className={localView === 'completed' ? 'active' : ''} onClick={() => setLocalView('completed')}>Things I’ve Tried</button>
+        </nav>
+      )}
 
       {localView === 'tracker' && (
-        <div className="iaTrackerV0104D">
-          <div className="iaTrackerColumnsV0104D">
-            <section className="iaPanelV0104D iaInterestsV0104D">
-              <div className="iaPanelHeadV0104D"><strong>💚 My Interests</strong><button type="button" onClick={() => setLocalView('explore')}>Explore more</button></div>
-              <div className="iaInterestChipsV0104D">
-                {[...activeGrowthActivities, ...activeJourneyItems].slice(0, 6).map((item) => (
-                  <span key={`interest-${item.id}`}>{item.emoji || '✨'} {item.metadata?.interest || item.label || item.title}</span>
-                ))}
-                {(activeGrowthActivities.length + activeJourneyItems.length) === 0 && <p>Try something that catches your attention. Your interests will grow here.</p>}
-              </div>
-              <button className="iaTextActionV0104D" type="button" onClick={() => setLocalView('explore')}>+ Discover a new interest</button>
-            </section>
+        <div className="iaHomeV0180">
+          <section className="iaHeroV0180">
+            <div>
+              <span>✨ YOUR WORLD OUTSIDE SCHOOL</span>
+              <h3>What sounds fun today?</h3>
+              <p>Discover things you like, try something new, and keep the good ones going.</p>
+              <button type="button" onClick={() => document.getElementById('ia-ideas-v0182')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>✨ Find something to try</button>
+            </div>
+            <div className="iaHeroArtV0180" aria-hidden="true"><span>🚀</span><span>🎨</span><span>⚽</span><span>🔬</span></div>
+          </section>
 
-            <section className="iaPanelV0104D iaDoingV0104D">
-              <div className="iaPanelHeadV0104D"><strong>🧑‍🤝‍🧑 What I’m Doing</strong><button type="button" onClick={() => setLocalView('explore')}>Add activity</button></div>
-              <div className="iaDoingListV0104D">
-                {activeGrowthActivities.slice(0, 4).map((activity) => (
-                  <article key={activity.id}>
-                    <span className="iaDoingEmojiV0104D">{activity.emoji || emoji}</span>
-                    <div><strong>{activity.title}</strong><small><em data-type={activity.type}>{formatGrowthTypeV0104D(activity.type)}</em>{activity.schedule ? ` · ${formatGrowthScheduleV0103(activity.schedule)}` : ' · Not scheduled'}</small></div>
-                    <button type="button" className="iaEditButtonV0104D" onClick={() => openActivityEditor(activity)} aria-label={`Edit ${activity.title}`}>✎</button>
+          <section className="iaSectionV0180 iaInterestsHomeV0180">
+            <div className="iaSectionHeadV0180">
+              <div><span>❤️ THINGS I’M INTO</span><h3>What catches your attention?</h3><p>These help SynapStride find ideas, resources, and real-world activities for you.</p></div>
+              <button type="button" onClick={() => setLocalView('explore')}>+ Add an interest</button>
+            </div>
+            <div className="iaInterestTilesV0180">
+              {[...activeGrowthActivities, ...activeJourneyItems].slice(0,6).map((item) => (
+                <button type="button" className={selectedInterestV0182 === (item.metadata?.interest || item.label || item.title) ? 'selected' : ''} key={`interest-home-${item.id}`} onClick={() => chooseInterestV0182(item.metadata?.interest || item.label || item.title)}>
+                  <em>{item.emoji || '✨'}</em><strong>{item.metadata?.interest || item.label || item.title}</strong>
+                </button>
+              ))}
+              {(activeGrowthActivities.length + activeJourneyItems.length) === 0 && <>
+                <button type="button" className={selectedInterestV0182 === 'Space' ? 'selected' : ''} onClick={() => chooseInterestV0182('Space')}><em>🚀</em><strong>Space</strong></button>
+                <button type="button" className={selectedInterestV0182 === 'Coding' ? 'selected' : ''} onClick={() => chooseInterestV0182('Coding')}><em>💻</em><strong>Coding</strong></button>
+                <button type="button" className={selectedInterestV0182 === 'Animals' ? 'selected' : ''} onClick={() => chooseInterestV0182('Animals')}><em>🐾</em><strong>Animals</strong></button>
+                <button type="button" className="add" onClick={() => setLocalView('explore')}><em>＋</em><strong>Choose mine</strong></button>
+              </>}
+            </div>
+          </section>
+
+          <section className="iaSectionV0180 iaIdeasInPageV0182" id="ia-ideas-v0182">
+            <div className="iaSectionHeadV0180">
+              <div><span>💡 IDEAS FOR YOU</span><h3>{selectedInterestV0182 ? `${selectedInterestV0182} ideas to explore` : 'A few things you might enjoy'}</h3><p>{selectedInterestV0182 ? `Stay right here — these ideas connect with ${selectedInterestV0182.toLowerCase()}.` : 'Picked from what SynapStride is learning about you.'}</p></div>
+              <div className="iaIdeaHeadActionsV0182">
+                {selectedInterestV0182 && <button type="button" onClick={() => { setSelectedInterestV0182(null); setIdeaDetailV0182(null) }}>Show all</button>}
+                <button type="button" onClick={() => setExpandedIdeasV0182((v) => !v)}>{expandedIdeasV0182 ? 'Show fewer' : 'See more ideas →'}</button>
+              </div>
+            </div>
+            <div className="iaIdeaGridV0180">
+              {homeIdeasV0182.map((candidate,index) => (
+                <article className={ideaDetailV0182?.id === candidate.id ? 'active' : ''} key={`home-idea-${candidate.id}`}>
+                  <div className="iaIdeaVisualV0180"><span>{candidate.emoji || ['🚀','🎨','🧪'][index] || '✨'}</span><small>{candidate.providerType === 'local_event' ? '📍 Near you' : '✨ Picked for you'}</small></div>
+                  <div className="iaIdeaBodyV0180"><small>{candidate.provider || 'SynapStride recommendation'}</small><h4>{candidate.title}</h4><p>{candidate.evaluation?.reasons?.[0] || candidate.description || 'Something that connects with what you enjoy.'}</p></div>
+                  <div className="iaIdeaActionsV0180"><button type="button" onClick={() => setIdeaDetailV0182(candidate)}>Tell me more</button><button type="button" className="primary" onClick={() => addIdeaV0182(candidate)}>I’d try this</button></div>
+                </article>
+              ))}
+            </div>
+            {ideaDetailV0182 && <aside className="iaInlineDetailV0182"><div className="iaInlineDetailIconV0182">{ideaDetailV0182.emoji || '✨'}</div><div><small>EXPLORE THIS IDEA</small><h4>{ideaDetailV0182.title}</h4><p>{ideaDetailV0182.description || ideaDetailV0182.evaluation?.reasons?.[0] || 'This looks like a good match for something you might enjoy trying.'}</p><span>{ideaDetailV0182.provider || 'SynapStride recommendation'}</span></div><div className="iaInlineDetailActionsV0182"><button type="button" onClick={() => setIdeaDetailV0182(null)}>Close</button><button type="button" className="primary" onClick={() => addIdeaV0182(ideaDetailV0182)}>I’d try this</button></div></aside>}
+          </section>
+
+          <section className="iaSectionV0180 iaNearYouSectionV0181">
+            <div className="iaSectionHeadV0180">
+              <div><span>📍 NEAR YOU</span><h3>Real-world things worth checking out</h3><p>Events, classes, museums, workshops, and activities that connect with your interests.</p></div>
+              <button type="button" onClick={() => setLocalView('explore')}>See local opportunities →</button>
+            </div>
+            {growthActivities.filter((activity) => activity.type === 'local_event' && !['completed','attended','cancelled','skipped'].includes(activity.status)).length > 0 ? (
+              <div className="iaLocalGridV0181">
+                {growthActivities.filter((activity) => activity.type === 'local_event' && !['completed','attended','cancelled','skipped'].includes(activity.status)).slice(0,3).map((activity) => (
+                  <article key={`local-home-${activity.id}`}>
+                    <div className="iaLocalIconV0181">{activity.emoji || '📍'}</div>
+                    <div><small>LOCAL OPPORTUNITY</small><h4>{activity.title}</h4><p>{activity.description || 'A real-world activity you saved to explore.'}</p>{activity.schedule && <em>{formatGrowthScheduleV0103(activity.schedule)}</em>}</div>
+                    <button type="button" onClick={() => openActivityEditor(activity)}>View details</button>
                   </article>
                 ))}
-                {activeJourneyItems.slice(0, Math.max(0, 4 - activeGrowthActivities.length)).map((item) => (
-                  <article key={`journey-${item.id}`}><span className="iaDoingEmojiV0104D">{item.emoji || emoji}</span><div><strong>{item.title}</strong><small><em>Experience</em> · {item.status === 'in_progress' ? 'In progress' : 'Started'}</small></div></article>
-                ))}
-                {(activeGrowthActivities.length + activeJourneyItems.length) === 0 && <p className="iaEmptyLineV0104D">Activities you add will appear here.</p>}
               </div>
-              {(activeGrowthActivities.length + activeJourneyItems.length) > 4 && <button className="iaTextActionV0104D" type="button">View all ({activeGrowthActivities.length + activeJourneyItems.length})</button>}
+            ) : (
+              <div className="iaNearEmptyV0181">
+                <span>🗺️</span>
+                <div><strong>Let’s find something beyond the screen.</strong><p>When location discovery is connected, SynapStride can surface verified events and activities here without inventing them.</p></div>
+                <button type="button" onClick={() => setLocalView('explore')}>Explore what’s available →</button>
+              </div>
+            )}
+          </section>
+
+          <div className="iaHomeLowerV0180">
+            <section className="iaSectionV0180 iaDoingHomeV0180">
+              <div className="iaSectionHeadV0180"><div><span>🚀 WHAT I’M DOING</span><h3>Keep going</h3></div><button type="button" onClick={() => setLocalView('explore')}>+ Add activity</button></div>
+              <div className="iaDoingCardsV0180">
+                {activeGrowthActivities.slice(0,3).map((activity)=><article key={`home-doing-${activity.id}`}><span>{activity.emoji || '🌱'}</span><div><strong>{activity.title}</strong><small>{activity.schedule ? formatGrowthScheduleV0103(activity.schedule) : 'Ready when you are'}</small></div><button type="button" onClick={()=>openActivityEditor(activity)}>Open →</button></article>)}
+                {activeJourneyItems.slice(0,Math.max(0,3-activeGrowthActivities.length)).map((item)=><article key={`home-journey-${item.id}`}><span>{item.emoji || '✨'}</span><div><strong>{item.title}</strong><small>{item.status === 'in_progress' ? 'In progress' : 'Ready to continue'}</small></div></article>)}
+                {(activeGrowthActivities.length + activeJourneyItems.length)===0 && <div className="iaCompactEmptyV0180"><span>🌱</span><p><strong>Nothing started yet.</strong><small>When something looks fun, choose “I’d try this” and it’ll show up here.</small></p><button type="button" onClick={()=>setLocalView('explore')}>Find an idea</button></div>}
+              </div>
             </section>
 
-            <section className="iaPanelV0104D iaComingV0104D">
-              <div className="iaPanelHeadV0104D"><strong>🗓️ Coming Up</strong><button type="button" onClick={() => setLocalView('calendar')}>View calendar →</button></div>
-              <div className="iaComingListV0104D">
-                {scheduledActivities.slice(0, 3).map((activity) => {
-                  const raw = activity.schedule?.startAt || activity.schedule?.date
-                  const date = raw ? new Date(`${String(raw).slice(0,10)}T12:00:00`) : null
-                  return <article key={`up-${activity.id}`}><div className="iaDateTileV0104D"><b>{date ? date.toLocaleDateString(undefined,{weekday:'short'}).toUpperCase() : 'DATE'}</b><span>{date ? date.toLocaleDateString(undefined,{month:'short',day:'numeric'}).toUpperCase() : 'TBD'}</span></div><div><strong>{activity.title}</strong><small>{formatGrowthScheduleV0103(activity.schedule)}</small><em data-type={activity.type}>{formatGrowthTypeV0104D(activity.type)}</em></div></article>
-                })}
-                {scheduledActivities.length === 0 && <p className="iaEmptyLineV0104D">Nothing scheduled yet. Add a date to an activity when you’re ready.</p>}
+            <section className="iaSectionV0180 iaComingHomeV0180">
+              <div className="iaSectionHeadV0180"><div><span>📅 COMING UP</span><h3>Your next plans</h3></div><button type="button" onClick={()=>setLocalView('calendar')}>View calendar →</button></div>
+              <div className="iaComingCardsV0180">
+                {scheduledActivities.slice(0,3).map((activity)=>{const raw=activity.schedule?.startAt||activity.schedule?.date;const d=raw?new Date(`${String(raw).slice(0,10)}T12:00:00`):null;return <article key={`home-up-${activity.id}`}><span><b>{d?d.toLocaleDateString(undefined,{month:'short'}).toUpperCase():'TBD'}</b><strong>{d?d.getDate():'—'}</strong></span><div><strong>{activity.title}</strong><small>{formatGrowthScheduleV0103(activity.schedule)}</small></div></article>})}
+                {scheduledActivities.length===0 && <div className="iaCompactEmptyV0180"><span>🗓️</span><p><strong>Nothing scheduled yet.</strong><small>Add a date only when you’re ready to make a plan.</small></p></div>}
               </div>
             </section>
           </div>
-          <div className="iaExploreBridgeV0104D"><div><span>✨</span><div><strong>Explore More</strong><p>Ideas picked around what you’re interested in and what might be fun to try next.</p></div></div><button type="button" onClick={() => setLocalView('explore')}>See ideas →</button></div>
+
+          {(completedGrowthActivities.length + completedJourneyItems.length)>0 && <button type="button" className="iaTriedBridgeV0180" onClick={()=>setLocalView('completed')}><span>🏆</span><p><strong>Things I’ve Tried</strong><small>{completedGrowthActivities.length + completedJourneyItems.length} past {completedGrowthActivities.length + completedJourneyItems.length===1?'activity':'activities'} · Look back and reflect</small></p><b>View →</b></button>}
         </div>
       )}
 

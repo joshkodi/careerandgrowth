@@ -1,3 +1,5 @@
+import { describeAboutMeEvidenceState } from './aboutMeEvidenceSemantics'
+
 // src/intelligence/growthProfileUnderstanding.js
 
 // ============================================================
@@ -208,6 +210,9 @@ export function buildGrowthProfileUnderstanding({
   const evidenceCounts =
     countEvidenceSources(evidenceEvents)
 
+  const aboutMeEvidenceState =
+    describeAboutMeEvidenceState(evidenceEvents)
+
   const parentEvidenceCount =
     evidenceCountForSource(
       evidenceCounts,
@@ -245,6 +250,7 @@ export function buildGrowthProfileUnderstanding({
     stated: {
       discover: statedDiscover,
       studentIntent: safeArray(studentIntents),
+      aboutMeEvidenceState,
     },
 
     observed: {
@@ -283,6 +289,10 @@ export function buildGrowthProfileUnderstanding({
     guardrails: {
       rawEvidenceIsSourceOfTruth: true,
       discoverResponseIsChildStated: true,
+      latestChildStatementWinsForDisplay: true,
+      olderChildStatementsRemainEvidenceHistory: true,
+      childStatementDoesNotEqualObservedPattern: true,
+      inferredPatternRequiresIndependentEvidence: true,
       parentPerspectiveIsSeparateProvenance: true,
       derivedUnderstandingIsRebuildable: true,
       recommendationIsEvidence: false,

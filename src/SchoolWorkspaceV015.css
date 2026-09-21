@@ -96,3 +96,168 @@
 .synWorkspaceHelpV098.active {
   display: block !important;
 }
+
+/* =========================================================
+   SynapStride v0.16 Stage 5B — Simplified Assignment Journey
+   ========================================================= */
+.synAssignmentJourneyHeaderV0165 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px 10px;
+}
+
+.synAssignmentJourneyHeaderV0165 > div {
+  display: grid;
+  gap: 5px;
+}
+
+.synAssignmentJourneyHeaderV0165 > div > strong {
+  font-size: 1.05rem;
+  color: #17233f;
+}
+
+.synAssignmentJourneyHeaderV0165 > div > small {
+  color: #748097;
+}
+
+.synAssignmentStatusPillV0165 {
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eaf8ef;
+  color: #14834d;
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.synAssignmentCompleteActionV0165 {
+  border: 1px solid #cfe7d7 !important;
+  background: #f7fcf8 !important;
+  color: #19844e !important;
+  border-radius: 12px !important;
+  padding: 11px 15px !important;
+  font-weight: 800 !important;
+  white-space: nowrap;
+}
+
+.synAssignmentPrimaryActionsV0165 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 20px 20px;
+}
+
+.synAssignmentPrimaryActionsV0165 button {
+  min-height: 70px;
+  border-radius: 15px !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px !important;
+  text-align: left;
+}
+
+.synAssignmentPrimaryActionsV0165 button > span:first-child {
+  font-size: 1.25rem;
+}
+
+.synAssignmentPrimaryActionsV0165 button > span:last-child {
+  display: grid;
+  gap: 3px;
+}
+
+.synAssignmentPrimaryActionsV0165 button strong { font-size: .98rem; }
+.synAssignmentPrimaryActionsV0165 button small { font-size: .78rem; opacity: .78; }
+
+.synAssignmentPrimaryActionsV0165 .primary {
+  background: #139b55 !important;
+  color: #fff !important;
+  border-color: #139b55 !important;
+}
+
+.synAssignmentPrimaryActionsV0165 .help {
+  background: #fbfaff !important;
+  color: #5d39dc !important;
+  border: 1px solid #cfc3ff !important;
+}
+
+/* One clear choice per help step: three primary paths, no wall of options. */
+.synWorkspaceHelpChoicesV098:not(.preview) {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.synWorkspaceHelpChoicesV098:not(.preview) button {
+  min-height: 122px !important;
+  align-content: center;
+}
+
+.synFocusedHelpHeaderV0165 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  margin: 0 0 14px;
+  border: 1px solid #e0dafc;
+  background: #fbfaff;
+  border-radius: 14px;
+}
+
+.synFocusedHelpHeaderV0165 > button {
+  border: 0;
+  background: transparent;
+  color: #6443db;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.synFocusedHelpHeaderV0165 > div {
+  display: grid;
+  gap: 3px;
+}
+
+.synFocusedHelpHeaderV0165 > div > span {
+  color: #806bd8;
+  font-size: .7rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.synFocusedHelpHeaderV0165 > div > strong { color: #17233f; }
+.synFocusedHelpHeaderV0165 p { margin: 2px 0 0; color: #69758b; }
+
+/* Keep the best resource focused. "Not yet" advances to another approach. */
+.synWorkspaceHelpV098 .synResourceAlternativesV0923 {
+  display: none !important;
+}
+
+.synOutcomeSimpleV0165 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  max-width: 620px;
+  margin-left: auto;
+}
+
+.synOutcomeSimpleV0165 button {
+  min-height: 92px !important;
+}
+
+/* Once help is resolved, return the assignment to the focused single-column state. */
+.synWorkspaceBodyV098.assignment-only .synWorkspaceHelpV098.is-collapsed {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .synAssignmentJourneyHeaderV0165,
+  .synFocusedHelpHeaderV0165 {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .synAssignmentPrimaryActionsV0165,
+  .synWorkspaceHelpChoicesV098:not(.preview),
+  .synOutcomeSimpleV0165 {
+    grid-template-columns: 1fr !important;
+  }
+}

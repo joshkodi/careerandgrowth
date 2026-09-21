@@ -224,6 +224,16 @@ export default function useDiscovery({
 
                 persona:
                   persona.id,
+
+                provenance:
+                  'child_stated',
+
+                aboutMeObjective:
+                  question.shortLabel ||
+                  question.id,
+
+                childStatement:
+                  true,
               },
             })
           }

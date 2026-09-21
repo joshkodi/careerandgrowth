@@ -2344,25 +2344,24 @@ function App() {
               </div>
 
               <p className="eyebrow">
-                YOUR PROFILE GREW
+                ABOUT ME
               </p>
 
               <h2>
                 Thanks, {childProfile.name.trim()}.
-                We learned a little more about you.
+                I learned a little more about you.
               </h2>
 
               <p className="handoffText">
-                What you shared is now part of your
-                evolving Profile — alongside what you
-                try, learn, reflect on, and what people
-                who know you notice.
+                What you shared is one part of your
+                evolving About Me story — alongside what you
+                try, learn, and reflect on inside SynapStride.
               </p>
 
               <p className="handoffText">
                 These are clues, not permanent labels.
-                As you grow and try new things, your
-                Profile can grow and change too.
+                As you grow and try new things, what SynapStride
+                understands about you can grow and change too.
               </p>
 
               <button
@@ -2373,7 +2372,7 @@ function App() {
                   )
                 }
               >
-                See What Changed →
+                See My About Me →
               </button>
 
             </div>
@@ -3452,7 +3451,7 @@ function BppWorkspaceShell({
           </div>
 
           <button type="button" className={activeSection === 'profile' ? 'active' : ''} onClick={onProfile}>
-            <span className="synNavIconV0116 profile"><SynIcon name="profile" /></span><strong>My Profile</strong>
+            <span className="synNavIconV0116 profile"><SynIcon name="profile" /></span><strong>About Me</strong>
           </button>
 
           <div className={`synNavGroupV0116 ${parentOpen ? 'open' : ''}`}>

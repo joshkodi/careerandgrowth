@@ -1,0 +1,793 @@
+/* =========================================================
+   SynapStride v0.16 Stage 5B — Simplified Assignment Journey
+   ========================================================= */
+.synAssignmentJourneyHeaderV0165 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px 10px;
+}
+
+.synAssignmentJourneyHeaderV0165 > div {
+  display: grid;
+  gap: 5px;
+}
+
+.synAssignmentJourneyHeaderV0165 > div > strong {
+  font-size: 1.05rem;
+  color: #17233f;
+}
+
+.synAssignmentJourneyHeaderV0165 > div > small {
+  color: #748097;
+}
+
+.synAssignmentStatusPillV0165 {
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eaf8ef;
+  color: #14834d;
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.synAssignmentCompleteActionV0165 {
+  border: 1px solid #cfe7d7 !important;
+  background: #f7fcf8 !important;
+  color: #19844e !important;
+  border-radius: 12px !important;
+  padding: 11px 15px !important;
+  font-weight: 800 !important;
+  white-space: nowrap;
+}
+
+.synAssignmentPrimaryActionsV0165 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 20px 20px;
+}
+
+.synAssignmentPrimaryActionsV0165 button {
+  min-height: 70px;
+  border-radius: 15px !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px !important;
+  text-align: left;
+}
+
+.synAssignmentPrimaryActionsV0165 button > span:first-child {
+  font-size: 1.25rem;
+}
+
+.synAssignmentPrimaryActionsV0165 button > span:last-child {
+  display: grid;
+  gap: 3px;
+}
+
+.synAssignmentPrimaryActionsV0165 button strong { font-size: .98rem; }
+.synAssignmentPrimaryActionsV0165 button small { font-size: .78rem; opacity: .78; }
+
+.synAssignmentPrimaryActionsV0165 .primary {
+  background: #139b55 !important;
+  color: #fff !important;
+  border-color: #139b55 !important;
+}
+
+.synAssignmentPrimaryActionsV0165 .help {
+  background: #fbfaff !important;
+  color: #5d39dc !important;
+  border: 1px solid #cfc3ff !important;
+}
+
+/* One clear choice per help step: three primary paths, no wall of options. */
+.synWorkspaceHelpChoicesV098:not(.preview) {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.synWorkspaceHelpChoicesV098:not(.preview) button {
+  min-height: 122px !important;
+  align-content: center;
+}
+
+.synFocusedHelpHeaderV0165 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  margin: 0 0 14px;
+  border: 1px solid #e0dafc;
+  background: #fbfaff;
+  border-radius: 14px;
+}
+
+.synFocusedHelpHeaderV0165 > button {
+  border: 0;
+  background: transparent;
+  color: #6443db;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.synFocusedHelpHeaderV0165 > div {
+  display: grid;
+  gap: 3px;
+}
+
+.synFocusedHelpHeaderV0165 > div > span {
+  color: #806bd8;
+  font-size: .7rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.synFocusedHelpHeaderV0165 > div > strong { color: #17233f; }
+.synFocusedHelpHeaderV0165 p { margin: 2px 0 0; color: #69758b; }
+
+/* Keep the best resource focused. "Not yet" advances to another approach. */
+.synWorkspaceHelpV098 .synResourceAlternativesV0923 {
+  display: none !important;
+}
+
+.synOutcomeSimpleV0165 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  max-width: 620px;
+  margin-left: auto;
+}
+
+.synOutcomeSimpleV0165 button {
+  min-height: 92px !important;
+}
+
+/* Once help is resolved, return the assignment to the focused single-column state. */
+.synWorkspaceBodyV098.assignment-only .synWorkspaceHelpV098.is-collapsed {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .synAssignmentJourneyHeaderV0165,
+  .synFocusedHelpHeaderV0165 {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .synAssignmentPrimaryActionsV0165,
+  .synWorkspaceHelpChoicesV098:not(.preview),
+  .synOutcomeSimpleV0165 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* Stage 5B integration correction: the new journey replaces legacy workspace density. */
+.synAssignmentWorkspaceV098 .ssSchoolWorkspaceV015.help-open {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolWorkspaceV015.help-open .synWorkspaceContextV098 {
+  display: none !important;
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolWorkspaceV015.help-open .synWorkspaceHelpV098 {
+  width: 100% !important;
+  max-width: 900px !important;
+  margin: 0 auto !important;
+  padding: 22px 24px 26px !important;
+}
+
+/* Once Help is active, don't keep the competing Continue/Help CTA row above it. */
+.synWorkspaceAssignmentStateV0910.help-active-v0165 .synAssignmentPrimaryActionsV0165 {
+  display: none !important;
+}
+
+.synWorkspaceAssignmentStateV0910.help-active-v0165 .synAssignmentJourneyHeaderV0165 {
+  padding-bottom: 16px;
+}
+
+/* Turn the legacy task block into one clean assignment plan. */
+.synAssignmentPlanV0165 {
+  scroll-margin-top: 24px;
+}
+
+.synAssignmentPlanV0165 > ul {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 0 !important;
+  padding: 0 !important;
+  list-style: none;
+  counter-reset: assignment-step;
+}
+
+.synAssignmentPlanV0165 > ul > li {
+  counter-increment: assignment-step;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 !important;
+  padding: 9px 11px;
+  border-radius: 11px;
+  background: #f8f9fd;
+  color: #33405a !important;
+  font-size: .86rem !important;
+}
+
+.synAssignmentPlanV0165 > ul > li::before {
+  content: counter(assignment-step);
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #eeeafd;
+  color: #6443db;
+  font-size: .72rem;
+  font-weight: 900;
+}
+
+/* The old text preview repeated the same generated plan immediately below it. */
+.synAssignmentPlanV0165 .synAssignmentTextPreviewV0919 {
+  display: none !important;
+}
+
+/* Help is a focused three-choice step. */
+.synAssignmentWorkspaceV098 .ssSchoolCompanionV015 .synWorkspaceHelpHeroV098 {
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolCompanionV015 .synWorkspaceHelpChoicesV098:not(.preview) {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolCompanionV015 .synWorkspaceHelpChoicesV098:not(.preview) button {
+  min-height: 150px !important;
+  padding: 18px 14px !important;
+  border-radius: 16px !important;
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolCompanionV015 .synWorkspaceHelpNoteV098 {
+  max-width: 720px;
+  margin: 16px auto 0;
+}
+
+.synAssignmentWorkspaceV098 .ssSchoolCompanionV015 .synWorkspaceGetHelpV098 {
+  justify-content: center;
+  padding-top: 14px;
+}
+
+@media (max-width: 820px) {
+  .synAssignmentWorkspaceV098 .ssSchoolCompanionV015 .synWorkspaceHelpChoicesV098:not(.preview) {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Stage 5C — functional assignment journey */
+.synJourneyStepListV0165 { display:grid; gap:8px; margin-top:12px; }
+.synJourneyStepListV0165 button { width:100%; display:flex; align-items:center; gap:11px; padding:11px 12px !important; border:1px solid #e2e6ef !important; border-radius:12px !important; background:#fff !important; text-align:left; color:#25314b !important; }
+.synJourneyStepListV0165 button > span { width:28px; height:28px; flex:0 0 28px; display:grid; place-items:center; border-radius:50%; background:#f0edff; color:#6545dc; font-weight:900; }
+.synJourneyStepListV0165 button > div { display:grid; gap:2px; }
+.synJourneyStepListV0165 button small { color:#7b8497; font-size:.72rem; }
+.synJourneyStepListV0165 button.current, .synJourneyStepListV0165 button.selected { border-color:#8b75ed !important; background:#faf9ff !important; }
+.synJourneyStepListV0165 button.done > span { background:#e6f7ed; color:#11824a; }
+.synCurrentStepWorkspaceV0165 { margin-top:14px; padding:16px; border-radius:14px; border:1px solid #dcd5fb; background:linear-gradient(180deg,#fcfbff,#f8f7ff); }
+.synCurrentStepKickerV0165 { color:#6a4ade; font-size:.68rem; font-weight:900; letter-spacing:.08em; }
+.synCurrentStepWorkspaceV0165 h3 { margin:6px 0 6px; color:#17233f; }
+.synCurrentStepWorkspaceV0165 p { margin:0; color:#657087; line-height:1.5; }
+.synCurrentStepActionsV0165 { display:grid; gap:8px; margin-top:14px; }
+.synCurrentStepActionsV0165 button { border-radius:11px !important; padding:10px 12px !important; font-weight:800 !important; }
+.synCurrentStepActionsV0165 button.primary { background:#149b55 !important; color:#fff !important; border-color:#149b55 !important; }
+.synTeacherInstructionsV0165 { margin-top:12px; border:1px solid #e2e6ef; border-radius:11px; padding:10px 12px; background:#fbfcfe; }
+.synTeacherInstructionsV0165 summary { cursor:pointer; color:#4f5ed7; font-weight:800; }
+.synTeacherInstructionsV0165 p { margin:9px 0 2px; color:#5f6a80; line-height:1.5; }
+
+
+/* =========================================================
+   SynapStride v0.16 Stage 5D — Coherent Assignment Navigation
+   Persistent journey breadcrumb + contextual help
+   ========================================================= */
+
+.synAssignmentBreadcrumbV0166 {
+  padding: 8px 20px 14px;
+  border-top: 1px solid #eef0f6;
+  border-bottom: 1px solid #eef0f6;
+  background: #fff;
+}
+
+.synAssignmentBreadcrumbTitleV0166 {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  color: #6c7589;
+}
+
+.synAssignmentBreadcrumbTitleV0166 > span {
+  color: #6545dc;
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .09em;
+}
+
+.synAssignmentBreadcrumbTitleV0166 > small {
+  font-weight: 800;
+}
+
+.synAssignmentBreadcrumbTrackV0166 {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  position: relative;
+  gap: 4px;
+}
+
+.synAssignmentBreadcrumbTrackV0166::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: #dfe3ee;
+  z-index: 0;
+}
+
+.synAssignmentBreadcrumbTrackV0166 button {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  border: 0 !important;
+  background: transparent !important;
+  color: #667188 !important;
+  padding: 0 4px !important;
+  cursor: pointer;
+}
+
+.synAssignmentBreadcrumbDotV0166 {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid #cfd5e3;
+  background: #fff;
+  color: #68738a;
+  font-size: .74rem;
+  font-weight: 900;
+}
+
+.synAssignmentBreadcrumbLabelV0166 {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .7rem;
+  font-weight: 800;
+}
+
+.synAssignmentBreadcrumbTrackV0166 button.selected .synAssignmentBreadcrumbDotV0166,
+.synAssignmentBreadcrumbTrackV0166 button.current .synAssignmentBreadcrumbDotV0166 {
+  border-color: #5f43d8;
+  background: #5f43d8;
+  color: #fff;
+}
+
+.synAssignmentBreadcrumbTrackV0166 button.selected .synAssignmentBreadcrumbLabelV0166 {
+  color: #4d34bd;
+}
+
+.synAssignmentBreadcrumbTrackV0166 button.done .synAssignmentBreadcrumbDotV0166 {
+  border-color: #159556;
+  background: #159556;
+  color: #fff;
+}
+
+.synAssignmentBreadcrumbTrackV0166 button.done .synAssignmentBreadcrumbLabelV0166 {
+  color: #147848;
+}
+
+.synCurrentStepNavV0166 {
+  grid-template-columns: auto auto minmax(180px, 1fr);
+  align-items: stretch;
+}
+
+.synCurrentStepNavV0166 button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.synHelpStepContextV0166 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin: 0 auto 12px;
+  padding: 9px 13px;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid #ded8fa;
+  border-radius: 999px;
+  background: #faf9ff;
+}
+
+.synHelpStepContextV0166 > span {
+  color: #7965d0;
+  font-size: .65rem;
+  font-weight: 900;
+  letter-spacing: .07em;
+}
+
+.synHelpStepContextV0166 > strong {
+  color: #26324d;
+  font-size: .82rem;
+}
+
+/* Help is a mode inside the assignment journey, so keep the breadcrumb visible. */
+.synWorkspaceAssignmentStateV0910.help-active-v0165 .synAssignmentBreadcrumbV0166 {
+  display: block !important;
+}
+
+@media (max-width: 760px) {
+  .synAssignmentBreadcrumbTrackV0166 {
+    overflow-x: auto;
+    grid-template-columns: repeat(5, minmax(92px, 1fr));
+    padding-bottom: 5px;
+  }
+
+  .synAssignmentBreadcrumbLabelV0166 {
+    max-width: 92px;
+  }
+
+  .synCurrentStepNavV0166 {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Stage 5E — Assignment Journey UX Cleanup */
+.synAssignmentPrimaryActionsV0165.journey-active-v0167 {
+  display: none;
+}
+
+.synAssignmentPlanV0165.journey-active-v0167 {
+  display: none;
+}
+
+.synAssignmentCurrentStepV0165 {
+  margin-top: 14px;
+}
+
+.synCurrentStepNavV0166 button.primary {
+  min-width: 210px;
+}
+
+
+/* =========================================================
+   Stage 5F — Breadcrumb Interaction / Workspace Visibility Fix
+   Stage 5E hid the parent section that also contains the selected-step workspace.
+   Keep the workspace mounted and hide only the duplicate list itself.
+   ========================================================= */
+
+.synAssignmentPlanV0165.journey-active-v0167 {
+  display: block !important;
+}
+
+.synAssignmentPlanV0165.journey-active-v0167 > .synWorkspaceMiniHeadingV098,
+.synAssignmentPlanV0165.journey-active-v0167 .synJourneyStepListV0165 {
+  display: none !important;
+}
+
+.synAssignmentPlanV0165.journey-active-v0167 .synCurrentStepWorkspaceV0165 {
+  display: block;
+  margin-top: 0;
+}
+
+/* With the duplicate list gone, the remaining section is the focused step workspace. */
+.synAssignmentPlanV0165.journey-active-v0167 {
+  padding-top: 0;
+}
+
+
+/* =========================================================
+   SynapStride v0.16 Stage 5G — Intelligent Step Workspaces
+   Every assignment step is a useful workspace, not an empty shell.
+   ========================================================= */
+
+.synStepActivityWorkspaceV0168 {
+  display: grid;
+  gap: 14px;
+  margin: 14px 0 18px;
+}
+
+.synStepActivityIntroV0168 {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #f7f5ff;
+  border: 1px solid #e5defd;
+}
+
+.synStepActivityIntroV0168 strong {
+  color: #2c3150;
+  font-size: .98rem;
+}
+
+.synStepActivityIntroV0168 span {
+  color: #69738a;
+  font-size: .82rem;
+  line-height: 1.45;
+}
+
+.synRequirementListV0168 {
+  display: grid;
+  gap: 8px;
+}
+
+.synRequirementCardV0168 {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 11px 13px;
+  border: 1px solid #e7e9f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.synRequirementCardV0168 > span {
+  color: #159556;
+  font-weight: 900;
+}
+
+.synRequirementCardV0168 p {
+  margin: 0;
+  color: #3f4960;
+  font-size: .84rem;
+  line-height: 1.45;
+}
+
+.synInlineCompanionV0168 {
+  justify-self: start;
+  border: 1px solid #ded7fa !important;
+  border-radius: 999px !important;
+  background: #faf9ff !important;
+  color: #5d46c7 !important;
+  padding: 9px 13px !important;
+  font-weight: 800 !important;
+}
+
+.synFocusChoiceV0168 {
+  display: grid;
+  gap: 7px;
+}
+
+.synFocusChoiceV0168 > span {
+  color: #4a5267;
+  font-size: .76rem;
+  font-weight: 900;
+}
+
+.synFocusChoiceV0168 input,
+.synResearchActivityV0168 textarea,
+.synCreationNotesV0168 {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dfe3ed;
+  border-radius: 11px;
+  background: #fff;
+  color: #30394f;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: .84rem;
+}
+
+.synQuickChoiceRowV0168 {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.synQuickChoiceRowV0168 button {
+  border: 1px solid #dcd5fa !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: #5e46c8 !important;
+  padding: 7px 11px !important;
+  font-weight: 800 !important;
+}
+
+.synQuickChoiceRowV0168 span {
+  color: #778096;
+  font-size: .76rem;
+}
+
+.synResearchGridV0168 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.synResearchActivityV0168 {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 13px;
+  border: 1px solid #e5e7ef;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.synResearchActivityV0168 strong {
+  color: #343d55;
+  font-size: .86rem;
+}
+
+.synResearchActivityV0168 > span {
+  color: #778096;
+  font-size: .76rem;
+  line-height: 1.4;
+}
+
+.synResearchActivityV0168 button {
+  justify-self: start;
+  border: 0 !important;
+  background: transparent !important;
+  color: #6249cc !important;
+  padding: 3px 0 !important;
+  font-weight: 800 !important;
+}
+
+.synCreationPlanV0168 {
+  display: grid;
+  gap: 8px;
+}
+
+.synCreationPlanV0168 > div {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid #e6e8ef;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.synCreationPlanV0168 > div > span {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f0edff;
+  color: #5f46c8;
+  font-weight: 900;
+}
+
+.synCreationPlanV0168 p {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+
+.synCreationPlanV0168 p strong {
+  color: #3a435a;
+  font-size: .84rem;
+}
+
+.synCreationPlanV0168 p small {
+  color: #778096;
+  line-height: 1.4;
+}
+
+.synFinalChecklistV0168 {
+  display: grid;
+  gap: 8px;
+}
+
+.synFinalChecklistV0168 label {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid #e6e8ef;
+  border-radius: 11px;
+  background: #fff;
+  color: #465067;
+  font-size: .82rem;
+  line-height: 1.4;
+}
+
+.synFinalChecklistV0168 input {
+  margin-top: 2px;
+}
+
+.synCurrentStepNavV0166 {
+  grid-template-columns: auto minmax(210px, 1fr) !important;
+}
+
+@media (max-width: 760px) {
+  .synResearchGridV0168 {
+    grid-template-columns: 1fr;
+  }
+
+  .synCurrentStepNavV0166 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Stage 5I authoritative visual project journey */
+.synVStage{display:grid;gap:16px;color:#29344d}.synVHeading{display:grid;gap:4px}.synVHeading>span,.synVMission>div:first-child>span,.synVEditor>span{font-size:.68rem;font-weight:900;letter-spacing:.08em;color:#7151df}.synVHeading h4,.synVMission h4{margin:0;color:#172341;font-size:1.2rem}.synVHeading p,.synVMission p{margin:0;color:#758097;font-size:.8rem}.synVMission{display:grid;grid-template-columns:1fr auto;align-items:center;gap:15px;padding:18px;border:1px solid #e2e2f4;border-radius:18px;background:linear-gradient(135deg,#fbfaff,#f1f9ff)}.synVMission>div:first-child{display:grid;gap:6px}.synVArt{padding:20px;border-radius:20px;background:#edf9f3;font-size:2rem}.synVRequirements{display:grid;gap:9px;padding:15px;border:1px solid #f0e2b5;border-radius:15px;background:#fff9e8}.synVRequirements>div{display:flex;gap:9px;align-items:center}.synVRequirements b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#159a5b;color:white;font-size:.65rem}.synVBuddy{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:11px 13px;border:1px solid #ded9fa;border-radius:15px;background:#f7f6ff}.synVBuddy>i{display:grid;place-items:center;width:43px;height:43px;border-radius:50%;background:#e6ebff;font-size:1.35rem;font-style:normal}.synVBuddy p,.synVSuccess p{display:grid;margin:0}.synVBuddy small,.synVSuccess small{color:#7a8498}.synVBuddy button,.synVCelebrate button{border:1px solid #7355df!important;background:white!important;color:#6547d0!important;border-radius:9px!important;padding:8px 11px!important;font-weight:800!important}
+.synVChoices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}.synVChoices>button{position:relative;min-height:140px;display:grid!important;justify-items:center;align-content:center;gap:5px;border:1px solid #e0e4ed!important;border-radius:15px!important;background:white!important;color:#303a53!important}.synVChoices>button.selected{border:2px solid #20a55f!important;background:#f3fff7!important}.synVChoices em{font-size:2.3rem;font-style:normal}.synVChoices small{color:#7b8499}.synVChoices b{position:absolute;right:7px;top:7px;padding:3px 6px;border-radius:999px;background:#daf7e6;color:#12894e;font-size:.58rem}.synVCustom{box-sizing:border-box;width:100%;padding:11px;border:1px solid #dfe3ed;border-radius:10px}.synVSuccess{display:flex;gap:9px;align-items:center;padding:11px 13px;border:1px solid #ccebd8;border-radius:13px;background:#effcf4}
+.synVExplore{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.synVExplore article{display:grid;gap:8px;padding:14px;border:1px solid #e2e5ef;border-radius:16px;background:linear-gradient(145deg,#fff,#faf9ff)}.synVExplore header{display:flex;justify-content:space-between}.synVExplore header b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#7656e8;color:white}.synVExplore header em{font-size:1.7rem;font-style:normal}.synVExplore article p{margin:0;color:#778197;font-size:.74rem}.synVExplore textarea{box-sizing:border-box;width:100%;padding:8px;border:1px solid #e0e3ec;border-radius:9px;font:inherit}.synVExplore article>button{justify-self:end;border:0!important;border-radius:8px!important;background:#7656e8!important;color:white!important;padding:7px 12px!important;font-weight:800!important}.synVProgress{display:grid;gap:7px;padding:11px 13px;border:1px solid #e7eaf0;border-radius:12px;background:#f8f9fc}.synVProgress p{display:flex;justify-content:space-between;margin:0}.synVProgress>div,.synVBar{height:7px;overflow:hidden;border-radius:999px;background:#e2e6ee}.synVProgress i,.synVBar i{display:block;height:100%;background:#24aa65}
+.synVBuilder{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(0,1.4fr);gap:13px}.synVSections{display:grid;gap:8px}.synVSections>div{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;padding:11px;border:1px solid #e4e7ef;border-radius:11px;background:white}.synVSections>div.active{border-color:#7d64e7;background:#f8f6ff;box-shadow:inset 3px 0 0 #7656e8}.synVSections em{font-style:normal}.synVEditor{display:grid;gap:9px;padding:15px;border:1px solid #e2e5ee;border-radius:15px;background:white}.synVEditor h5{margin:0}.synVEditor textarea{box-sizing:border-box;width:100%;padding:11px;border:1px solid #dde2eb;border-radius:10px;font:inherit}.synVEditor>div{display:flex;gap:7px;flex-wrap:wrap}.synVEditor button{border:1px solid #e1dcfa!important;border-radius:999px!important;background:#faf9ff!important;color:#654bd2!important;padding:7px 9px!important;font-weight:800!important}.synVEditor aside{padding:9px;border-radius:10px;background:#f2fbf6;color:#397457}
+.synVFinish{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(190px,.55fr);gap:13px}.synVCheck{display:grid;gap:10px;padding:15px;border:1px solid #e2e5ed;border-radius:15px;background:white}.synVCheck header{display:flex;justify-content:space-between}.synVCheck label{display:flex;gap:9px;align-items:center;padding:9px;border:1px solid #e6e8ef;border-radius:10px}.synVCheck label.done{background:#f4fcf7}.synVCheck label small{margin-left:auto;color:#b47b14;font-weight:800}.synVCelebrate{display:grid;justify-items:center;align-content:start;gap:8px;padding:18px 13px;border:1px solid #e5defc;border-radius:16px;background:linear-gradient(160deg,#f7f3ff,#fffdf6);text-align:center}.synVCelebrate>div{display:grid;place-items:center;width:72px;height:72px;border-radius:50%;background:#e8e9ff;font-size:2rem}.synVCelebrate p{margin:0;color:#788196}
+@media(max-width:820px){.synVChoices{grid-template-columns:repeat(2,minmax(0,1fr))}.synVBuilder,.synVFinish{grid-template-columns:1fr}}@media(max-width:620px){.synVMission{grid-template-columns:1fr}.synVArt{display:none}.synVChoices,.synVExplore{grid-template-columns:1fr}.synVBuddy{grid-template-columns:auto 1fr}.synVBuddy button{grid-column:1/-1}}
+
+/* Stage 5J — focused Learn workspace + functional Create builder */
+.synLearnTopicsV0170{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.synLearnTopicsV0170>button{display:grid!important;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;text-align:left;padding:11px!important;border:1px solid #e2e5ee!important;border-radius:13px!important;background:white!important;color:#34405a!important}.synLearnTopicsV0170>button.active{border:2px solid #7656e8!important;background:#f8f6ff!important}.synLearnTopicsV0170>button.done{background:#f5fcf8!important}.synLearnTopicsV0170>button>span{font-size:1.35rem}.synLearnTopicsV0170 p{display:grid;margin:0}.synLearnTopicsV0170 small{color:#7d8598;font-size:.64rem;line-height:1.25}.synLearnTopicsV0170 b{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:#ede9ff;color:#674bd0;font-size:.65rem}.synLearnTopicsV0170 button.done b{background:#dff6e8;color:#168c51}
+.synLearnWorkspaceV0170{display:grid;gap:13px;padding:17px;border:1px solid #dedff0;border-radius:17px;background:linear-gradient(145deg,#fff,#fbfaff)}.synLearnLessonV0170{display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:start}.synLearnLessonV0170>span{display:grid;place-items:center;width:56px;height:56px;border-radius:15px;background:#f1edff;font-size:2rem}.synLearnLessonV0170>div{display:grid;gap:4px}.synLearnLessonV0170 small{color:#7656e8;font-weight:900;letter-spacing:.08em}.synLearnLessonV0170 h5{margin:0;color:#27324b;font-size:1rem}.synLearnLessonV0170 p{margin:0;color:#667189;line-height:1.5;font-size:.8rem}.synLearnActionsV0170{display:flex;gap:8px;flex-wrap:wrap}.synLearnActionsV0170 button{border:1px solid #ded9fa!important;border-radius:999px!important;background:white!important;color:#654bd2!important;padding:7px 10px!important;font-weight:800!important}.synTakeawayV0170{display:grid;gap:5px;padding-top:4px;border-top:1px solid #ececf3}.synTakeawayV0170 strong{font-size:.8rem}.synTakeawayV0170 small{color:#7a8498}.synTakeawayV0170 textarea{box-sizing:border-box;width:100%;border:1px solid #dfe3ec;border-radius:10px;padding:10px;font:inherit}
+.synVSections>button{display:grid!important;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;width:100%;text-align:left;padding:11px!important;border:1px solid #e4e7ef!important;border-radius:11px!important;background:white!important;color:#34405a!important}.synVSections>button.active{border-color:#7d64e7!important;background:#f8f6ff!important;box-shadow:inset 3px 0 0 #7656e8}.synVSections>button.done:not(.active){background:#f5fcf8!important}.synVSections>button em{font-style:normal}.synVSections>button p{display:grid;margin:0}.synVSections>button small{color:#7d8599;font-size:.65rem}.synVSections>button.done b{color:#168c51}.synCreatePromptV0170{margin:0;color:#6f7990;font-size:.78rem}.synCarryForwardV0170{display:grid!important;gap:6px!important;padding:10px!important;border-radius:11px!important;background:#f2fbf6!important;color:#3f7157!important}.synCarryForwardV0170 p{margin:0;font-size:.75rem;line-height:1.4}.synCarryForwardV0170 button{justify-self:start!important;border-color:#cce8d7!important;background:white!important;color:#26704a!important}.synSectionProgressV0170{padding:7px 9px;border-radius:9px;background:#f7f8fb;color:#6f7890;font-size:.7rem;font-weight:800}
+@media(max-width:900px){.synLearnTopicsV0170{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.synLearnTopicsV0170{grid-template-columns:1fr}}
+
+/* Stage 5M — merged Get Started */
+.synGetStartedChoiceV0171{display:grid;gap:4px;margin-top:4px;padding-top:14px;border-top:1px solid #ececf3}
+.synGetStartedChoiceV0171>span{font-size:.66rem;font-weight:900;letter-spacing:.08em;color:#7656e8}
+.synGetStartedChoiceV0171 h5{margin:0;color:#28334c;font-size:1rem}
+.synGetStartedChoiceV0171 p{margin:0;color:#758096;font-size:.78rem}
+
+/* Stage 5N — Get Started course overview */
+.synGetStartedRoadmapV0172{display:grid;gap:12px;margin-top:2px;padding:16px;border:1px solid #e3e1f2;border-radius:17px;background:linear-gradient(145deg,#fcfbff,#f8fbff)}
+.synGetStartedRoadmapHeadingV0172{display:grid;gap:3px}.synGetStartedRoadmapHeadingV0172>span{font-size:.66rem;font-weight:900;letter-spacing:.08em;color:#6f55d7}.synGetStartedRoadmapHeadingV0172 h5{margin:0;color:#28334c;font-size:1.05rem}.synGetStartedRoadmapHeadingV0172 p{margin:0;color:#778198;font-size:.78rem}
+.synGetStartedRoadmapCardsV0172{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.synGetStartedRoadmapCardsV0172>div{display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:start;padding:12px;border:1px solid #e7e8ef;border-radius:13px;background:#fff}.synGetStartedRoadmapCardsV0172 em{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#f3f0ff;font-style:normal;font-size:1.15rem}.synGetStartedRoadmapCardsV0172 p{display:grid;gap:3px;margin:0}.synGetStartedRoadmapCardsV0172 strong{font-size:.78rem;color:#34405a}.synGetStartedRoadmapCardsV0172 small{font-size:.68rem;line-height:1.35;color:#788297}
+.synGetStartedCompanionV0172,.synGetStartedPromptV0172{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:11px 12px;border-radius:13px;background:#f4f1ff}.synGetStartedCompanionV0172>span,.synGetStartedPromptV0172>span{font-size:1.45rem}.synGetStartedCompanionV0172 p,.synGetStartedPromptV0172 p{display:grid;margin:0}.synGetStartedCompanionV0172 small,.synGetStartedPromptV0172 small{color:#727d94;font-size:.68rem;line-height:1.35}.synGetStartedCompanionV0172 button,.synGetStartedPromptV0172 button{border:1px solid #ddd5fb!important;border-radius:999px!important;background:#fff!important;color:#654bd2!important;padding:7px 10px!important;font-weight:800!important}
+.synGetStartedPromptV0172{background:#fff8e8;border:1px solid #f3e2b7}.synGetStartedPromptV0172 button{border-color:#ead8a8!important;color:#765d22!important}
+@media(max-width:760px){.synGetStartedRoadmapCardsV0172{grid-template-columns:1fr}.synGetStartedCompanionV0172,.synGetStartedPromptV0172{grid-template-columns:auto 1fr}.synGetStartedCompanionV0172 button,.synGetStartedPromptV0172 button{grid-column:2;justify-self:start}}
+
+/* Stage 5O — contextual Companion stays inside Learn/Create */
+.synInlineCoachV0173{display:grid;gap:10px;padding:12px;border:1px solid #ded7fb;border-radius:13px;background:linear-gradient(145deg,#f8f6ff,#fff);animation:synInlineCoachIn .16s ease-out}
+@keyframes synInlineCoachIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.synInlineCoachHeadV0173{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}.synInlineCoachHeadV0173>span{font-size:1.35rem}.synInlineCoachHeadV0173 p{display:grid;margin:0}.synInlineCoachHeadV0173 strong{font-size:.76rem;color:#5540ad}.synInlineCoachHeadV0173 small{font-size:.64rem;color:#8990a1}.synInlineCoachHeadV0173>button{border:0!important;background:transparent!important;color:#858da0!important;font-size:1rem!important;padding:3px 6px!important}
+.synInlineCoachResponseV0173{margin:0!important;padding:10px 11px;border-radius:10px;background:#fff;color:#4e5870!important;font-size:.78rem!important;line-height:1.5!important}
+.synInlineCoachFollowV0173{display:flex!important;gap:7px!important;flex-wrap:wrap}.synInlineCoachFollowV0173 button{border:1px solid #ddd7f6!important;border-radius:999px!important;background:white!important;color:#654bd2!important;padding:6px 9px!important;font-size:.68rem!important;font-weight:800!important}
+.synInlineAskV0173{display:grid;gap:8px}.synInlineAskV0173>p{margin:0;color:#59637a;font-size:.76rem}.synInlineAskV0173>div{display:grid;grid-template-columns:1fr auto;gap:7px}.synInlineAskV0173 input{min-width:0;border:1px solid #dfe2eb;border-radius:10px;padding:9px;font:inherit}.synInlineAskV0173 button{border:0!important;border-radius:10px!important;background:#6e52db!important;color:#fff!important;padding:8px 12px!important;font-weight:800!important}.synInlineAskV0173 button:disabled{opacity:.45}
+.synInlineCoachCreateV0173{margin-top:2px}
+
+/* Stage 6A — Interests & Activities visual home */
+.iaHomeV0180{display:grid;gap:18px;padding:18px 2px 26px}.iaHeroV0180{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;padding:22px 24px;border:1px solid #dce9f5;border-radius:20px;background:linear-gradient(115deg,#fffdf8,#f4f9ff 58%,#eef8ff);overflow:hidden}.iaHeroV0180>div:first-child{display:grid;gap:7px}.iaHeroV0180>div>span{font-size:.68rem;font-weight:900;letter-spacing:.1em;color:#18804c}.iaHeroV0180 h3{margin:0;color:#17243f;font-size:1.45rem}.iaHeroV0180 p{margin:0;color:#69768d;font-size:.84rem}.iaHeroV0180 button{justify-self:start;margin-top:5px;border:0;border-radius:12px;background:#654fe1;color:#fff;padding:10px 14px;font-weight:850}.iaHeroArtV0180{display:flex;gap:7px}.iaHeroArtV0180 span{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:#fff;box-shadow:0 6px 18px #526b8a18;font-size:1.5rem}.iaHeroArtV0180 span:nth-child(2),.iaHeroArtV0180 span:nth-child(4){transform:translateY(12px)}
+.iaSectionV0180{display:grid;gap:14px;padding:18px;border:1px solid #e4e7ef;border-radius:18px;background:#fff}.iaSectionHeadV0180{display:flex;align-items:start;justify-content:space-between;gap:16px}.iaSectionHeadV0180>div{display:grid;gap:2px}.iaSectionHeadV0180 span{font-size:.66rem;font-weight:900;letter-spacing:.08em;color:#6b55d7}.iaSectionHeadV0180 h3{margin:0;color:#1d2a45;font-size:1rem}.iaSectionHeadV0180 p{margin:0;color:#7c879b;font-size:.73rem}.iaSectionHeadV0180>button{border:0;background:transparent;color:#178447;font-weight:850;font-size:.75rem;white-space:nowrap}
+.iaInterestTilesV0180{display:flex;gap:9px;flex-wrap:wrap}.iaInterestTilesV0180 button{display:grid;place-items:center;gap:5px;min-width:88px;padding:11px 13px;border:1px solid #dde4ef;border-radius:14px;background:#fbfcff;color:#34405a}.iaInterestTilesV0180 button:hover{border-color:#a99af1;background:#f8f6ff}.iaInterestTilesV0180 em{font-style:normal;font-size:1.45rem}.iaInterestTilesV0180 strong{font-size:.72rem}.iaInterestTilesV0180 button.add{border-style:dashed;color:#725cda}
+.iaIdeaGridV0180{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.iaIdeaGridV0180 article{display:grid;grid-template-rows:auto 1fr auto;min-width:0;border:1px solid #e2e6ef;border-radius:15px;overflow:hidden;background:#fff;box-shadow:0 5px 14px #2634510a}.iaIdeaVisualV0180{min-height:94px;display:grid;place-items:center;position:relative;background:linear-gradient(145deg,#eef5ff,#f8f2ff)}.iaIdeaVisualV0180>span{font-size:2.5rem}.iaIdeaVisualV0180>small{position:absolute;left:9px;bottom:8px;padding:4px 7px;border-radius:999px;background:#fff;color:#6551c7;font-size:.6rem;font-weight:850}.iaIdeaBodyV0180{display:grid;align-content:start;gap:4px;padding:11px}.iaIdeaBodyV0180>small{color:#8b93a4;font-size:.6rem}.iaIdeaBodyV0180 h4{margin:0;color:#26334e;font-size:.83rem}.iaIdeaBodyV0180 p{margin:0;color:#727d91;font-size:.68rem;line-height:1.4}.iaIdeaActionsV0180{display:flex;gap:7px;padding:0 11px 11px}.iaIdeaActionsV0180 button{flex:1;border:1px solid #dddff0;border-radius:9px;background:#fff;color:#5d6579;padding:7px;font-size:.67rem;font-weight:800}.iaIdeaActionsV0180 button.primary{border-color:#7158e8;background:#7158e8;color:#fff}
+.iaNearYouV0180{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:17px 19px;border:1px solid #cfe6df;border-radius:18px;background:linear-gradient(105deg,#f5fff9,#f5faff)}.iaNearYouIntroV0180{display:grid;grid-template-columns:auto 1fr;gap:11px;align-items:start}.iaNearYouIntroV0180>span{font-size:1.7rem}.iaNearYouIntroV0180>div{display:grid;gap:2px}.iaNearYouIntroV0180 small{font-size:.62rem;font-weight:900;letter-spacing:.09em;color:#16824b}.iaNearYouIntroV0180 h3{margin:0;color:#21314b;font-size:.95rem}.iaNearYouIntroV0180 p{margin:0;color:#738095;font-size:.7rem}.iaNearYouActionsV0180{display:grid;gap:4px;justify-items:end}.iaNearYouActionsV0180 button{border:1px solid #9bd0b4;border-radius:10px;background:#fff;color:#16824b;padding:8px 11px;font-weight:850;font-size:.72rem}.iaNearYouActionsV0180 small{max-width:260px;text-align:right;color:#8a94a4;font-size:.57rem}
+.iaHomeLowerV0180{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}.iaDoingCardsV0180,.iaComingCardsV0180{display:grid;gap:8px}.iaDoingCardsV0180 article{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;padding:9px;border:1px solid #edf0f5;border-radius:11px}.iaDoingCardsV0180 article>span{font-size:1.35rem}.iaDoingCardsV0180 article>div{display:grid}.iaDoingCardsV0180 strong,.iaComingCardsV0180 strong{font-size:.74rem;color:#303d58}.iaDoingCardsV0180 small,.iaComingCardsV0180 small{font-size:.63rem;color:#858ea0}.iaDoingCardsV0180 article>button{border:0;background:transparent;color:#6650d5;font-size:.66rem;font-weight:850}.iaComingCardsV0180 article{display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:center;padding:8px;border:1px solid #edf0f5;border-radius:11px}.iaComingCardsV0180 article>span{display:grid;place-items:center;min-width:42px;padding:5px;border-radius:9px;background:#f6f3ff}.iaComingCardsV0180 article>span b{font-size:.52rem;color:#745ddb}.iaComingCardsV0180 article>span strong{font-size:.9rem}.iaComingCardsV0180 article>div{display:grid}.iaCompactEmptyV0180{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;padding:10px;border:1px dashed #dfe3eb;border-radius:11px;background:#fbfcfe}.iaCompactEmptyV0180>span{font-size:1.35rem}.iaCompactEmptyV0180 p{display:grid;margin:0}.iaCompactEmptyV0180 strong{font-size:.72rem;color:#44506a}.iaCompactEmptyV0180 small{font-size:.63rem;color:#8790a1}.iaCompactEmptyV0180 button{border:0;background:transparent;color:#6550d3;font-weight:850;font-size:.66rem}.iaTriedBridgeV0180{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;width:100%;padding:12px 15px;border:1px solid #e5def8;border-radius:14px;background:#fbf9ff;text-align:left}.iaTriedBridgeV0180>span{font-size:1.4rem}.iaTriedBridgeV0180 p{display:grid;margin:0}.iaTriedBridgeV0180 strong{font-size:.76rem;color:#3b4660}.iaTriedBridgeV0180 small{font-size:.64rem;color:#8991a2}.iaTriedBridgeV0180>b{color:#6a53d6;font-size:.7rem}
+@media(max-width:900px){.iaIdeaGridV0180{grid-template-columns:1fr}.iaHomeLowerV0180{grid-template-columns:1fr}.iaNearYouV0180{grid-template-columns:1fr}.iaNearYouActionsV0180{justify-items:start}.iaNearYouActionsV0180 small{text-align:left}.iaHeroArtV0180{display:none}}
+
+/* Stage 6B — approved single-scroll Interests & Activities refinement */
+.iaNearYouSectionV0181{background:linear-gradient(115deg,#f7fff9,#f5fbff)}
+.iaLocalGridV0181{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.iaLocalGridV0181 article{display:grid;grid-template-rows:auto 1fr auto;gap:8px;padding:12px;border:1px solid #dce9e2;border-radius:14px;background:#fff}
+.iaLocalIconV0181{display:grid;place-items:center;min-height:70px;border-radius:11px;background:linear-gradient(145deg,#effbf4,#eef7ff);font-size:2rem}
+.iaLocalGridV0181 article>div:nth-child(2){display:grid;align-content:start;gap:3px}
+.iaLocalGridV0181 small{font-size:.58rem;font-weight:900;letter-spacing:.06em;color:#19804c}
+.iaLocalGridV0181 h4{margin:0;color:#293650;font-size:.8rem}.iaLocalGridV0181 p{margin:0;color:#778296;font-size:.66rem;line-height:1.4}
+.iaLocalGridV0181 em{font-style:normal;color:#59677f;font-size:.62rem}.iaLocalGridV0181 button{border:1px solid #d6dedb;border-radius:9px;background:#fff;padding:7px;color:#24734b;font-size:.67rem;font-weight:850}
+.iaNearEmptyV0181{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:14px;border:1px dashed #bcdcca;border-radius:13px;background:#ffffffaa}
+.iaNearEmptyV0181>span{font-size:1.8rem}.iaNearEmptyV0181>div{display:grid;gap:2px}.iaNearEmptyV0181 strong{font-size:.77rem;color:#30415a}.iaNearEmptyV0181 p{margin:0;color:#7a8798;font-size:.66rem}
+.iaNearEmptyV0181 button{border:1px solid #a8d3b9;border-radius:9px;background:#fff;color:#18804b;padding:8px 10px;font-size:.68rem;font-weight:850}
+@media(max-width:900px){.iaLocalGridV0181{grid-template-columns:1fr}.iaNearEmptyV0181{grid-template-columns:auto 1fr}.iaNearEmptyV0181 button{grid-column:1/-1}}
+
+/* Stage 6C — persistent in-page discovery */
+.iaInterestTilesV0180 button.selected{border-color:#7257e7;background:#f3efff;box-shadow:0 0 0 2px #7257e71a;color:#5c45ca}.iaIdeasInPageV0182{scroll-margin-top:18px}.iaIdeaHeadActionsV0182{display:flex;gap:10px;align-items:center}.iaIdeaHeadActionsV0182 button{border:0;background:transparent;color:#178447;font-weight:850;font-size:.72rem;white-space:nowrap}.iaIdeaGridV0180 article.active{border-color:#8d78ed;box-shadow:0 0 0 2px #735ce71a,0 7px 18px #2634510d}.iaInlineDetailV0182{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:15px;border:1px solid #dcd5fb;border-radius:14px;background:linear-gradient(110deg,#fbf9ff,#f7fbff)}.iaInlineDetailIconV0182{display:grid;place-items:center;width:54px;height:54px;border-radius:14px;background:#fff;box-shadow:0 5px 15px #26345112;font-size:1.8rem}.iaInlineDetailV0182>div:nth-child(2){display:grid;gap:3px}.iaInlineDetailV0182 small{font-size:.58rem;font-weight:900;letter-spacing:.08em;color:#6852d2}.iaInlineDetailV0182 h4{margin:0;color:#27334e;font-size:.9rem}.iaInlineDetailV0182 p{margin:0;color:#707d92;font-size:.69rem;line-height:1.45}.iaInlineDetailV0182 span{color:#8a93a3;font-size:.6rem}.iaInlineDetailActionsV0182{display:flex;gap:7px}.iaInlineDetailActionsV0182 button{border:1px solid #dddff0;border-radius:9px;background:#fff;color:#606a7d;padding:8px 11px;font-size:.67rem;font-weight:850}.iaInlineDetailActionsV0182 button.primary{border-color:#7158e8;background:#7158e8;color:#fff}@media(max-width:760px){.iaIdeaHeadActionsV0182{align-items:flex-end;flex-direction:column}.iaInlineDetailV0182{grid-template-columns:auto 1fr}.iaInlineDetailActionsV0182{grid-column:1/-1;justify-content:flex-end}}

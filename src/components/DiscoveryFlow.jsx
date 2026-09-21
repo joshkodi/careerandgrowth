@@ -1,98 +1,15 @@
-// ============================================================
-// SynapStride
-// MVP v0.15 — Discover UX refresh
-//
-// Presentation-only. Existing discovery questions, answer callbacks,
-// evidence translation, scoring, persistence and profile inference
-// remain owned by the existing application pipeline.
-// ============================================================
-
+import { useMemo, useState } from 'react'
+import { buildAboutMeExperiencePlan } from '../intelligence/aboutMeExperiencePlanner'
 import './DiscoverExperienceV015.css'
-
-function DiscoveryFlow({
-  childProfile,
-  questions,
-  currentQuestionIndex,
-  currentQuestion,
-  onBack,
-  onAnswer,
-}) {
-  if (!currentQuestion || !questions?.length) return null
-
-  const childName = childProfile?.name?.trim() || 'Explorer'
-  const currentNumber = currentQuestionIndex + 1
-  const progressPercentage = (currentNumber / questions.length) * 100
-  const currentTopic = currentQuestion.shortLabel || 'Getting to know you'
-
-  return (
-    <section className="ss-discover-v015">
-      <button
-        type="button"
-        className="ss-discover-v015__back"
-        onClick={onBack}
-      >
-        ← My Profile
-      </button>
-
-      <div className="ss-discover-v015__shell">
-        <header className="ss-discover-v015__top">
-          <span className="ss-discover-v015__eyebrow">Discover</span>
-          <h1>Let’s get to know you, {childName}.</h1>
-          <p>
-            There are no right answers. Pick what feels most like you today —
-            SynapStride will keep learning with you as you grow.
-          </p>
-
-          <div className="ss-discover-v015__progress">
-            <div
-              className="ss-discover-v015__track"
-              aria-label={`Question ${currentNumber} of ${questions.length}`}
-            >
-              <div
-                className="ss-discover-v015__bar"
-                style={{ width: `${progressPercentage}%` }}
-              />
-            </div>
-            <span className="ss-discover-v015__count">
-              {currentNumber} of {questions.length}
-            </span>
-          </div>
-        </header>
-
-        <main className="ss-discover-v015__body">
-          <div className="ss-discover-v015__question">
-            <span className="ss-discover-v015__topic">✨ {currentTopic}</span>
-            <h2>{currentQuestion.question}</h2>
-            <p>Choose the one that sounds most like you. Don’t overthink it.</p>
-          </div>
-
-          <div className="ss-discover-v015__answers">
-            {currentQuestion.answers.map((answer) => (
-              <button
-                type="button"
-                key={answer.id}
-                className="ss-discover-v015__answer"
-                onClick={() => onAnswer(answer)}
-              >
-                <span className="ss-discover-v015__answerText">
-                  {answer.label}
-                </span>
-                <span className="ss-discover-v015__arrow" aria-hidden="true">→</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="ss-discover-v015__note">
-            <span className="ss-discover-v015__spark" aria-hidden="true">🌱</span>
-            <span>
-              <strong>This is just one clue.</strong> What you choose, try and reflect on
-              over time helps SynapStride understand you better.
-            </span>
-          </div>
-        </main>
-      </div>
-    </section>
-  )
+const icons=['✨','🚀','🎨','🧪','🛠️','🐾','🎮','🌱']
+function visual(label='',i=0){const m=String(label).match(/^(\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic})*)\s*(.*)$/u);return{emoji:m?.[1]||icons[i%icons.length],text:m?.[2]||label}}
+export default function DiscoveryFlow({childProfile,questions,currentQuestionIndex,currentQuestion,onBack,onAnswer}){
+ const[started,setStarted]=useState(false),[selectedId,setSelectedId]=useState(null)
+ const plan=useMemo(()=>buildAboutMeExperiencePlan({childProfile,questions}),[childProfile,questions])
+ const planned=plan[currentQuestionIndex]||currentQuestion;if(!planned||!questions?.length)return null
+ const name=childProfile?.name?.trim()||'Explorer',n=currentQuestionIndex+1,pct=n/questions.length*100
+ const answers=(planned.answers||[]).map((a,i)=>({...a,...visual(a.label,i)}))
+ const choose=a=>{setSelectedId(a.id);window.setTimeout(()=>{setSelectedId(null);onAnswer(a)},180)}
+ if(!started&&currentQuestionIndex===0)return <section className="ss-about-v016"><div className="ss-about-v016__welcome"><div className="ss-about-v016__welcomeCopy"><span className="ss-about-v016__eyebrow">✨ ABOUT ME</span><h1>Hi {name}! 👋<br/>Let’s figure out what makes you, you.</h1><p>This is not a test. Pick what feels like you today. As you learn, try things and grow, I’ll keep learning with you.</p><div className="ss-about-v016__trail"><span><b>❤️</b> Things you’re into</span><span><b>🧠</b> What helps you figure things out</span><span><b>🚀</b> Things you want to explore</span></div><button type="button" className="ss-about-v016__primary" onClick={()=>setStarted(true)}>Let’s get started! →</button><small>You can change your mind later. These are clues, not labels.</small></div><div className="ss-about-v016__welcomeArt" aria-hidden="true"><div className="ss-about-v016__planet">🪐</div><div className="ss-about-v016__kid">🧒</div><div className="ss-about-v016__buddy">🤖</div><div className="ss-about-v016__signs"><span>EXPLORE</span><span>TRY THINGS</span><span>GROW</span></div></div></div></section>
+ return <section className="ss-about-v016"><div className="ss-about-v016__questionShell"><header className="ss-about-v016__questionTop"><button type="button" className="ss-about-v016__back" onClick={currentQuestionIndex===0?()=>setStarted(false):onBack}>← Back</button><div className="ss-about-v016__progress"><div><i style={{width:`${pct}%`}}/></div><span>{n} of {questions.length}</span></div><span className="ss-about-v016__mini">✨ About Me</span></header><div className="ss-about-v016__prompt"><span>{planned.objective?.replace('_',' ')||planned.shortLabel||'About you'}</span><h1>{planned.adaptivePrompt||planned.question}</h1><p>{planned.adaptiveHint||'Choose what feels most like you today.'}</p></div><div className="ss-about-v016__visualAnswers">{answers.map(a=><button type="button" key={a.id} className={selectedId===a.id?'selected':''} onClick={()=>choose(a)}><b>{a.emoji}</b><strong>{a.text}</strong>{selectedId===a.id&&<em>✓</em>}</button>)}</div><div className="ss-about-v016__inlineAck"><span>🤖</span><p><strong>Every answer is one clue.</strong> I’ll combine what you tell me with what you actually try inside SynapStride.</p></div></div></section>
 }
-
-export default DiscoveryFlow

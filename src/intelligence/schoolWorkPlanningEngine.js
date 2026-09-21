@@ -35,11 +35,10 @@ const titleFromText = (text = '') => {
 const planFor = (activityType, title) => {
   if (activityType === journeyActivityTypes.PROJECT) {
     return [
-      'Understand what you need to do',
-      'Choose your focus',
-      'Learn or research the important parts',
-      'Create your project',
-      'Check and finish it',
+      'Get Started',
+      'Learn',
+      'Create',
+      'Finish',
     ]
   }
   if (activityType === journeyActivityTypes.TEST_QUIZ || activityType === journeyActivityTypes.STUDY) {

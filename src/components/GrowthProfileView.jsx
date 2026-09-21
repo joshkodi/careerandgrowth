@@ -290,16 +290,16 @@ function GrowthProfileView({
   return (
     <section className="synProfileV011 synProfileV0117">
 
-      <header className="synProfileHeroV011 synProfileHeroV0117">
+      <header className="synProfileHeroV011 synProfileHeroV0117 ssLegacyProfileV01671">
         <div>
           <span className="synProfileEyebrowV011">
-            MY PROFILE
+            ABOUT ME
           </span>
 
           <div className="synProfileHeroIdentityV014">
             <Avatar avatarId={childProfile?.avatarId} size={64} />
             <h1>
-              Hi {safeName}. Here&apos;s the picture that&apos;s taking shape.
+              Hi {safeName}. This is you — so far.
             </h1>
           </div>
 
@@ -321,7 +321,7 @@ function GrowthProfileView({
 
 
       {profileGrowthSource === 'parent' ? (
-        <div className="synProfileUpdateNoticeV0117">
+        <div className="synProfileUpdateNoticeV0117 ssLegacyProfileV01671">
           <span>👨‍👩‍👦</span>
           <p>
             <strong>Your Profile has another perspective.</strong>
@@ -332,7 +332,63 @@ function GrowthProfileView({
       ) : null}
 
 
-      <section className="synProfileAboutV011 synProfileAboutV0117">
+      <section className="ssAboutLivingV01671">
+        <header className="ssAboutHeroV01671">
+          <div className="ssAboutIdentityV01671">
+            <Avatar avatarId={childProfile?.avatarId} size={64} />
+            <div>
+              <span className="synProfileEyebrowV011">✨ ABOUT ME</span>
+              <h1>This is you — so far, {safeName}.</h1>
+              <p>A living picture that grows from what you tell SynapStride and what you actually try.</p>
+            </div>
+          </div>
+          <div className="ssAboutGrowingV01671"><span>🌱</span><strong>Always growing</strong><small>Clues, not labels</small></div>
+        </header>
+
+        <div className="ssAboutCardsV01671">
+          <article>
+            <div className="ssAboutCardTitleV01671"><span>❤️</span><div><h3>Things I’m Into</h3><small>What you’ve told me</small></div></div>
+            {statedDiscover.length ? <div className="ssAboutChipsV01671">{uniqueLabels(statedDiscover, 4).map((label)=><span key={label}>{label}</span>)}</div> : <p className="ssAboutEmptyV01671">Tell me what you enjoy and we’ll start here.</p>}
+            <b className="ssAboutSourceV01671">{statedDiscover.length ? '👤 You told me' : 'Waiting for your clues'}</b>
+          </article>
+
+          <article>
+            <div className="ssAboutCardTitleV01671"><span>🚀</span><div><h3>Things I’m Exploring</h3><small>Curiosities showing up over time</small></div></div>
+            {story.curiosity.length ? <div className="ssAboutChipsV01671">{story.curiosity.map((label)=><span key={label}>{label}</span>)}</div> : <p className="ssAboutEmptyV01671">Try a few things and we’ll notice what keeps pulling you back.</p>}
+            <b className="ssAboutSourceV01671">{story.curiosity.length ? '✨ I’m noticing' : 'Still exploring'}</b>
+          </article>
+
+          <article>
+            <div className="ssAboutCardTitleV01671"><span>🧠</span><div><h3>What Helps Me</h3><small>What seems useful when you’re figuring things out</small></div></div>
+            <p className="ssAboutEmptyV01671">As you learn, ask for help, and continue after support, we’ll notice what actually seems useful.</p>
+            <b className="ssAboutSourceV01671">Needs contextual learning evidence</b>
+          </article>
+
+          <article>
+            <div className="ssAboutCardTitleV01671"><span>🌱</span><div><h3>How I’m Growing</h3><small>Patterns backed by real experiences</small></div></div>
+            {storyPatterns.length ? <div className="ssAboutChipsV01671">{uniqueLabels(storyPatterns, 4).map((label)=><span key={label}>{String(label).replaceAll('_',' ')}</span>)}</div> : <p className="ssAboutEmptyV01671">This fills in as you try, finish, reflect and keep going.</p>}
+            <b className="ssAboutSourceV01671">{storyPatterns.length ? '✨ We’ve seen this more than once' : 'No labels from a first-day quiz'}</b>
+          </article>
+        </div>
+
+        <section className="ssAboutStoryV01671">
+          <div>
+            <span className="synProfileEyebrowV011">YOUR STORY SO FAR</span>
+            <h2>{story.headline}</h2>
+            <p>{story.narrative}</p>
+          </div>
+          {story.direction.length ? <aside><span>🧭</span><div><strong>Worth exploring next</strong><p>{story.connection}</p></div></aside> : null}
+        </section>
+
+        {onContinueDiscover ? <section className="ssAboutCheckV01671">
+          <div><span>🤖</span><div><strong>Anything changed?</strong><p>Your interests and preferences can change. Tell me whenever something feels different.</p></div></div>
+          <button type="button" onClick={onContinueDiscover}>{discoverCount ? 'Update About Me' : 'Start About Me'} →</button>
+        </section> : null}
+
+        {onAvatarChange ? <details className="synProfileAvatarEditV014 ssAboutAvatarV01671"><summary>Change my avatar</summary><AvatarPicker compact age={childProfile?.age} value={childProfile?.avatarId} onChange={onAvatarChange}/></details> : null}
+      </section>
+
+      <section className="synProfileAboutV011 synProfileAboutV0117 ssLegacyProfileV01671">
         <div className="synProfileAboutIntroV011">
           <span className="synProfileEyebrowV011">
             IN YOUR OWN WORDS
@@ -382,7 +438,7 @@ function GrowthProfileView({
       </section>
 
       {onAvatarChange ? (
-        <details className="synProfileAvatarEditV014">
+        <details className="synProfileAvatarEditV014 ssLegacyProfileV01671">
           <summary>Change my avatar</summary>
           <AvatarPicker
             compact
@@ -394,7 +450,7 @@ function GrowthProfileView({
       ) : null}
 
 
-      <section className="synProfileStoryV011 synProfileStoryV0117">
+      <section className="synProfileStoryV011 synProfileStoryV0117 ssLegacyProfileV01671">
         <div className="synProfileStoryLeadV011 synProfileStoryLeadV0117">
           <span className="synProfileEyebrowV011">
             YOUR STORY SO FAR
@@ -457,7 +513,7 @@ function GrowthProfileView({
       </section>
 
 
-      <section className="synProfileEvidenceV0117">
+      <section className="synProfileEvidenceV0117 ssLegacyProfileV01671">
         <div>
           <span className="synProfileEyebrowV011">
             WHY THIS PICTURE IS TAKING SHAPE
