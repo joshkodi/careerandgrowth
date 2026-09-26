@@ -8,6 +8,7 @@ function GrowthIntelligenceInspector({
   pathways,
   careers,
   recommendations = [],
+  modelBackedUnderstanding = null,
   onReset,
 }) {
   if (!profile) {
@@ -117,6 +118,41 @@ function GrowthIntelligenceInspector({
           </span>
         </div>
 
+
+
+        <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #d7dce6' }}>
+          <strong>🧠 v0.17 Model-Backed Child Understanding</strong>
+          <p style={{ margin: '0.35rem 0 0.8rem', color: '#68748a', fontSize: '0.78rem' }}>
+            Shadow mode. Model output is hypothesis-only and cannot change SynapStride execution.
+          </p>
+          {!modelBackedUnderstanding ? (
+            <p>No model-backed understanding available yet.</p>
+          ) : (
+            <>
+              <div style={rowStyle}>
+                <span>Model provider</span>
+                <span style={valueStyle}>{modelBackedUnderstanding?.model?.provider || '—'}</span>
+              </div>
+              <div style={rowStyle}>
+                <span>Accepted hypotheses</span>
+                <span style={valueStyle}>{modelBackedUnderstanding?.modelInferred?.length || 0}</span>
+              </div>
+              <div style={rowStyle}>
+                <span>Rejected hypotheses</span>
+                <span style={valueStyle}>{modelBackedUnderstanding?.rejectedModelInferences?.length || 0}</span>
+              </div>
+              {(modelBackedUnderstanding?.modelInferred || []).map((item, index) => (
+                <div key={`${item.type}-${item.concept}-${index}`} style={{ marginTop: '0.75rem', padding: '0.8rem', border: '1px solid #e1e5eb', borderRadius: '10px', background: '#fff' }}>
+                  <strong>{item.concept}</strong>
+                  <div style={{ marginTop: '0.3rem', color: '#68748a', fontSize: '0.78rem' }}>{item.statement}</div>
+                  <div style={{ marginTop: '0.35rem', fontSize: '0.75rem' }}>
+                    {item.type} · confidence {Math.round((item.confidence || 0) * 100)}% · {item.evidenceRefs?.length || 0} evidence refs
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
 
         <InspectorSection
           title="Level 2 — Traits"

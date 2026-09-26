@@ -1,17 +1,19 @@
-export const DEFAULT_MODEL_CONFIG = Object.freeze({
-  provider: 'mock',
-  model: 'synapstride-semantic-mock-v2',
-  endpoint: '',
-  timeoutMs: 12000,
+export const MODEL_PROVIDER_TYPES = Object.freeze({
+  MOCK: 'mock',
+  SYNAPSTRIDE_API: 'synapstride-api',
+})
+
+const env = import.meta.env || {}
+
+export const defaultModelConfig = Object.freeze({
+  provider: env.VITE_MODEL_PROVIDER || MODEL_PROVIDER_TYPES.MOCK,
+  modelId: env.VITE_MODEL_ID || 'synapstride-mock-v1',
+  endpoint: env.VITE_MODEL_API_URL || '',
+  timeoutMs: 8000,
+  maxRetries: 1,
+  structuredOutput: true,
 })
 
 export function resolveModelConfig(overrides = {}) {
-  const env = typeof import.meta !== 'undefined' ? import.meta.env || {} : {}
-  return {
-    ...DEFAULT_MODEL_CONFIG,
-    provider: env.VITE_SYNAPSTRIDE_MODEL_PROVIDER || DEFAULT_MODEL_CONFIG.provider,
-    model: env.VITE_SYNAPSTRIDE_MODEL_ID || DEFAULT_MODEL_CONFIG.model,
-    endpoint: env.VITE_SYNAPSTRIDE_MODEL_ENDPOINT || DEFAULT_MODEL_CONFIG.endpoint,
-    ...(overrides || {}),
-  }
+  return { ...defaultModelConfig, ...overrides }
 }

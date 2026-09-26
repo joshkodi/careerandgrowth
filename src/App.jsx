@@ -128,6 +128,9 @@ import {
   buildGrowthProfileUnderstanding,
 } from './intelligence/growthProfileUnderstanding'
 
+import { buildGrowthIntelligenceContext } from './intelligence/growthIntelligenceContext'
+import { buildModelBackedChildUnderstanding } from './intelligence/understanding/childUnderstandingRuntime'
+
 
 
 
@@ -344,6 +347,8 @@ function App() {
     evidenceEventCount,
     setEvidenceEventCount,
   ] = useState(0)
+
+  const [modelBackedChildUnderstanding, setModelBackedChildUnderstanding] = useState(null)
 
   const [
     profileGrowthSource,
@@ -946,6 +951,53 @@ function App() {
           growthRecommendations,
       },
     })
+
+
+
+  // ==========================================================
+  // MVP v0.17 Stage 1 — MODEL-BACKED CHILD UNDERSTANDING
+  // Shadow mode only: model hypotheses are inspectable but do not
+  // change recommendations, profile state, or customer execution.
+  // ==========================================================
+  useEffect(() => {
+    let cancelled = false
+
+    if (!childProfile?.name?.trim()) {
+      setModelBackedChildUnderstanding(null)
+      return () => { cancelled = true }
+    }
+
+    const growthContext = buildGrowthIntelligenceContext({
+      childId: getChildEvidenceId(childProfile),
+      age: childProfile?.age || null,
+      evidenceEvents: currentChildEvidenceEvents,
+      journeyItems,
+      studentIntents: studentGrowthIntents,
+      parentIntents: parentGrowthIntents,
+      completedExperienceIds: journeyExperienceIds,
+      growthProfile: growthIntelligenceProfile,
+      patternIntelligence: holisticPatternIntelligence,
+      promotionRegistry: holisticPatternPromotion,
+    })
+
+    buildModelBackedChildUnderstanding({ growthContext })
+      .then((result) => {
+        if (!cancelled) setModelBackedChildUnderstanding(result)
+      })
+      .catch((error) => {
+        console.warn('[v0.17 Stage 1] Model-backed child understanding unavailable:', error)
+        if (!cancelled) setModelBackedChildUnderstanding(null)
+      })
+
+    return () => { cancelled = true }
+  }, [
+    childProfile,
+    evidenceEventCount,
+    journeyItems,
+    studentGrowthIntents,
+    parentGrowthIntents,
+    growthIntelligenceProfile,
+  ])
 
 
   // ==========================================================
@@ -2096,6 +2148,7 @@ function App() {
             growthProfile={
               growthIntelligenceProfile
             }
+            modelBackedUnderstanding={modelBackedChildUnderstanding}
             evidenceEvents={
               currentChildEvidenceEvents
             }
@@ -2686,6 +2739,7 @@ function App() {
             pathways={intelligencePathways}
             careers={intelligenceCareers}
             recommendations={growthRecommendations}
+            modelBackedUnderstanding={modelBackedChildUnderstanding}
             parentAccount={parentAccount}
             onSignOut={handleSignOut}
             onReset={resetTestData}
@@ -3266,6 +3320,7 @@ function SettingsView({
   pathways = [],
   careers = [],
   recommendations = [],
+  modelBackedUnderstanding = null,
   parentAccount,
   onSignOut,
   onReset,
@@ -3352,6 +3407,7 @@ function SettingsView({
             pathways={pathways}
             careers={careers}
             recommendations={recommendations}
+            modelBackedUnderstanding={modelBackedUnderstanding}
             onReset={onReset}
           />
         ) : (

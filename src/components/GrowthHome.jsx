@@ -64,6 +64,8 @@ import {
   buildPersonalizedGuidance,
 } from '../intelligence/personalizedGuidanceEngine'
 
+import { personalizeExperienceCandidates } from '../intelligence/personalization/personalizationRuntime'
+
 import {
   buildCompanionGuidance,
 } from '../intelligence/guidanceEngine'
@@ -76,6 +78,8 @@ import {
 import {
   generateContextualCompanionResponse,
 } from '../intelligence/companionReasoningEngineV016'
+
+import { runChildAwareCompanion } from '../intelligence/companion/companionRuntime'
 
 import {
   describeGrowthProfileDelta,
@@ -121,6 +125,7 @@ function GrowthHome({
   onStartAdventure,
   evidenceEventCount = 0,
   growthProfile = null,
+  modelBackedUnderstanding = null,
   evidenceEvents = [],
   topTraits = [],
   topDomains = [],
@@ -488,11 +493,44 @@ function GrowthHome({
         },
       })
 
-      const companion = await generateContextualCompanionResponse({
+      const legacyCompanion = await generateContextualCompanionResponse({
         decision: runtime.decision,
         semanticContext: runtime.semanticContext,
         legacyGuidance,
       })
+
+      // v0.17 Stage 3: the Companion is now a direct model-backed runtime participant.
+      // It receives selected context only; SynapStride still owns allowed actions,
+      // state changes, evidence promotion, and all execution.
+      const companionRuntime = await runChildAwareCompanion({
+        message: text,
+        messageId: `companion-${Date.now()}`,
+        childUnderstanding: modelBackedUnderstanding,
+        growthContext: sharedIntelligenceRecommendationLoop || null,
+        immediateContext: {
+          surface: activeItem?.path === journeyPaths.SCHOOL_LEARNING
+            ? 'school_learning'
+            : activeItem?.path === journeyPaths.ACTIVITIES_INTERESTS
+              ? 'interests_activities'
+              : 'home',
+          experience: activeItem
+            ? { id: activeItem.id || null, title: activeItem.title || activeItem.topic || null, topic: activeItem.topic || null, path: activeItem.path || null }
+            : null,
+          action: runtime.decision?.action || null,
+        },
+        conversation: guideReply
+          ? [{ role: 'child', text: guideReply.question }, { role: 'companion', text: guideReply.text }]
+          : [],
+        fallbackText: legacyCompanion.text,
+        fallbackAction: runtime.decision?.action || legacyGuidance.action || 'none',
+      })
+
+      const companion = {
+        text: companionRuntime.response.text,
+        contextual: legacyCompanion.contextual,
+        checkUnderstanding: companionRuntime.response.checkUnderstanding !== false,
+        model: companionRuntime.model,
+      }
 
       // Capture the delivered guidance as episodic outcome memory. This is not
       // promoted directly into the Growth Profile; Growth Intelligence remains
@@ -519,14 +557,19 @@ function GrowthHome({
         action: actionMap[navigableAction] || null,
         contextual: companion.contextual || legacyGuidance.contextual || false,
         intelligence: {
-          version: '0.16.0',
+          version: companionRuntime.version,
           decision: runtime.decision,
-          model: runtime.model,
+          model: companionRuntime.model,
           usedFallback: runtime.usedFallback,
+          companionIntent: companionRuntime.response.intent,
+          personalizationNeed: companionRuntime.response.personalizationNeed,
+          actionProposal: companionRuntime.response.actionProposal,
+          evidenceCandidates: companionRuntime.response.evidenceCandidates,
+          provenance: companionRuntime.provenance,
         },
       })
     } catch (error) {
-      console.error('SynapStride v0.16 Companion orchestration failed safely.', error)
+      console.error('SynapStride v0.17 Stage 3 Companion orchestration failed safely.', error)
       setGuideReply({
         question: text,
         text: legacyGuidance.text,
@@ -569,6 +612,7 @@ function GrowthHome({
             sharedIntelligenceRecommendationLoop={
               sharedIntelligenceRecommendationLoop
             }
+            modelBackedUnderstanding={modelBackedUnderstanding}
             studentIntents={studentIntents}
             parentIntents={parentIntents}
             journeyItems={journeyItems}
@@ -2037,6 +2081,7 @@ function JourneyPanel({
   childName,
   childProfile = null,
   sharedIntelligenceRecommendationLoop = null,
+  modelBackedUnderstanding = null,
   studentIntents = [],
   parentIntents = [],
   journeyItems = [],
@@ -2623,6 +2668,42 @@ function JourneyPanel({
   const intelligenceRecommendationLoop =
     sharedIntelligenceRecommendationLoop ||
     localIntelligenceRecommendationLoop
+
+  // v0.17 Stage 2 — model-assisted semantic evaluation, SynapStride-owned ranking.
+  // The model only evaluates candidates already supplied by SynapStride.
+  const [personalizedActivityOpportunities, setPersonalizedActivityOpportunities] = useState([])
+
+  useEffect(() => {
+    let cancelled = false
+    const candidates = intelligenceRecommendationLoop
+      ?.domains
+      ?.interests_activities
+      ?.discoveredOpportunities || []
+
+    if (!modelBackedUnderstanding || !candidates.length) {
+      setPersonalizedActivityOpportunities(candidates.slice(0, 3))
+      return () => { cancelled = true }
+    }
+
+    personalizeExperienceCandidates({
+      childUnderstanding: modelBackedUnderstanding,
+      growthContext: intelligenceRecommendationLoop,
+      candidates,
+      recentOutcomes: growthActivities
+        .filter((activity) => ['completed', 'attended', 'skipped'].includes(activity.status))
+        .slice(-8),
+      limit: 3,
+    })
+      .then((result) => {
+        if (!cancelled) setPersonalizedActivityOpportunities(result.ranked)
+      })
+      .catch((error) => {
+        console.warn('[v0.17 Stage 2] Activity personalization unavailable:', error)
+        if (!cancelled) setPersonalizedActivityOpportunities(candidates.slice(0, 3))
+      })
+
+    return () => { cancelled = true }
+  }, [intelligenceRecommendationLoop, modelBackedUnderstanding, growthActivities])
 
 
   const fallbackLearningNextSteps =
@@ -6578,12 +6659,7 @@ function JourneyPanel({
           onExplore={onExplore}
           exploreRecommendations={exploreRecommendations}
           exploreCatalog={exploreCatalog}
-          intelligenceOpportunities={
-            intelligenceRecommendationLoop
-              ?.domains
-              ?.interests_activities
-              ?.discoveredOpportunities || []
-          }
+          intelligenceOpportunities={personalizedActivityOpportunities}
           completedExplorations={completedExplorations}
           onSaveGrowthOpportunity={onSaveGrowthOpportunity}
           onStartAdventure={onStartAdventure}
@@ -8088,6 +8164,7 @@ function GrowthAreaWorkspaceV0103({
           candidate.evaluation?.score ?? null,
         reasons:
           candidate.evaluation?.reasons || [],
+        personalization: candidate.personalization || null,
       },
       metadata: {
         growthIntelligenceRecommended: true,
@@ -8196,12 +8273,12 @@ function GrowthAreaWorkspaceV0103({
               {homeIdeasV0182.map((candidate,index) => (
                 <article className={ideaDetailV0182?.id === candidate.id ? 'active' : ''} key={`home-idea-${candidate.id}`}>
                   <div className="iaIdeaVisualV0180"><span>{candidate.emoji || ['🚀','🎨','🧪'][index] || '✨'}</span><small>{candidate.providerType === 'local_event' ? '📍 Near you' : '✨ Picked for you'}</small></div>
-                  <div className="iaIdeaBodyV0180"><small>{candidate.provider || 'SynapStride recommendation'}</small><h4>{candidate.title}</h4><p>{candidate.evaluation?.reasons?.[0] || candidate.description || 'Something that connects with what you enjoy.'}</p></div>
+                  <div className="iaIdeaBodyV0180"><small>{candidate.provider || 'SynapStride recommendation'}</small><h4>{candidate.title}</h4><p>{candidate.personalization?.rationale || candidate.evaluation?.reasons?.[0] || candidate.description || 'Something that connects with what you enjoy.'}</p></div>
                   <div className="iaIdeaActionsV0180"><button type="button" onClick={() => setIdeaDetailV0182(candidate)}>Tell me more</button><button type="button" className="primary" onClick={() => addIdeaV0182(candidate)}>I’d try this</button></div>
                 </article>
               ))}
             </div>
-            {ideaDetailV0182 && <aside className="iaInlineDetailV0182"><div className="iaInlineDetailIconV0182">{ideaDetailV0182.emoji || '✨'}</div><div><small>EXPLORE THIS IDEA</small><h4>{ideaDetailV0182.title}</h4><p>{ideaDetailV0182.description || ideaDetailV0182.evaluation?.reasons?.[0] || 'This looks like a good match for something you might enjoy trying.'}</p><span>{ideaDetailV0182.provider || 'SynapStride recommendation'}</span></div><div className="iaInlineDetailActionsV0182"><button type="button" onClick={() => setIdeaDetailV0182(null)}>Close</button><button type="button" className="primary" onClick={() => addIdeaV0182(ideaDetailV0182)}>I’d try this</button></div></aside>}
+            {ideaDetailV0182 && <aside className="iaInlineDetailV0182"><div className="iaInlineDetailIconV0182">{ideaDetailV0182.emoji || '✨'}</div><div><small>EXPLORE THIS IDEA</small><h4>{ideaDetailV0182.title}</h4><p>{ideaDetailV0182.personalization?.rationale || ideaDetailV0182.description || ideaDetailV0182.evaluation?.reasons?.[0] || 'This looks like a good match for something you might enjoy trying.'}</p><span>{ideaDetailV0182.provider || 'SynapStride recommendation'}</span></div><div className="iaInlineDetailActionsV0182"><button type="button" onClick={() => setIdeaDetailV0182(null)}>Close</button><button type="button" className="primary" onClick={() => addIdeaV0182(ideaDetailV0182)}>I’d try this</button></div></aside>}
           </section>
 
           <section className="iaSectionV0180 iaNearYouSectionV0181">
@@ -8282,7 +8359,8 @@ function GrowthAreaWorkspaceV0103({
                     <div>
                       <strong>{candidate.title}</strong>
                       <small>
-                        {candidate.evaluation?.reasons?.[0] ||
+                        {candidate.personalization?.rationale ||
+                          candidate.evaluation?.reasons?.[0] ||
                           'Picked from your current interests and Growth Profile.'}
                       </small>
                     </div>
