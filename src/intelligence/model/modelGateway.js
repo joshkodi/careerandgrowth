@@ -11,8 +11,10 @@ export function registerModelProvider(name, provider) {
 export function createMockModelProvider({ responder = null } = {}) {
   return {
     async reason(request = {}) {
-      if (typeof responder === 'function') return responder(request)
-      return request.fallbackOutput || { status: 'mock', task: request.task || 'unknown' }
+      const output = typeof responder === 'function'
+        ? await responder(request)
+        : request.fallbackOutput || { status: 'mock', task: request.task || 'unknown' }
+      return { __synapstrideProviderEnvelope: true, output, providerMeta: { mode: 'fallback', liveModel: false } }
     },
   }
 }
@@ -46,11 +48,11 @@ export function createSynapStrideApiProvider() {
         // mock service envelope. The network path is still exercised end-to-end,
         // while existing deterministic fallback output keeps the UI stable.
         if (payload?.mode === 'mock') {
-          return request.fallbackOutput || { status: 'mock', task: request.task || 'unknown' }
+          return { __synapstrideProviderEnvelope: true, output: request.fallbackOutput || { status: 'mock', task: request.task || 'unknown' }, providerMeta: { mode: 'fallback', liveModel: false, transport: 'http' } }
         }
 
         if (payload?.success === false) throw new Error(payload.error || 'SynapStride model API request failed.')
-        if (payload?.output !== undefined) return payload.output
+        if (payload?.output !== undefined) return { __synapstrideProviderEnvelope: true, output: payload.output, providerMeta: { mode: 'live', liveModel: true, transport: 'http', backendModel: payload.modelId || payload.model || null } }
 
         throw new Error('SynapStride model API response did not contain an output field.')
       } finally {
@@ -68,15 +70,17 @@ export async function reasonWithModel(request = {}, configOverrides = {}) {
   const provider = providers.get(config.provider)
   if (!provider) throw new Error(`No model provider registered for "${config.provider}".`)
   const startedAt = Date.now()
-  const output = await provider.reason({
+  const providerResult = await provider.reason({
     ...request,
     modelId: config.modelId,
     endpoint: config.endpoint,
     timeoutMs: config.timeoutMs,
   })
+  const output = providerResult?.__synapstrideProviderEnvelope ? providerResult.output : providerResult
+  const providerMeta = providerResult?.__synapstrideProviderEnvelope ? providerResult.providerMeta || {} : {}
   const validated = request.outputSchema ? requireStructuredOutput(output, request.outputSchema) : output
   return {
     output: validated,
-    meta: { provider: config.provider, modelId: config.modelId, latencyMs: Date.now() - startedAt },
+    meta: { provider: config.provider, modelId: config.modelId, latencyMs: Date.now() - startedAt, ...providerMeta },
   }
 }

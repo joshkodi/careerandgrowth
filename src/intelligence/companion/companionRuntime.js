@@ -11,7 +11,7 @@ export async function runChildAwareCompanion({ message, messageId, childUndersta
   const intentResult = inferCompanionIntent(message, immediateContext)
   const context = buildCompanionContext({ childUnderstanding, growthContext, immediateContext, conversation, message, intentResult })
   const deterministicEvidence = buildConversationEvidenceCandidates({ message, messageId })
-  const fallbackOutput = { text: fallbackText || 'Tell me what you want to work through and I’ll help choose a useful next step.', intent: intentResult.intent, personalizationNeed: intentResult.personalizationNeed, checkUnderstanding: true, actionProposal: { action: fallbackAction || 'none' }, evidenceCandidates: deterministicEvidence }
+  const fallbackOutput = { text: fallbackText || 'Tell me what you want to work through and I’ll help choose a useful next step.', intent: intentResult.intent, personalizationNeed: intentResult.personalizationNeed, checkUnderstanding: true, followUpOptions: [], actionProposal: { action: fallbackAction || 'none' }, evidenceCandidates: deterministicEvidence }
   let result
   try {
     result = await reasonWithModel({ task: 'companion_conversation', context, outputSchema: companionConversationSchema, fallbackOutput }, modelConfig)

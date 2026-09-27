@@ -183,6 +183,8 @@ function GrowthProfileView({
   completedExplorations = [],
   profileUnderstanding = null,
   profileGrowthSource = null,
+  adaptiveAboutMe = null,
+  onReflectionResponse = null,
   onContinueDiscover = null,
   onExploreAdventures,
 }) {
@@ -370,6 +372,39 @@ function GrowthProfileView({
             <b className="ssAboutSourceV01671">{storyPatterns.length ? '✨ We’ve seen this more than once' : 'No labels from a first-day quiz'}</b>
           </article>
         </div>
+
+
+        {(adaptiveAboutMe?.outcomes || []).some((item) => item?.response === 'confirmed') ? (
+          <section className="ssAboutConfirmedV0174">
+            <div><span>💛</span><div><strong>Things that feel like me</strong><p>Reflections you’ve said fit you. You can keep changing as you grow.</p></div></div>
+            <div className="ssAboutChipsV01671">
+              {adaptiveAboutMe.outcomes.filter((item) => item?.response === 'confirmed' && item?.statement).slice(-4).map((item) => <span key={item.id || item.candidateId}>{item.statement}</span>)}
+            </div>
+          </section>
+        ) : null}
+
+
+        {(adaptiveAboutMe?.candidates || []).length ? (
+          <section className="ssAboutReflectionsV0174">
+            <div className="ssAboutReflectionIntroV0174">
+              <span>✨</span>
+              <div><strong>Something I noticed</strong><p>These are clues, not labels. You get to tell me if they feel like you.</p></div>
+            </div>
+            <div className="ssAboutReflectionGridV0174">
+              {adaptiveAboutMe.candidates.map((candidate) => (
+                <article key={candidate.id}>
+                  <small>{String(candidate.dimension || 'exploration').replaceAll('_', ' ')}</small>
+                  <p>{candidate.statement}</p>
+                  <div className="ssAboutReflectionActionsV0174">
+                    <button type="button" onClick={() => onReflectionResponse?.(candidate, 'confirmed')}>👍 That’s me</button>
+                    <button type="button" onClick={() => onReflectionResponse?.(candidate, 'maybe')}>🤔 Maybe</button>
+                    <button type="button" onClick={() => onReflectionResponse?.(candidate, 'rejected')}>👎 Not really</button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="ssAboutStoryV01671">
           <div>

@@ -7,9 +7,10 @@ export const companionIntentIds = Object.freeze({
 export const personalizationNeeds = Object.freeze({ NONE: 'none', LIGHT: 'light', CONTEXTUAL: 'contextual', DEEP: 'deep' })
 
 export const companionConversationSchema = Object.freeze({
-  required: ['text', 'intent', 'personalizationNeed', 'actionProposal', 'evidenceCandidates'],
+  required: ['text', 'intent', 'personalizationNeed', 'followUpOptions', 'actionProposal', 'evidenceCandidates'],
   properties: {
     text: { type: 'string' }, intent: { type: 'string' }, personalizationNeed: { type: 'string' }, checkUnderstanding: { type: 'boolean' },
+    followUpOptions: { type: 'array' },
     actionProposal: { type: 'object' }, evidenceCandidates: { type: 'array' },
   },
 })

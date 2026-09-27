@@ -1,0 +1,113 @@
+.companionAvatarV017 {
+  --companion-size: 48px;
+  width: var(--companion-size);
+  height: var(--companion-size);
+  flex: 0 0 var(--companion-size);
+  display: inline-grid;
+  place-items: center;
+}
+
+.companionAvatarCoreV017 {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #eef5ff, #e8e6ff);
+  border: 1px solid rgba(76, 95, 180, .18);
+  box-shadow: 0 6px 18px rgba(47, 65, 130, .12);
+}
+
+.companionAvatarFaceV017 {
+  font-size: calc(var(--companion-size) * .42);
+  line-height: 1;
+}
+
+.companionAvatarV017--thinking .companionAvatarCoreV017 {
+  animation: companionThinkPulseV017 1.35s ease-in-out infinite;
+}
+
+.companionAvatarThoughtV017 {
+  position: absolute;
+  top: -7px;
+  right: -11px;
+  display: flex;
+  gap: 3px;
+  align-items: flex-end;
+}
+
+.companionAvatarThoughtV017 i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .3;
+  animation: companionThinkDotV017 1.2s ease-in-out infinite;
+}
+
+.companionAvatarThoughtV017 i:nth-child(2) { animation-delay: .16s; }
+.companionAvatarThoughtV017 i:nth-child(3) { animation-delay: .32s; }
+
+.companionThinkingV017 {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  margin: 10px 0;
+  border-radius: 16px;
+  background: rgba(242, 246, 255, .9);
+  border: 1px solid rgba(76, 95, 180, .12);
+}
+
+.companionThinkingV017 strong {
+  display: block;
+}
+
+.companionThinkingV017 small {
+  display: block;
+  margin-top: 2px;
+  opacity: .7;
+}
+
+.companionFollowUpsV017 button:disabled,
+.companionAskV015 input:disabled,
+.companionAskV015 button:disabled,
+.synFirstUseAgentInputV014 input:disabled,
+.synFirstUseAgentInputV014 button:disabled,
+.synFirstUseAgentPromptsV014 button:disabled {
+  cursor: wait;
+  opacity: .55;
+}
+
+@keyframes companionThinkPulseV017 {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2px) scale(1.04); }
+}
+
+@keyframes companionThinkDotV017 {
+  0%, 100% { transform: translateY(0); opacity: .25; }
+  50% { transform: translateY(-4px); opacity: .9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .companionAvatarV017--thinking .companionAvatarCoreV017,
+  .companionAvatarThoughtV017 i {
+    animation: none;
+  }
+}
+
+
+/* v0.17 — keep Companion question text readable on light input surfaces. */
+.companionAskV015 input,
+.synFirstUseAgentInputV014 input {
+  color: #17233f;
+  -webkit-text-fill-color: #17233f;
+}
+
+.companionAskV015 input::placeholder,
+.synFirstUseAgentInputV014 input::placeholder {
+  color: rgba(23, 35, 63, .55);
+  -webkit-text-fill-color: rgba(23, 35, 63, .55);
+}

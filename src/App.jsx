@@ -130,6 +130,8 @@ import {
 
 import { buildGrowthIntelligenceContext } from './intelligence/growthIntelligenceContext'
 import { buildModelBackedChildUnderstanding } from './intelligence/understanding/childUnderstandingRuntime'
+import { buildAdaptiveAboutMe } from './intelligence/reflection/reflectionRuntime'
+import { saveReflectionOutcome } from './intelligence/reflection/reflectionStorage'
 
 
 
@@ -349,6 +351,7 @@ function App() {
   ] = useState(0)
 
   const [modelBackedChildUnderstanding, setModelBackedChildUnderstanding] = useState(null)
+  const [adaptiveAboutMe, setAdaptiveAboutMe] = useState(null)
 
   const [
     profileGrowthSource,
@@ -998,6 +1001,26 @@ function App() {
     parentGrowthIntents,
     growthIntelligenceProfile,
   ])
+
+
+  // ==========================================================
+  // MVP v0.17 Stage 4 — ADAPTIVE ABOUT ME
+  // Reflections are child-correctable candidates, never profile facts.
+  // ==========================================================
+  useEffect(() => {
+    let cancelled = false
+    if (!modelBackedChildUnderstanding) { setAdaptiveAboutMe(null); return () => { cancelled = true } }
+    buildAdaptiveAboutMe({ childUnderstanding: modelBackedChildUnderstanding })
+      .then((result) => { if (!cancelled) setAdaptiveAboutMe(result) })
+      .catch((error) => { console.warn('[v0.17 Stage 4] Adaptive About Me unavailable:', error); if (!cancelled) setAdaptiveAboutMe(null) })
+    return () => { cancelled = true }
+  }, [modelBackedChildUnderstanding])
+
+  const handleReflectionResponse = (candidate, response) => {
+    const childId = modelBackedChildUnderstanding?.child?.id || getChildEvidenceId(childProfile)
+    saveReflectionOutcome({ childId, candidateId: candidate?.id, concept: candidate?.concept, dimension: candidate?.dimension, statement: candidate?.statement, response, evidenceRefs: candidate?.evidenceRefs || [], source: candidate?.source || 'model_inferred' })
+    setAdaptiveAboutMe((current) => current ? { ...current, candidates: (current.candidates || []).filter((item) => item.id !== candidate?.id), outcomes: [...(current.outcomes || []), { candidateId: candidate?.id, concept: candidate?.concept, dimension: candidate?.dimension, statement: candidate?.statement, response }] } : current)
+  }
 
 
   // ==========================================================
@@ -2518,6 +2541,9 @@ function App() {
                     profileGrowthSource={
                       profileGrowthSource
                     }
+
+                    adaptiveAboutMe={adaptiveAboutMe}
+                    onReflectionResponse={handleReflectionResponse}
 
                     onContinueDiscover={
                       startDiscovery

@@ -28,6 +28,7 @@ import { buildSchoolWorkPlan } from '../intelligence/schoolWorkPlanningEngine'
 import './FirstUseHomeV014.css'
 import './AvatarV014.css'
 import Avatar from './Avatar'
+import CompanionAvatar from './CompanionAvatar'
 import ChildCoreHomeV015 from './ChildCoreHomeV015'
 
 import ExperienceResearchPanel from './ExperienceResearchPanel'
@@ -65,6 +66,8 @@ import {
 } from '../intelligence/personalizedGuidanceEngine'
 
 import { personalizeExperienceCandidates } from '../intelligence/personalization/personalizationRuntime'
+import { buildGrowthGuideContext } from '../intelligence/orchestration/growthGuideContextBuilder'
+import { buildGrowthGuide } from '../intelligence/orchestration/growthGuideOrchestrator'
 
 import {
   buildCompanionGuidance,
@@ -167,6 +170,7 @@ function GrowthHome({
   const [journeyStartPath, setJourneyStartPath] = useState(journeyPaths.EXPERIENCES)
   const [guideInput, setGuideInput] = useState('')
   const [guideReply, setGuideReply] = useState(null)
+  const [guideBusy, setGuideBusy] = useState(false)
 
   const childName =
     childProfile?.name?.trim() ||
@@ -267,6 +271,16 @@ function GrowthHome({
         recommendations,
       ]
     )
+
+  const growthGuide = useMemo(() => buildGrowthGuide({
+    context: buildGrowthGuideContext({
+      personalizedGuidance,
+      childUnderstanding: modelBackedUnderstanding,
+      journeyItems: unifiedJourneyItemsForGuidance,
+      growthActivities,
+      recommendations,
+    }),
+  }), [personalizedGuidance, modelBackedUnderstanding, unifiedJourneyItemsForGuidance, growthActivities, recommendations])
 
   const activeJourneyItems =
     journeyItems.filter(
@@ -432,9 +446,17 @@ function GrowthHome({
     onExplore?.()
   }
 
+  const isDirectKnowledgeQuestionV017 = (value = '') => /^(what|why|how|when|where|who|which|explain|describe|tell me)\b/i.test(String(value || '').trim())
+
+  const modelSourceLabelV017 = (meta = {}) => meta?.liveModel
+    ? `LIVE MODEL${meta?.backendModel || meta?.modelId ? ` · ${meta.backendModel || meta.modelId}` : ''}`
+    : `FALLBACK · ${meta?.provider || 'local'}`
+
   const runGuideRequest = async (rawText) => {
     const text = String(rawText || '').trim()
-    if (!text) return
+    if (!text || guideBusy) return
+
+    setGuideBusy(true)
 
     const activeItem =
       needsAttention?.item ||
@@ -521,8 +543,12 @@ function GrowthHome({
         conversation: guideReply
           ? [{ role: 'child', text: guideReply.question }, { role: 'companion', text: guideReply.text }]
           : [],
-        fallbackText: legacyCompanion.text,
-        fallbackAction: runtime.decision?.action || legacyGuidance.action || 'none',
+        fallbackText: isDirectKnowledgeQuestionV017(text)
+          ? 'I can help with that question, but the live AI answer is not available right now. Please try again when the model connection is active.'
+          : legacyCompanion.text,
+        fallbackAction: isDirectKnowledgeQuestionV017(text)
+          ? 'none'
+          : runtime.decision?.action || legacyGuidance.action || 'none',
       })
 
       const companion = {
@@ -546,15 +572,25 @@ function GrowthHome({
 
       // Navigation remains controlled by SynapStride. The model chooses only
       // from allowed guidance actions and never receives arbitrary callbacks.
-      const navigableAction = actionMap[runtime.decision?.action]
-        ? runtime.decision.action
-        : legacyGuidance.action
+      const proposedAction = companionRuntime.response?.actionProposal?.action || 'none'
+      const navigableAction = !isDirectKnowledgeQuestionV017(text) && proposedAction !== 'none' && actionMap[proposedAction]
+        ? proposedAction
+        : null
+      const actionLabels = {
+        continue_work: 'Continue →',
+        open_school: 'Open School & Learning →',
+        open_school_help: 'Get school help →',
+        explore: 'Explore →',
+        profile: 'Open About Me →',
+        try_recommendation: 'Try this →',
+      }
 
       setGuideReply({
         question: text,
         text: companion.text,
-        actionLabel: legacyGuidance.actionLabel || null,
-        action: actionMap[navigableAction] || null,
+        followUpOptions: companionRuntime.response.followUpOptions || [],
+        actionLabel: navigableAction ? (actionLabels[navigableAction] || legacyGuidance.actionLabel || null) : null,
+        action: navigableAction ? actionMap[navigableAction] || null : null,
         contextual: companion.contextual || legacyGuidance.contextual || false,
         intelligence: {
           version: companionRuntime.version,
@@ -573,13 +609,15 @@ function GrowthHome({
       setGuideReply({
         question: text,
         text: legacyGuidance.text,
+        followUpOptions: [],
         actionLabel: legacyGuidance.actionLabel || null,
         action: actionMap[legacyGuidance.action] || null,
         contextual: legacyGuidance.contextual || false,
       })
+    } finally {
+      setGuideBusy(false)
+      setGuideInput('')
     }
-
-    setGuideInput('')
   }
 
   const handleGuideSubmit = (event) => {
@@ -676,6 +714,7 @@ function GrowthHome({
             setGuideInput={setGuideInput}
             runGuideRequest={runGuideRequest}
             handleGuideSubmit={handleGuideSubmit}
+            guideBusy={guideBusy}
           />
         ) : (
           <ChildCoreHomeV015
@@ -684,11 +723,13 @@ function GrowthHome({
             needsAttention={needsAttention}
             recommendation={topRecommendation}
             personalizedGuidance={personalizedGuidance}
+            growthGuide={growthGuide}
             guideInput={guideInput}
             guideReply={guideReply}
             setGuideInput={setGuideInput}
             handleGuideSubmit={handleGuideSubmit}
             runGuideRequest={runGuideRequest}
+            guideBusy={guideBusy}
             onSchool={openSchoolLearning}
             onJourney={openJourney}
             onExplore={onExplore}
@@ -719,6 +760,7 @@ function FirstUseHomeV014({
   setGuideInput,
   runGuideRequest,
   handleGuideSubmit,
+  guideBusy,
 }) {
   return (
     <div className="synFirstUseHomeV014">
@@ -821,11 +863,28 @@ function FirstUseHomeV014({
             </div>
           </div>
 
-          {guideReply ? (
+          {guideBusy && (
+            <div className="companionThinkingV017" aria-live="polite">
+              <CompanionAvatar state="thinking" size={46} />
+              <div><strong>Thinking about that...</strong><small>Your Companion is working on a helpful answer.</small></div>
+            </div>
+          )}
+
+          {!guideBusy && guideReply ? (
             <div className="synFirstUseAgentConversationV014" aria-live="polite">
               <div>{guideReply.question}</div>
               <section>
                 <p>{guideReply.text}</p>
+                {guideReply.followUpOptions?.length > 0 && (
+                  <div className="companionFollowUpsV017" aria-label="Suggested follow-up questions">
+                    {guideReply.followUpOptions.map((option) => (
+                      <button type="button" key={option.id || option.label} disabled={guideBusy} onClick={() => runGuideRequest(option.prompt)}>
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {import.meta.env.DEV && guideReply.intelligence?.model && <small style={{display:'block',margin:'8px 0',opacity:.65}}>AI source: {modelSourceLabelV017(guideReply.intelligence.model)}</small>}
                 {guideReply.actionLabel && guideReply.action && (
                   <button type="button" onClick={guideReply.action}>{guideReply.actionLabel}</button>
                 )}
@@ -842,20 +901,21 @@ function FirstUseHomeV014({
           )}
 
           <div className="synFirstUseAgentPromptsV014">
-            <button type="button" onClick={() => runGuideRequest('Help me with my homework')}>Help with my homework</button>
-            <button type="button" onClick={() => runGuideRequest('What can I build?')}>What can I build?</button>
-            <button type="button" onClick={() => runGuideRequest('What should I try next?')}>What should I try?</button>
+            <button type="button" disabled={guideBusy} onClick={() => runGuideRequest('Help me with my homework')}>Help with my homework</button>
+            <button type="button" disabled={guideBusy} onClick={() => runGuideRequest('What can I build?')}>What can I build?</button>
+            <button type="button" disabled={guideBusy} onClick={() => runGuideRequest('What should I try next?')}>What should I try?</button>
           </div>
 
           <form className="synFirstUseAgentInputV014" onSubmit={handleGuideSubmit}>
             <input
               type="text"
               value={guideInput}
+              disabled={guideBusy}
               onChange={(event) => setGuideInput(event.target.value)}
               placeholder="Ask me anything..."
               aria-label="Ask SynapStride Guide"
             />
-            <button type="submit" disabled={!guideInput.trim()} aria-label="Send to SynapStride Guide">→</button>
+            <button type="submit" disabled={guideBusy || !guideInput.trim()} aria-label="Send to SynapStride Guide">→</button>
           </form>
         </aside>
       </section>
@@ -3997,6 +4057,44 @@ function JourneyPanel({
     })
   }
 
+  const runInlineLearningCompanionV017 = async (item, payload = {}, childQuestion = '') => {
+    const state = getStepWorkspaceState(item)
+    const focus = payload.focus || state.focus || item.topic || ''
+    const activity = payload.activity || {}
+    const mode = payload.mode || 'ask'
+    const message = String(childQuestion || (mode === 'example'
+      ? `Show me an age-appropriate example of ${activity.title || focus || 'this topic'} for my ${focus || 'school'} project.`
+      : `Explain ${activity.title || focus || 'this topic'} in a simple way that helps me understand it for my ${focus || 'school'} project.`)).trim()
+    const deterministicFallback = getInlineCoachResponseV0173({ ...payload, focus, activity })
+
+    updateStepWorkspaceState(item, { inlineCoach: { ...payload, activityId: activity.id || payload.activityId || null, mode: 'loading', response: 'Thinking…' } })
+    try {
+      const runtime = await runChildAwareCompanion({
+        message,
+        messageId: `school-inline-${Date.now()}`,
+        childUnderstanding: modelBackedUnderstanding,
+        growthContext: sharedIntelligenceRecommendationLoop || null,
+        immediateContext: {
+          surface: 'school_learning',
+          experience: { id: item.id || null, title: item.title || null, topic: focus || item.topic || null, path: item.path || journeyPaths.SCHOOL_LEARNING },
+          assignmentStep: 'learn',
+          learningFocus: { id: activity.id || null, title: activity.title || null, short: activity.short || null },
+          action: mode,
+        },
+        conversation: [],
+        fallbackText: deterministicFallback,
+        fallbackAction: 'none',
+      })
+      updateStepWorkspaceState(item, {
+        inlineCoach: { ...payload, activityId: activity.id || payload.activityId || null, mode: 'answer', response: runtime.response.text, model: runtime.model },
+        inlineQuestion: childQuestion || state.inlineQuestion || '',
+      })
+    } catch (error) {
+      console.error('SynapStride inline School Companion failed safely.', error)
+      updateStepWorkspaceState(item, { inlineCoach: { ...payload, activityId: activity.id || payload.activityId || null, mode: 'answer', response: deterministicFallback, model: { provider: 'fallback', liveModel: false } } })
+    }
+  }
+
   const renderIntelligentStepWorkspaceV0168 = (item, plan, selectedStep) => {
     const stepIndex = plan.steps.findIndex((step) => step.id === selectedStep.id)
     const state = getStepWorkspaceState(item)
@@ -4061,10 +4159,10 @@ function JourneyPanel({
       <div className="synLearnTopicsV0170">{researchActivities.map((a,i)=>{const done=!!String(state.researchNotes?.[a.id]||'').trim();return <button key={a.id} className={`${activeLearn.id===a.id?'active':''} ${done?'done':''}`} onClick={()=>updateStepWorkspaceState(item,{activeLearnId:a.id})}><span>{a.icon}</span><p><strong>{a.short}</strong><small>{a.hint}</small></p>{done?<b>✓</b>:<b>{i+1}</b>}</button>})}</div>
       <div className="synLearnWorkspaceV0170">
         <div className="synLearnLessonV0170"><span>{activeLearn.icon}</span><div><small>LEARN</small><h5>{activeLearn.title}</h5><p>{activeLearn.lesson}</p></div></div>
-        <div className="synLearnActionsV0170"><button onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{mode:'ask',scope:'learn',activityId:activeLearn.id},inlineQuestion:''})}>💬 Ask SynapStride</button><button onClick={()=>showInlineCoachV0173(item,{mode:'explain',scope:'learn',focus,activity:activeLearn})}>📖 Explain more</button><button onClick={()=>showInlineCoachV0173(item,{mode:'example',scope:'learn',focus,activity:activeLearn})}>🌎 Show me an example</button></div>
+        <div className="synLearnActionsV0170"><button onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{mode:'ask',scope:'learn',activityId:activeLearn.id},inlineQuestion:''})}>💬 Ask SynapStride</button><button onClick={()=>runInlineLearningCompanionV017(item,{mode:'explain',scope:'learn',focus,activity:activeLearn})}>📖 Explain more</button><button onClick={()=>runInlineLearningCompanionV017(item,{mode:'example',scope:'learn',focus,activity:activeLearn})}>🌎 Show me an example</button></div>
         {state.inlineCoach?.scope==='learn' && state.inlineCoach?.activityId===activeLearn.id && <div className="synInlineCoachV0173">
           <div className="synInlineCoachHeadV0173"><span>🤖</span><p><strong>SynapStride</strong><small>Right here with you</small></p><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null,inlineQuestion:''})}>×</button></div>
-          {state.inlineCoach.mode==='ask' ? <div className="synInlineAskV0173"><p>What do you want to know about <strong>{activeLearn.short.toLowerCase()}</strong>?</p><div><input value={state.inlineQuestion||''} placeholder="Type your question…" onChange={e=>updateStepWorkspaceState(item,{inlineQuestion:e.target.value})}/><button type="button" disabled={!String(state.inlineQuestion||'').trim()} onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{...state.inlineCoach,mode:'answer',response:`Good question. Think about “${state.inlineQuestion}” by connecting it to the main idea of ${focus||'your topic'}. Start with what you already know, then identify the one part that is still unclear.`}})}>Ask →</button></div></div> : <><p className="synInlineCoachResponseV0173">{state.inlineCoach.response}</p><div className="synInlineCoachFollowV0173"><button type="button" onClick={()=>showInlineCoachV0173(item,{mode:'explain',scope:'learn',focus,activity:activeLearn})}>Explain another way</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{mode:'ask',scope:'learn',activityId:activeLearn.id},inlineQuestion:''})}>I have a question</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null,inlineQuestion:''})}>✓ Got it</button></div></>}
+          {state.inlineCoach.mode==='ask' ? <div className="synInlineAskV0173"><p>What do you want to know about <strong>{activeLearn.short.toLowerCase()}</strong>?</p><div><input value={state.inlineQuestion||''} placeholder="Type your question…" onChange={e=>updateStepWorkspaceState(item,{inlineQuestion:e.target.value})}/><button type="button" disabled={!String(state.inlineQuestion||'').trim()} onClick={()=>runInlineLearningCompanionV017(item,{mode:'ask',scope:'learn',focus,activity:activeLearn},state.inlineQuestion)}>Ask →</button></div></div> : <><p className="synInlineCoachResponseV0173">{state.inlineCoach.response}</p>{import.meta.env.DEV && state.inlineCoach.model && <small style={{display:'block',margin:'6px 0',opacity:.65}}>AI source: {modelSourceLabelV017(state.inlineCoach.model)}</small>}<div className="synInlineCoachFollowV0173"><button type="button" onClick={()=>runInlineLearningCompanionV017(item,{mode:'explain',scope:'learn',focus,activity:activeLearn},`Explain ${activeLearn.title} another way.`)}>Explain another way</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{mode:'ask',scope:'learn',activityId:activeLearn.id},inlineQuestion:''})}>I have a question</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null,inlineQuestion:''})}>✓ Got it</button></div></>}
         </div>}
         <label className="synTakeawayV0170"><strong>What I learned</strong><small>Save one useful thought in your own words.</small><textarea rows="3" value={state.researchNotes?.[activeLearn.id]||''} placeholder="One thing I learned is…" onChange={e=>updateStepWorkspaceState(item,{researchNotes:{...(state.researchNotes||{}),[activeLearn.id]:e.target.value}})}/></label>
       </div>

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import Avatar from './Avatar'
+import CompanionAvatar from './CompanionAvatar'
 import './ChildCoreHomeV015.css'
 import { buildChildExperienceProfile } from '../intelligence/childExperienceProfile'
 import { buildCompanionHomeContext } from '../intelligence/companionContextEngine'
@@ -11,11 +12,13 @@ function ChildCoreHomeV015({
   needsAttention,
   recommendation,
   personalizedGuidance,
+  growthGuide,
   guideInput,
   guideReply,
   setGuideInput,
   handleGuideSubmit,
   runGuideRequest,
+  guideBusy = false,
   onSchool,
   onJourney,
   onExplore,
@@ -37,6 +40,19 @@ function ChildCoreHomeV015({
     personalizedGuidance?.tryNext?.reason ||
     recommendation?.reasons?.[0] ||
     'It connects with things you have shown interest in and gives you something new to try.'
+
+  const guideActions = growthGuide?.actions || []
+  const continueGuide = guideActions.find((item) => item.category === 'continue')
+  const exploreGuide = guideActions.find((item) => item.category === 'explore')
+  const growGuide = guideActions.find((item) => item.category === 'grow')
+
+  const runGrowthGuideAction = (guide) => {
+    if (!guide) return
+    if (guide.action === 'continue_work') return continueItem()
+    if (guide.action === 'try_recommendation') return onStartGrow?.(guide.item)
+    if (guide.action === 'profile') return onGrowthProfile?.()
+    if (guide.action === 'explore') return onExplore?.()
+  }
 
   const continueItem = () => {
     if (!resume?.item) return onJourney?.()
@@ -71,10 +87,26 @@ function ChildCoreHomeV015({
           </div>
         </div>
 
-        {guideReply && (
+        {guideBusy && (
+          <div className="companionThinkingV017" aria-live="polite">
+            <CompanionAvatar state="thinking" size={46} />
+            <div><strong>Thinking about that...</strong><small>Your Companion is working on a helpful answer.</small></div>
+          </div>
+        )}
+
+        {!guideBusy && guideReply && (
           <div className="companionReplyV015" aria-live="polite">
             <small>You asked: {guideReply.question}</small>
             <p>{guideReply.text}</p>
+            {guideReply.followUpOptions?.length > 0 && (
+              <div className="companionFollowUpsV017" aria-label="Suggested follow-up questions">
+                {guideReply.followUpOptions.map((option) => (
+                  <button type="button" key={option.id || option.label} disabled={guideBusy} onClick={() => runGuideRequest(option.prompt)}>
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
             {guideReply.actionLabel && guideReply.action && (
               <button type="button" onClick={guideReply.action}>{guideReply.actionLabel}</button>
             )}
@@ -84,11 +116,12 @@ function ChildCoreHomeV015({
         <form className="companionAskV015" onSubmit={handleGuideSubmit}>
           <input
             value={guideInput}
+            disabled={guideBusy}
             onChange={(event) => setGuideInput(event.target.value)}
             placeholder={experience.companionPlaceholder}
             aria-label="Ask your SynapStride Companion"
           />
-          <button type="submit" disabled={!guideInput.trim()} aria-label="Send">→</button>
+          <button type="submit" disabled={guideBusy || !guideInput.trim()} aria-label="Send">→</button>
         </form>
 
         <div className="companionQuickV015">
@@ -98,6 +131,29 @@ function ChildCoreHomeV015({
           <button type="button" onClick={() => runGuideRequest('I need help with school work')}>📚 School help</button>
           <button type="button" onClick={() => runGuideRequest('What should I try next?')}>✨ What should I try?</button>
           <button type="button" onClick={() => runGuideRequest('I want to make something')}>🛠 Make something</button>
+        </div>
+      </section>
+
+      <section className="growthGuideV0175" aria-label="Your Growth Guide">
+        <div className="growthGuideHeadV0175">
+          <div><span className="childCoreEyebrowV015">YOUR GROWTH GUIDE</span><h2>What feels right next?</h2></div>
+          <p>A few useful choices — based on what’s already in motion and what SynapStride is learning with you.</p>
+        </div>
+        <div className="growthGuideGridV0175">
+          {[
+            ['continue', '▶', 'CONTINUE', continueGuide],
+            ['explore', '✨', 'EXPLORE', exploreGuide],
+            ['grow', '🌱', 'GROW', growGuide],
+          ].map(([kind, icon, label, guide]) => guide && (
+            <article className={`growthGuideCardV0175 growthGuideCardV0175--${kind}`} key={kind}>
+              <small>{icon} {label}</small>
+              <h3>{guide.title}</h3>
+              <p>{guide.reason}</p>
+              <button type="button" onClick={() => runGrowthGuideAction(guide)}>
+                {kind === 'continue' ? 'Continue →' : kind === 'explore' ? 'Try it →' : 'See my growth →'}
+              </button>
+            </article>
+          ))}
         </div>
       </section>
 
