@@ -334,93 +334,156 @@ function GrowthProfileView({
       ) : null}
 
 
-      <section className="ssAboutLivingV01671">
-        <header className="ssAboutHeroV01671">
-          <div className="ssAboutIdentityV01671">
-            <Avatar avatarId={childProfile?.avatarId} size={64} />
+      <section className="ssAboutLivingV018">
+        <header className="ssAboutHeroV018">
+          <div className="ssAboutHeroPersonV018">
+            <Avatar avatarId={childProfile?.avatarId} size={92} />
             <div>
               <span className="synProfileEyebrowV011">✨ ABOUT ME</span>
-              <h1>This is you — so far, {safeName}.</h1>
-              <p>A living picture that grows from what you tell SynapStride and what you actually try.</p>
+              <h1>About Me</h1>
+              <p>This is me — and I’m always growing!</p>
+              <div className="ssAboutIntroBubbleV018">
+                <strong>I’m {safeName}!</strong>
+                <span>
+                  {statedDiscover.length
+                    ? `I’m into ${naturalJoin(uniqueLabels(statedDiscover, 2))}, and I’m learning new things about myself.`
+                    : 'I’m discovering what I enjoy, how I learn, and what I want to try next.'}
+                </span>
+              </div>
             </div>
           </div>
-          <div className="ssAboutGrowingV01671"><span>🌱</span><strong>Always growing</strong><small>Clues, not labels</small></div>
+          <div className="ssAboutGrowingV018">
+            <span>🌱</span>
+            <strong>Always growing</strong>
+            <small>Clues, not labels</small>
+          </div>
         </header>
 
-        <div className="ssAboutCardsV01671">
-          <article>
-            <div className="ssAboutCardTitleV01671"><span>❤️</span><div><h3>Things I’m Into</h3><small>What you’ve told me</small></div></div>
-            {statedDiscover.length ? <div className="ssAboutChipsV01671">{uniqueLabels(statedDiscover, 4).map((label)=><span key={label}>{label}</span>)}</div> : <p className="ssAboutEmptyV01671">Tell me what you enjoy and we’ll start here.</p>}
-            <b className="ssAboutSourceV01671">{statedDiscover.length ? '👤 You told me' : 'Waiting for your clues'}</b>
+        <div className="ssAboutPrimaryCardsV018">
+          <article className="ssAboutPrimaryCardV018 ssAboutInterestsV018">
+            <div className="ssAboutBigIconV018">❤️</div>
+            <h2>What I’m Into</h2>
+            <p>Things I love and enjoy</p>
+            <div className="ssAboutMiniChipsV018">
+              {uniqueLabels(statedDiscover, 3).map((label) => <span key={label}>{label}</span>)}
+              {!statedDiscover.length ? <span>Tell me what you like</span> : null}
+            </div>
+            {onContinueDiscover ? (
+              <button type="button" onClick={onContinueDiscover}>
+                {discoverCount ? 'See my interests' : 'Add my interests'} →
+              </button>
+            ) : null}
           </article>
 
-          <article>
-            <div className="ssAboutCardTitleV01671"><span>🚀</span><div><h3>Things I’m Exploring</h3><small>Curiosities showing up over time</small></div></div>
-            {story.curiosity.length ? <div className="ssAboutChipsV01671">{story.curiosity.map((label)=><span key={label}>{label}</span>)}</div> : <p className="ssAboutEmptyV01671">Try a few things and we’ll notice what keeps pulling you back.</p>}
-            <b className="ssAboutSourceV01671">{story.curiosity.length ? '✨ I’m noticing' : 'Still exploring'}</b>
+          <article className="ssAboutPrimaryCardV018 ssAboutNoticingV018">
+            <div className="ssAboutBigIconV018">✨</div>
+            <h2>What SynapStride Is Noticing</h2>
+            <p>New things I might like</p>
+            <div className="ssAboutNoticeCountV018">
+              {(adaptiveAboutMe?.candidates || []).length
+                ? `${adaptiveAboutMe.candidates.length} new ${adaptiveAboutMe.candidates.length === 1 ? 'insight' : 'insights'}`
+                : 'Still learning about me'}
+            </div>
+            <a href="#syn-about-noticing">Check it out →</a>
           </article>
 
-          <article>
-            <div className="ssAboutCardTitleV01671"><span>🧠</span><div><h3>What Helps Me</h3><small>What seems useful when you’re figuring things out</small></div></div>
-            <p className="ssAboutEmptyV01671">As you learn, ask for help, and continue after support, we’ll notice what actually seems useful.</p>
-            <b className="ssAboutSourceV01671">Needs contextual learning evidence</b>
-          </article>
-
-          <article>
-            <div className="ssAboutCardTitleV01671"><span>🌱</span><div><h3>How I’m Growing</h3><small>Patterns backed by real experiences</small></div></div>
-            {storyPatterns.length ? <div className="ssAboutChipsV01671">{uniqueLabels(storyPatterns, 4).map((label)=><span key={label}>{String(label).replaceAll('_',' ')}</span>)}</div> : <p className="ssAboutEmptyV01671">This fills in as you try, finish, reflect and keep going.</p>}
-            <b className="ssAboutSourceV01671">{storyPatterns.length ? '✨ We’ve seen this more than once' : 'No labels from a first-day quiz'}</b>
+          <article className="ssAboutPrimaryCardV018 ssAboutGrowthV018">
+            <div className="ssAboutBigIconV018">🌱</div>
+            <h2>How I’m Growing</h2>
+            <p>My strengths and progress</p>
+            <div className="ssAboutGrowthBarsV018" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <a href="#syn-about-growth">See my growth →</a>
           </article>
         </div>
 
-
-        {(adaptiveAboutMe?.outcomes || []).some((item) => item?.response === 'confirmed') ? (
-          <section className="ssAboutConfirmedV0174">
-            <div><span>💛</span><div><strong>Things that feel like me</strong><p>Reflections you’ve said fit you. You can keep changing as you grow.</p></div></div>
-            <div className="ssAboutChipsV01671">
-              {adaptiveAboutMe.outcomes.filter((item) => item?.response === 'confirmed' && item?.statement).slice(-4).map((item) => <span key={item.id || item.candidateId}>{item.statement}</span>)}
+        <section className="ssAboutInteractiveV018" id="syn-about-noticing">
+          <div className="ssAboutSectionHeadingV018">
+            <span>✨</span>
+            <div>
+              <h2>What SynapStride Is Noticing</h2>
+              <p>I’ll share one clue at a time. You decide whether it feels like you.</p>
             </div>
-          </section>
-        ) : null}
+          </div>
 
-
-        {(adaptiveAboutMe?.candidates || []).length ? (
-          <section className="ssAboutReflectionsV0174">
-            <div className="ssAboutReflectionIntroV0174">
-              <span>✨</span>
-              <div><strong>Something I noticed</strong><p>These are clues, not labels. You get to tell me if they feel like you.</p></div>
+          {(adaptiveAboutMe?.candidates || []).length ? (
+            <div className="ssAboutInsightV018">
+              <small>Something I noticed</small>
+              <h3>{adaptiveAboutMe.candidates[0].statement}</h3>
+              <p>Does that sound right?</p>
+              <div className="ssAboutReactionRowV018">
+                <button type="button" onClick={() => onReflectionResponse?.(adaptiveAboutMe.candidates[0], 'confirmed')}>👍 That’s me</button>
+                <button type="button" onClick={() => onReflectionResponse?.(adaptiveAboutMe.candidates[0], 'maybe')}>🤔 Kind of</button>
+                <button type="button" onClick={() => onReflectionResponse?.(adaptiveAboutMe.candidates[0], 'rejected')}>👎 Not really</button>
+              </div>
             </div>
-            <div className="ssAboutReflectionGridV0174">
-              {adaptiveAboutMe.candidates.map((candidate) => (
-                <article key={candidate.id}>
-                  <small>{String(candidate.dimension || 'exploration').replaceAll('_', ' ')}</small>
-                  <p>{candidate.statement}</p>
-                  <div className="ssAboutReflectionActionsV0174">
-                    <button type="button" onClick={() => onReflectionResponse?.(candidate, 'confirmed')}>👍 That’s me</button>
-                    <button type="button" onClick={() => onReflectionResponse?.(candidate, 'maybe')}>🤔 Maybe</button>
-                    <button type="button" onClick={() => onReflectionResponse?.(candidate, 'rejected')}>👎 Not really</button>
-                  </div>
+          ) : (
+            <div className="ssAboutInsightEmptyV018">
+              <span>🔎</span>
+              <div>
+                <strong>I’m still getting to know you.</strong>
+                <p>Keep exploring, asking questions and trying things. I’ll share a clue when I notice something worth checking with you.</p>
+              </div>
+            </div>
+          )}
+
+          {(adaptiveAboutMe?.outcomes || []).some((item) => item?.response === 'confirmed') ? (
+            <div className="ssAboutConfirmedV018">
+              <strong>💛 Things you said feel like you</strong>
+              <div className="ssAboutMiniChipsV018">
+                {adaptiveAboutMe.outcomes
+                  .filter((item) => item?.response === 'confirmed' && item?.statement)
+                  .slice(-3)
+                  .map((item) => <span key={item.id || item.candidateId}>{item.statement}</span>)}
+              </div>
+            </div>
+          ) : null}
+        </section>
+
+        <section className="ssAboutGrowthPanelV018" id="syn-about-growth">
+          <div className="ssAboutSectionHeadingV018">
+            <span>🌱</span>
+            <div>
+              <h2>How I’m Growing</h2>
+              <p>Strengths and skills that are showing up over time.</p>
+            </div>
+          </div>
+          {storyPatterns.length || storyTraits.length ? (
+            <div className="ssAboutStrengthGridV018">
+              {uniqueLabels(storyPatterns.length ? storyPatterns : storyTraits, 4).map((label, index) => (
+                <article key={label}>
+                  <span>{['💡','🧩','🚩','🎨'][index] || '⭐'}</span>
+                  <strong>{String(label).replaceAll('_', ' ')}</strong>
+                  <p>{index % 2 === 0 ? 'This has shown up in things you’ve tried.' : 'I’m seeing this pattern more than once.'}</p>
                 </article>
               ))}
             </div>
-          </section>
-        ) : null}
-
-        <section className="ssAboutStoryV01671">
-          <div>
-            <span className="synProfileEyebrowV011">YOUR STORY SO FAR</span>
-            <h2>{story.headline}</h2>
-            <p>{story.narrative}</p>
-          </div>
-          {story.direction.length ? <aside><span>🧭</span><div><strong>Worth exploring next</strong><p>{story.connection}</p></div></aside> : null}
+          ) : (
+            <p className="ssAboutSimpleEmptyV018">Your growth story will appear here as you try, learn, finish and reflect.</p>
+          )}
         </section>
 
-        {onContinueDiscover ? <section className="ssAboutCheckV01671">
-          <div><span>🤖</span><div><strong>Anything changed?</strong><p>Your interests and preferences can change. Tell me whenever something feels different.</p></div></div>
-          <button type="button" onClick={onContinueDiscover}>{discoverCount ? 'Update About Me' : 'Start About Me'} →</button>
-        </section> : null}
+        <section className="ssAboutNextV018">
+          <div>
+            <span>🧭</span>
+            <div>
+              <strong>Let’s Explore What’s Next!</strong>
+              <p>Find activities, projects and ideas based on what you’re into and what I’m noticing.</p>
+            </div>
+          </div>
+          {onExploreAdventures ? <button type="button" onClick={onExploreAdventures}>Explore Ideas →</button> : null}
+        </section>
 
-        {onAvatarChange ? <details className="synProfileAvatarEditV014 ssAboutAvatarV01671"><summary>Change my avatar</summary><AvatarPicker compact age={childProfile?.age} value={childProfile?.avatarId} onChange={onAvatarChange}/></details> : null}
+        <div className="ssAboutUtilityRowV018">
+          {onContinueDiscover ? <button type="button" onClick={onContinueDiscover}>✏️ Change something about me</button> : null}
+          {onAvatarChange ? (
+            <details className="ssAboutAvatarV018">
+              <summary>🙂 Change my avatar</summary>
+              <AvatarPicker compact age={childProfile?.age} value={childProfile?.avatarId} onChange={onAvatarChange}/>
+            </details>
+          ) : null}
+        </div>
       </section>
 
       <section className="synProfileAboutV011 synProfileAboutV0117 ssLegacyProfileV01671">
