@@ -8,7 +8,10 @@ export async function reasonAboutChild({ context, modelConfig } = {}) {
     context,
     outputSchema: childUnderstandingOutputSchema,
     fallbackOutput: emptyChildUnderstandingOutput(),
-  }, modelConfig)
+  }, {
+  timeoutMs: 30000,
+  ...modelConfig,
+  })
 
   const validation = validateChildUnderstandingInterpretation(result.output, context)
 

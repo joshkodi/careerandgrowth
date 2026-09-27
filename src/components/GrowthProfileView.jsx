@@ -2,6 +2,7 @@ import './GrowthProfileView.css'
 import './AvatarV014.css'
 import Avatar from './Avatar'
 import AvatarPicker from './AvatarPicker'
+import { presentAboutMeCandidate } from '../intelligence/reflection/reflectionPresentation'
 
 // ============================================================
 // SynapStride
@@ -184,12 +185,18 @@ function GrowthProfileView({
   profileUnderstanding = null,
   profileGrowthSource = null,
   adaptiveAboutMe = null,
+  isChildUnderstandingLoading = false,
   onReflectionResponse = null,
   onContinueDiscover = null,
   onExploreAdventures,
 }) {
   const safeName =
     childName || 'Explorer'
+
+  const confirmedAboutMeOutcomes = safeArray(adaptiveAboutMe?.outcomes)
+    .filter((item) => item?.response === 'confirmed' && item?.statement)
+
+  const hasConfirmedAboutMe = confirmedAboutMeOutcomes.length > 0
 
   const evidenceSummary =
     profile?.evidenceSummary || {}
@@ -382,9 +389,17 @@ function GrowthProfileView({
             <div className="ssAboutNoticeCountV018">
               {(adaptiveAboutMe?.candidates || []).length
                 ? `${adaptiveAboutMe.candidates.length} new ${adaptiveAboutMe.candidates.length === 1 ? 'insight' : 'insights'}`
-                : 'Still learning about me'}
+                : hasConfirmedAboutMe
+                  ? `${confirmedAboutMeOutcomes.length} ${confirmedAboutMeOutcomes.length === 1 ? 'thing' : 'things'} confirmed`
+                  : 'Still learning about me'}
             </div>
-            <a href="#syn-about-noticing">Check it out →</a>
+            <a
+              href="#syn-about-noticing"
+              className={isChildUnderstandingLoading ? 'isLoading' : ''}
+              aria-busy={isChildUnderstandingLoading ? 'true' : undefined}
+            >
+              {isChildUnderstandingLoading ? 'Thinking…' : 'Check it out →'}
+            </a>
           </article>
 
           <article className="ssAboutPrimaryCardV018 ssAboutGrowthV018">
@@ -407,10 +422,23 @@ function GrowthProfileView({
             </div>
           </div>
 
-          {(adaptiveAboutMe?.candidates || []).length ? (
+          {isChildUnderstandingLoading ? (
+            <div className="ssAboutThinkingV018" role="status" aria-live="polite">
+              <span className="ssAboutThinkingSparkV018" aria-hidden="true">✨</span>
+              <div>
+                <strong>I’m thinking about what I’ve noticed...</strong>
+                <p>Looking at the things you’ve explored, asked about, and tried.</p>
+              </div>
+              <span className="ssAboutThinkingDotsV018" aria-hidden="true"><i></i><i></i><i></i></span>
+            </div>
+          ) : (adaptiveAboutMe?.candidates || []).length ? (
             <div className="ssAboutInsightV018">
               <small>Something I noticed</small>
-              <h3>{adaptiveAboutMe.candidates[0].statement}</h3>
+              <h3>{presentAboutMeCandidate(adaptiveAboutMe.candidates[0]).headline}</h3>
+              <div className="ssAboutWhyV018">
+                <strong>Why I noticed this</strong>
+                <p>{presentAboutMeCandidate(adaptiveAboutMe.candidates[0]).why}</p>
+              </div>
               <p>Does that sound right?</p>
               <div className="ssAboutReactionRowV018">
                 <button type="button" onClick={() => onReflectionResponse?.(adaptiveAboutMe.candidates[0], 'confirmed')}>👍 That’s me</button>
@@ -422,20 +450,25 @@ function GrowthProfileView({
             <div className="ssAboutInsightEmptyV018">
               <span>🔎</span>
               <div>
-                <strong>I’m still getting to know you.</strong>
-                <p>Keep exploring, asking questions and trying things. I’ll share a clue when I notice something worth checking with you.</p>
+                <strong>{hasConfirmedAboutMe ? 'Thanks! I learned something new about you.' : 'I’m still getting to know you.'}</strong>
+                <p>{hasConfirmedAboutMe
+                  ? 'Keep exploring, asking questions and trying things. I’ll share another clue when I notice something worth checking with you.'
+                  : 'Keep exploring, asking questions and trying things. I’ll share a clue when I notice something worth checking with you.'}</p>
               </div>
             </div>
           )}
 
-          {(adaptiveAboutMe?.outcomes || []).some((item) => item?.response === 'confirmed') ? (
+          {hasConfirmedAboutMe ? (
             <div className="ssAboutConfirmedV018">
               <strong>💛 Things you said feel like you</strong>
               <div className="ssAboutMiniChipsV018">
-                {adaptiveAboutMe.outcomes
-                  .filter((item) => item?.response === 'confirmed' && item?.statement)
+                {confirmedAboutMeOutcomes
                   .slice(-3)
-                  .map((item) => <span key={item.id || item.candidateId}>{item.statement}</span>)}
+                  .map((item) => (
+                    <span key={item.id || item.candidateId}>
+                      {presentAboutMeCandidate(item).headline}
+                    </span>
+                  ))}
               </div>
             </div>
           ) : null}

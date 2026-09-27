@@ -16,6 +16,7 @@ const inferenceSchema = {
     type: { type: 'string', enum: childUnderstandingInferenceTypes },
     concept: { type: 'string' },
     statement: { type: 'string' },
+    childFacingStatement: { type: 'string' },
     confidence: { type: 'number', minimum: 0, maximum: 1 },
     evidenceRefs: { type: 'array', items: { type: 'string' } },
     reasoningBasis: { type: 'array', items: { type: 'string' } },

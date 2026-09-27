@@ -131,6 +131,7 @@ import {
 import { buildGrowthIntelligenceContext } from './intelligence/growthIntelligenceContext'
 import { buildModelBackedChildUnderstanding } from './intelligence/understanding/childUnderstandingRuntime'
 import { buildAdaptiveAboutMe } from './intelligence/reflection/reflectionRuntime'
+import { buildCompanionExplorationEvidence } from './intelligence/companionExplorationEvidenceAdapter'
 import { saveReflectionOutcome } from './intelligence/reflection/reflectionStorage'
 
 
@@ -351,6 +352,7 @@ function App() {
   ] = useState(0)
 
   const [modelBackedChildUnderstanding, setModelBackedChildUnderstanding] = useState(null)
+  const [isChildUnderstandingLoading, setIsChildUnderstandingLoading] = useState(false)
   const [adaptiveAboutMe, setAdaptiveAboutMe] = useState(null)
 
   const [
@@ -411,6 +413,40 @@ function App() {
       )
 
       return profile
+    }
+
+
+
+  // ==========================================================
+  // v0.17 Stage 4 — COMPANION EXPLORATION → GROWTH EVIDENCE
+  // Only explicit child exploration language is promoted, and only
+  // as weak curiosity evidence. Conversation itself is not evidence.
+  // ==========================================================
+
+  const handleCompanionExploration =
+    (message, { activeTopic = null, isFollowUp = false } = {}) => {
+      const childId =
+        getChildEvidenceId(
+          childProfile
+        )
+
+      const event =
+        buildCompanionExplorationEvidence({
+          childId,
+          message,
+          activeTopic,
+          isFollowUp,
+        })
+
+      if (!event) {
+        return false
+      }
+
+      persistGrowthEvidence([event])
+      return {
+        recorded: true,
+        topic: event.metadata?.topic || activeTopic || null,
+      }
     }
 
 
@@ -967,8 +1003,11 @@ function App() {
 
     if (!childProfile?.name?.trim()) {
       setModelBackedChildUnderstanding(null)
+      setIsChildUnderstandingLoading(false)
       return () => { cancelled = true }
     }
+
+    setIsChildUnderstandingLoading(true)
 
     const growthContext = buildGrowthIntelligenceContext({
       childId: getChildEvidenceId(childProfile),
@@ -990,6 +1029,9 @@ function App() {
       .catch((error) => {
         console.warn('[v0.17 Stage 1] Model-backed child understanding unavailable:', error)
         if (!cancelled) setModelBackedChildUnderstanding(null)
+      })
+      .finally(() => {
+        if (!cancelled) setIsChildUnderstandingLoading(false)
       })
 
     return () => { cancelled = true }
@@ -1018,7 +1060,7 @@ function App() {
 
   const handleReflectionResponse = (candidate, response) => {
     const childId = modelBackedChildUnderstanding?.child?.id || getChildEvidenceId(childProfile)
-    saveReflectionOutcome({ childId, candidateId: candidate?.id, concept: candidate?.concept, dimension: candidate?.dimension, statement: candidate?.statement, response, evidenceRefs: candidate?.evidenceRefs || [], source: candidate?.source || 'model_inferred' })
+    saveReflectionOutcome({ childId, candidateId: candidate?.id, concept: candidate?.concept, dimension: candidate?.dimension, statement: candidate?.statement, childFacingStatement: candidate?.childFacingStatement || null, response, evidenceRefs: candidate?.evidenceRefs || [], source: candidate?.source || 'model_inferred' })
     setAdaptiveAboutMe((current) => current ? { ...current, candidates: (current.candidates || []).filter((item) => item.id !== candidate?.id), outcomes: [...(current.outcomes || []), { candidateId: candidate?.id, concept: candidate?.concept, dimension: candidate?.dimension, statement: candidate?.statement, response }] } : current)
   }
 
@@ -2164,6 +2206,10 @@ function App() {
               startExploration
             }
 
+            onCompanionExploration={
+              handleCompanionExploration
+            }
+
             evidenceEventCount={
               evidenceEventCount
             }
@@ -2543,6 +2589,7 @@ function App() {
                     }
 
                     adaptiveAboutMe={adaptiveAboutMe}
+                    isChildUnderstandingLoading={isChildUnderstandingLoading}
                     onReflectionResponse={handleReflectionResponse}
 
                     onContinueDiscover={

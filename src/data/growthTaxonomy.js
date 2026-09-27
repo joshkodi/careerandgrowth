@@ -183,6 +183,7 @@ export const evidenceSourceTypes = {
   REFLECTION: 'reflection',
   COMPLETION: 'completion',
   COMPANION_OUTCOME: 'companion_outcome',
+  COMPANION_EXPLORATION: 'companion_exploration',
 }
 
 export const evidenceStreamBySourceType = {
@@ -207,6 +208,10 @@ export const evidenceStreamBySourceType = {
   // v0.16 adaptive learning loop: child responses to delivered guidance.
   // These remain evidence, never direct profile facts.
   [evidenceSourceTypes.COMPANION_OUTCOME]:
+    evidenceStreams.KID_EXPERIENCE,
+
+  // v0.17 Stage 4: qualified exploratory Companion interactions.
+  [evidenceSourceTypes.COMPANION_EXPLORATION]:
     evidenceStreams.KID_EXPERIENCE,
 }
 

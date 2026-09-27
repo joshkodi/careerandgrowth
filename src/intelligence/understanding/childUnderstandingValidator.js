@@ -12,6 +12,7 @@ export function validateChildUnderstandingInterpretation(output = {}, context = 
     const type = clean(item?.type)
     const concept = clean(item?.concept)
     const statement = clean(item?.statement)
+    const childFacingStatement = clean(item?.childFacingStatement)
     const evidenceRefs = [...new Set(safeArray(item?.evidenceRefs).map(String).filter(Boolean))]
     const validEvidenceRefs = evidenceRefs.filter((id) => evidenceIds.has(id))
     const confidence = Number(item?.confidence)
@@ -32,6 +33,7 @@ export function validateChildUnderstandingInterpretation(output = {}, context = 
       type,
       concept,
       statement,
+      childFacingStatement: childFacingStatement || null,
       confidence,
       evidenceRefs: validEvidenceRefs,
       reasoningBasis: safeArray(item?.reasoningBasis).map(clean).filter(Boolean).slice(0, 6),

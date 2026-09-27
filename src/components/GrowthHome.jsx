@@ -126,6 +126,7 @@ function GrowthHome({
   exploreCatalog = [],
   onSaveGrowthOpportunity,
   onStartAdventure,
+  onCompanionExploration,
   evidenceEventCount = 0,
   growthProfile = null,
   modelBackedUnderstanding = null,
@@ -171,6 +172,7 @@ function GrowthHome({
   const [guideInput, setGuideInput] = useState('')
   const [guideReply, setGuideReply] = useState(null)
   const [guideBusy, setGuideBusy] = useState(false)
+  const [companionExplorationTopic, setCompanionExplorationTopic] = useState(null)
 
   const childName =
     childProfile?.name?.trim() ||
@@ -452,7 +454,7 @@ function GrowthHome({
     ? `LIVE MODEL${meta?.backendModel || meta?.modelId ? ` · ${meta.backendModel || meta.modelId}` : ''}`
     : `FALLBACK · ${meta?.provider || 'local'}`
 
-  const runGuideRequest = async (rawText) => {
+  const runGuideRequest = async (rawText, { companionFollowUp = false } = {}) => {
     const text = String(rawText || '').trim()
     if (!text || guideBusy) return
 
@@ -583,6 +585,15 @@ function GrowthHome({
         explore: 'Explore →',
         profile: 'Open About Me →',
         try_recommendation: 'Try this →',
+      }
+
+      const explorationResult = onCompanionExploration?.(text, {
+        activeTopic: companionExplorationTopic,
+        isFollowUp: companionFollowUp,
+      })
+
+      if (explorationResult?.topic) {
+        setCompanionExplorationTopic(explorationResult.topic)
       }
 
       setGuideReply({
@@ -878,7 +889,7 @@ function FirstUseHomeV014({
                 {guideReply.followUpOptions?.length > 0 && (
                   <div className="companionFollowUpsV017" aria-label="Suggested follow-up questions">
                     {guideReply.followUpOptions.map((option) => (
-                      <button type="button" key={option.id || option.label} disabled={guideBusy} onClick={() => runGuideRequest(option.prompt)}>
+                      <button type="button" key={option.id || option.label} disabled={guideBusy} onClick={() => runGuideRequest(option.prompt, { companionFollowUp: true })}>
                         {option.label}
                       </button>
                     ))}
