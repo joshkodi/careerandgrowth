@@ -1,4 +1,4 @@
-import { modelGateway } from '../model/modelGateway'
+import { reasonWithModel } from '../model/modelGateway'
 import { localMemoryRepository } from './memoryRepository'
 import { memoryTypes } from './memoryModels'
 
@@ -40,7 +40,7 @@ export async function interpretPreviousGuidanceOutcome({ childId, message, seman
 
   const fallback = fallbackInterpretation(message)
   try {
-    const result = await modelGateway.reason({
+    const result = await reasonWithModel({
       task: 'interpret_guidance_outcome',
       context: {
         previousGuidance: {
