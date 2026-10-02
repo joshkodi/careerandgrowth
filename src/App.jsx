@@ -10,6 +10,7 @@ import './SynapStrideV01110.css'
 import './FirstCustomerV01112.css'
 import './WhySynapStrideV0116.css'
 import './SynapStrideAuthV012.css'
+import './PublicLandingV018.css'
 import './components/AvatarV014.css'
 import './components/ParentFirstUseV014.css'
 import './components/FamilyOnboardingV014.css'
@@ -3211,45 +3212,98 @@ function SynapStrideLogoMark() {
 
 
 function AuthWelcome({ onGetStarted, onSignIn, onWhy }) {
+  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+
+  const signals = [
+    ['📚', 'School & Learning', 'Homework, questions, projects and skills'],
+    ['🎨', 'Interests & Activities', 'Things they enjoy, practice and keep coming back to'],
+    ['🌎', 'Exploration & Experiences', 'New things they try and discover'],
+    ['💬', 'Their Own Voice', 'What they enjoy, struggle with and want to try'],
+    ['👨‍👩‍👧', 'Parent Perspective', 'What parents notice along the journey'],
+  ]
+  const practical = [
+    ['📖', 'School & Learning', 'Get unstuck, understand something, create something and finish schoolwork.'],
+    ['🎨', 'Interests & Activities', 'Explore interests and keep track of activities that matter.'],
+    ['🧭', 'Discover', 'Learn more about yourself through what you enjoy, try and experience.'],
+    ['💬', 'AI Companion', 'Ask for help along the way from a guide that can use relevant context.'],
+  ]
+
   return (
-    <section className="synAuthPageV012 synAuthWelcomePageV012">
-      <div className="synAuthWelcomeCardV012">
-        <div className="synAuthBrandV012 synAuthBrandHeroV012">
-          <img src={synapStrideMark} alt="" />
-          <strong>Synap<span>Stride</span></strong>
-        </div>
-
-        <div className="synAuthWelcomeCopyV012">
-          <p className="synAuthEyebrowV012">DISCOVER · EXPLORE · GROW</p>
-          <h1>Help your child learn, explore, and discover what comes next.</h1>
-          <p className="synAuthLeadV012">
-            A growth guide that becomes more useful as your child learns, tries things and grows.
-          </p>
-        </div>
-
-        <div className="synAuthWelcomePointsV012">
-          <span><b>✦</b> Helpful for what matters today</span>
-          <span><b>🌱</b> Learns naturally over time</span>
-          <span><b>🔒</b> Parent-controlled family space</span>
-        </div>
-
-        <div className="synAuthWelcomeActionsV012">
-          <button type="button" className="synAuthPrimaryV012" onClick={onGetStarted}>
-            Get Started
-          </button>
-          <button type="button" className="synAuthSecondaryV012" onClick={onSignIn}>
-            Sign In
-          </button>
-        </div>
-
-        <button type="button" className="synAuthWhyV012" onClick={onWhy}>
-          Why SynapStride? →
+    <div className="synPublicV018">
+      <nav className="synPublicNavV018" aria-label="Public website">
+        <button className="synPublicBrandV018" type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <img src={synapStrideMark} alt="" /><span>Synap<span>Stride</span></span>
         </button>
-      </div>
-    </section>
+        <div className="synPublicLinksV018">
+          <a href="#how-it-works">How It Works</a><a href="#for-kids">For Kids</a><a href="#for-parents">For Parents</a>
+          <button type="button" onClick={onWhy} style={{border:0,background:'none',padding:0,color:'inherit',fontWeight:650,cursor:'pointer'}}>Why SynapStride</button>
+          <a href="#about">About</a>
+        </div>
+        <div className="synPublicActionsV018">
+          <button type="button" className="synPublicBtnV018" onClick={onSignIn}>Sign In</button>
+          <button type="button" className="synPublicBtnV018 primary" onClick={onGetStarted}>Get Started</button>
+        </div>
+      </nav>
+
+      <header className="synPublicHeroV018">
+        <div className="synPublicWrapV018 synPublicHeroGridV018">
+          <div>
+            <p className="synPublicKickerV018">DISCOVER · EXPLORE · GROW</p>
+            <h1>Help your child learn, explore, and discover <em>what comes next.</em></h1>
+            <p className="synPublicLeadV018">SynapStride is an AI-powered growth guide that learns from your child's learning, interests and experiences — helping provide more relevant guidance as they grow.</p>
+            <div className="synPublicHeroButtonsV018"><button type="button" className="synPublicBtnV018 primary" onClick={onGetStarted}>Get Started →</button><button type="button" className="synPublicBtnV018" onClick={onSignIn}>Sign In</button></div>
+            <div className="synPublicProofV018">
+              <div><b>🌱</b><strong>Helpful today</strong><small>Value from day one</small></div>
+              <div><b>▥</b><strong>Learns over time</strong><small>More useful as they grow</small></div>
+              <div><b>◆</b><strong>Parent-guided</strong><small>A family-controlled space</small></div>
+            </div>
+          </div>
+          <div className="synPublicHeroVisualV018" aria-label="SynapStride helps connect learning, interests and growth">
+            <div className="synPublicFamilyV018"><div><span>👩‍👧</span><strong>Growing together</strong></div></div>
+            <div className="synPublicFloatV018 f1">📖 &nbsp; Homework help</div><div className="synPublicFloatV018 f2">🧭 &nbsp; Explore interests</div><div className="synPublicFloatV018 f3">💡 &nbsp; Try new things</div><div className="synPublicFloatV018 f4">🌱 &nbsp; Discover strengths</div>
+          </div>
+        </div>
+      </header>
+
+      <section className="synPublicSectionV018 alt" id="how-it-works"><div className="synPublicWrapV018">
+        <div className="synPublicSectionHeadV018"><p className="synPublicKickerV018">A BIGGER PICTURE FOR A BRIGHTER FUTURE</p><h2>A child's growth is bigger than schoolwork.</h2><p>Children learn from many places — school, interests, activities, experiences and their own voice. Most tools see one piece. SynapStride connects them, helping build a more complete picture and more relevant guidance along the way.</p></div>
+        <div className="synPublicSignalGridV018">{signals.map(([icon,title,text]) => <article className="synPublicCardV018" key={title}><div className="icon">{icon}</div><h3>{title}</h3><p>{text}</p></article>)}</div>
+      </div></section>
+
+      <section className="synPublicSectionV018 warm"><div className="synPublicWrapV018 synPublicGrowthGridV018">
+        <div className="synPublicSectionHeadV018"><p className="synPublicKickerV018">ONE GUIDE THAT LEARNS AS THEY GROW</p><h2>Growth Intelligence in action.</h2><p>Every interaction can add another useful clue. SynapStride builds an evolving understanding from learning, interests, activities, experiences, reflections and parent perspective — helping identify what may help next and why.</p></div>
+        <div className="synPublicLoopV018"><div><span>📖</span>Learn</div><div><span>🧭</span>Explore</div><div><span>💡</span>Try</div><div><span>💬</span>Reflect</div></div>
+      </div></section>
+
+      <section className="synPublicSectionV018" id="for-kids"><div className="synPublicWrapV018">
+        <p className="synPublicKickerV018">BUILT FOR KIDS. USEFUL FOR PARENTS.</p>
+        <div className="synPublicAudienceV018">
+          <article className="synPublicAudienceCardV018 kids"><div className="synPublicAudienceArtV018">🧒💻</div><div><h3>For Kids</h3><strong>Learn. Explore. Try things. Have fun.</strong><p>Get help when stuck. Explore something interesting. Work through school assignments. Try activities and experiences. Have an AI companion that can understand relevant context along the way.</p></div></article>
+          <article className="synPublicAudienceCardV018 parents" id="for-parents"><div className="synPublicAudienceArtV018">👨‍👩‍👧</div><div><h3>For Parents</h3><strong>Useful now. Smarter over time.</strong><p>Get a broader picture of what your child is doing, learning and discovering — and contribute your own perspective without taking over their experience.</p></div></article>
+        </div>
+      </div></section>
+
+      <section className="synPublicSectionV018 alt"><div className="synPublicWrapV018">
+        <div className="synPublicSectionHeadV018"><p className="synPublicKickerV018">WHAT CAN MY CHILD ACTUALLY DO WITH IT?</p><h2>Practical support for real life.</h2></div>
+        <div className="synPublicPracticalV018">{practical.map(([icon,title,text]) => <article className="synPublicCardV018" key={title}><div className="icon">{icon}</div><h3>{title}</h3><p>{text}</p></article>)}</div>
+      </div></section>
+
+      <section className="synPublicSectionV018" id="about"><div className="synPublicWrapV018 synPublicCompanyV018">
+        <div className="synPublicSectionHeadV018"><p className="synPublicKickerV018">ABOUT SYNAPSTRIDE</p><h2>Technology for the whole growth journey.</h2><p>SynapStride is building a personal growth platform designed to help children learn, explore their interests and develop through real experiences — with parents as part of the journey.</p></div>
+        <div className="companyBox"><strong>SynapStride LLC</strong><p>An Arizona-based technology company building AI-powered experiences for children and families.</p></div>
+      </div></section>
+
+      <section className="synPublicCtaV018"><div className="synPublicCtaInnerV018"><div><h2>Ready to support what comes next?</h2><p>Join SynapStride and help your child learn, explore and grow.</p></div><button type="button" className="synPublicBtnV018 primary" onClick={onGetStarted}>Get Started →</button><button type="button" className="synPublicBtnV018" onClick={onSignIn}>Sign In</button></div></section>
+
+      <footer className="synPublicFooterV018">
+        <div className="synPublicFooterBrandV018"><button className="synPublicBrandV018" type="button" onClick={() => window.scrollTo({top:0,behavior:'smooth'})}><img src={synapStrideMark} alt=""/><span>Synap<span>Stride</span></span></button><p>© 2026 SynapStride LLC. All rights reserved.</p></div>
+        <div><h4>Product</h4><a href="#how-it-works">How It Works</a><a href="#for-kids">For Kids</a><a href="#for-parents">For Parents</a><button type="button" onClick={onWhy}>Why SynapStride</button></div>
+        <div><h4>Company</h4><a href="#about">About</a><button type="button" onClick={() => window.alert('Contact page coming soon.')}>Contact</button></div>
+        <div><h4>Legal</h4><button type="button" onClick={() => window.alert('Privacy Policy page coming soon.')}>Privacy Policy</button><button type="button" onClick={() => window.alert('Terms of Use page coming soon.')}>Terms of Use</button></div>
+      </footer>
+    </div>
   )
 }
-
 
 function AuthAccountScreen({
   mode,
