@@ -185,6 +185,11 @@ import {
 const APP_STATE_STORAGE_KEY =
   'careerGrowth.v04.appState'
 
+const CHILD_PRIVACY_CONSENT_STORAGE_KEY =
+  'synapstride.childPrivacyConsent.v1'
+
+const CHILD_PRIVACY_NOTICE_VERSION = '2026-10-03'
+
 
 const readJsonStorage = (key) => {
   try {
@@ -268,6 +273,11 @@ const storedAppState =
     storedAuthSession?.familyId || null
   )
 
+const storedChildPrivacyConsent =
+  storedAuthSession?.familyId
+    ? readJsonStorage(getFamilyStorageKey(CHILD_PRIVACY_CONSENT_STORAGE_KEY, storedAuthSession.familyId))
+    : null
+
 
 // ============================================================
 // APP
@@ -291,13 +301,22 @@ function App() {
       }
 
       if (!storedAppState?.childProfile?.name?.trim()) {
-        return 'parentSetup'
+        return storedChildPrivacyConsent?.status === 'active'
+          ? 'parentSetup'
+          : 'parentConsent'
       }
 
       return storedAppState.screen === 'journey'
         ? 'journey'
         : 'childSpace'
     })
+
+  // Reset the viewport whenever SynapStride navigates to a different page/screen.
+  // This keeps pages opened from footer links (Privacy, Terms, Contact, etc.)
+  // from inheriting the previous page's scroll position.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [screen])
 
 
   const [
@@ -319,6 +338,18 @@ function App() {
 
   const [authMessage, setAuthMessage] =
     useState('')
+
+  const [childPrivacyConsent, setChildPrivacyConsent] =
+    useState(storedChildPrivacyConsent)
+
+  const [privacyReturnScreen, setPrivacyReturnScreen] =
+    useState('landing')
+
+  const [termsReturnScreen, setTermsReturnScreen] =
+    useState('landing')
+
+  const [contactReturnScreen, setContactReturnScreen] =
+    useState('landing')
 
   const [childAccess, setChildAccess] = useState({
     enabled: false,
@@ -1493,7 +1524,7 @@ function App() {
     resetGrowthIntents()
     resetJourney()
 
-    setScreen('parentSetup')
+    setScreen(childPrivacyConsent?.status === 'active' ? 'parentSetup' : 'parentConsent')
   }
 
 
@@ -1650,6 +1681,44 @@ function App() {
     setScreen('signIn')
   }
 
+
+  // ==========================================================
+  // CHILD PRIVACY / PARENT CONSENT FOUNDATION
+  // ==========================================================
+
+  const acceptChildPrivacyConsent = () => {
+    if (!authSession?.familyId || authSession?.role !== 'parent') return
+
+    const consent = {
+      status: 'active',
+      noticeVersion: CHILD_PRIVACY_NOTICE_VERSION,
+      acceptedAt: new Date().toISOString(),
+      parentAccountId: parentAccount?.id || null,
+      parentEmail: parentAccount?.email || null,
+    }
+
+    localStorage.setItem(
+      getFamilyStorageKey(CHILD_PRIVACY_CONSENT_STORAGE_KEY, authSession.familyId),
+      JSON.stringify(consent)
+    )
+    setChildPrivacyConsent(consent)
+    setScreen('parentSetup')
+  }
+
+  const openPrivacyNotice = (returnScreen = screen) => {
+    setPrivacyReturnScreen(returnScreen)
+    setScreen('privacyPolicy')
+  }
+
+  const openTermsOfUse = (returnScreen = screen) => {
+    setTermsReturnScreen(returnScreen)
+    setScreen('termsOfUse')
+  }
+
+  const openContact = (returnScreen = screen) => {
+    setContactReturnScreen(returnScreen)
+    setScreen('contact')
+  }
 
   // ==========================================================
   // CHILD SPACE
@@ -1922,6 +1991,9 @@ function App() {
             setWhyReturnScreen('landing')
             setScreen('whySynapStride')
           }}
+          onPrivacy={() => openPrivacyNotice('landing')}
+          onTerms={() => openTermsOfUse('landing')}
+          onContact={() => openContact('landing')}
         />
       )}
 
@@ -1996,6 +2068,33 @@ function App() {
         )
       )}
 
+
+      {screen === 'parentConsent' && (
+        <ChildPrivacyConsentScreen
+          parentEmail={parentAccount?.email}
+          onAccept={acceptChildPrivacyConsent}
+          onReview={() => openPrivacyNotice('parentConsent')}
+          onBack={handleSignOut}
+        />
+      )}
+
+      {screen === 'privacyPolicy' && (
+        <PrivacyPolicyScreen
+          onBack={() => setScreen(privacyReturnScreen || 'landing')}
+        />
+      )}
+
+      {screen === 'termsOfUse' && (
+        <TermsOfUseScreen
+          onBack={() => setScreen(termsReturnScreen || 'landing')}
+        />
+      )}
+
+      {screen === 'contact' && (
+        <ContactScreen
+          onBack={() => setScreen(contactReturnScreen || 'landing')}
+        />
+      )}
 
       {screen ===
         'parentSetup' && (
@@ -2815,6 +2914,8 @@ function App() {
             recommendations={growthRecommendations}
             modelBackedUnderstanding={modelBackedChildUnderstanding}
             parentAccount={parentAccount}
+            childPrivacyConsent={childPrivacyConsent}
+            onPrivacy={() => openPrivacyNotice('settings')}
             onSignOut={handleSignOut}
             onReset={resetTestData}
           />
@@ -3211,32 +3312,31 @@ function SynapStrideLogoMark() {
 }
 
 
-function AuthWelcome({ onGetStarted, onSignIn, onWhy }) {
+function AuthWelcome({ onGetStarted, onSignIn, onWhy, onPrivacy, onTerms, onContact }) {
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 
-  const signals = [
-    ['📚', 'School & Learning', 'Homework, questions, projects and skills'],
-    ['🎨', 'Interests & Activities', 'Things they enjoy, practice and keep coming back to'],
-    ['🌎', 'Exploration & Experiences', 'New things they try and discover'],
-    ['💬', 'Their Own Voice', 'What they enjoy, struggle with and want to try'],
-    ['👨‍👩‍👧', 'Parent Perspective', 'What parents notice along the journey'],
+  const journey = [
+    { icon: '📘', title: 'Learn', text: 'Get help with schoolwork without simply being handed the answer.', tone: 'learn' },
+    { icon: '🔭', title: 'Explore', text: 'Discover topics, ideas and experiences based on curiosity.', tone: 'explore' },
+    { icon: '🛠️', title: 'Try', text: 'Turn interests into activities, projects and real-world experiences.', tone: 'try' },
+    { icon: '🧭', title: 'Discover Me', text: 'See interests, strengths and experiences come together over time.', tone: 'discover' },
   ]
-  const practical = [
-    ['📖', 'School & Learning', 'Get unstuck, understand something, create something and finish schoolwork.'],
-    ['🎨', 'Interests & Activities', 'Explore interests and keep track of activities that matter.'],
-    ['🧭', 'Discover', 'Learn more about yourself through what you enjoy, try and experience.'],
-    ['💬', 'AI Companion', 'Ask for help along the way from a guide that can use relevant context.'],
+
+  const growthSignals = [
+    ['📚', 'School & Learning'], ['⭐', 'Interests'], ['🎯', 'Activities'],
+    ['🏔️', 'Experiences'], ['💬', 'Reflections'], ['👨‍👩‍👧', 'Parent perspective'],
   ]
 
   return (
-    <div className="synPublicV018">
+    <div className="synPublicV018 synPublicRedesign">
       <nav className="synPublicNavV018" aria-label="Public website">
         <button className="synPublicBrandV018" type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <img src={synapStrideMark} alt="" /><span>Synap<span>Stride</span></span>
         </button>
         <div className="synPublicLinksV018">
-          <a href="#how-it-works">How It Works</a><a href="#for-kids">For Kids</a><a href="#for-parents">For Parents</a>
-          <button type="button" onClick={onWhy} style={{border:0,background:'none',padding:0,color:'inherit',fontWeight:650,cursor:'pointer'}}>Why SynapStride</button>
+          <a href="#how-it-works">How it works</a>
+          <a href="#for-parents">For Parents</a>
+          <button type="button" onClick={onWhy}>Why SynapStride</button>
           <a href="#about">About</a>
         </div>
         <div className="synPublicActionsV018">
@@ -3247,61 +3347,284 @@ function AuthWelcome({ onGetStarted, onSignIn, onWhy }) {
 
       <header className="synPublicHeroV018">
         <div className="synPublicWrapV018 synPublicHeroGridV018">
-          <div>
-            <p className="synPublicKickerV018">DISCOVER · EXPLORE · GROW</p>
-            <h1>Help your child learn, explore, and discover <em>what comes next.</em></h1>
-            <p className="synPublicLeadV018">SynapStride is an AI-powered growth guide that learns from your child's learning, interests and experiences — helping provide more relevant guidance as they grow.</p>
-            <div className="synPublicHeroButtonsV018"><button type="button" className="synPublicBtnV018 primary" onClick={onGetStarted}>Get Started →</button><button type="button" className="synPublicBtnV018" onClick={onSignIn}>Sign In</button></div>
+          <div className="synHeroCopy">
+            <p className="synPublicKickerV018">A PERSONAL GROWTH GUIDE FOR KIDS</p>
+            <h1>Help your child <span className="wordLearn">learn</span>, <span className="wordExplore">explore</span>, and <span className="wordDiscover">discover</span> what comes next.</h1>
+            <p className="synPublicLeadV018">SynapStride is an AI-powered growth guide that learns from what your child is learning, interested in, trying, and experiencing — and uses that understanding to help guide what comes next.</p>
+            <div className="synPublicHeroButtonsV018">
+              <button type="button" className="synPublicBtnV018 primary" onClick={onGetStarted}>Get Started <span>→</span></button>
+              <button type="button" className="synPublicBtnV018 soft" onClick={() => scrollTo('how-it-works')}>▶ &nbsp; See how it works</button>
+            </div>
             <div className="synPublicProofV018">
-              <div><b>🌱</b><strong>Helpful today</strong><small>Value from day one</small></div>
-              <div><b>▥</b><strong>Learns over time</strong><small>More useful as they grow</small></div>
-              <div><b>◆</b><strong>Parent-guided</strong><small>A family-controlled space</small></div>
+              <div><b>♥</b><strong>Built for curious minds</strong><small>Designed for growing kids</small></div>
+              <div><b>🛡</b><strong>Safe and parent-guided</strong><small>A family-controlled space</small></div>
+              <div><b>●●●</b><strong>Supports growth</strong><small>Today and tomorrow</small></div>
             </div>
           </div>
-          <div className="synPublicHeroVisualV018" aria-label="SynapStride helps connect learning, interests and growth">
-            <div className="synPublicFamilyV018"><div><span>👩‍👧</span><strong>Growing together</strong></div></div>
-            <div className="synPublicFloatV018 f1">📖 &nbsp; Homework help</div><div className="synPublicFloatV018 f2">🧭 &nbsp; Explore interests</div><div className="synPublicFloatV018 f3">💡 &nbsp; Try new things</div><div className="synPublicFloatV018 f4">🌱 &nbsp; Discover strengths</div>
+
+          <div className="synHeroWorld" aria-label="Kids learning, exploring and discovering">
+            <div className="synHeroBlob"></div>
+            <div className="synKidPair synNeutralLearners" aria-hidden="true">
+              <div className="synNeutralPerson synNeutralPersonLarge"><span className="synNeutralHead"></span><span className="synNeutralBody"></span></div>
+              <div className="synNeutralPerson synNeutralPersonSmall"><span className="synNeutralHead"></span><span className="synNeutralBody"></span></div>
+              <div className="synLaptop">⌨</div>
+            </div>
+            <span className="synDoodle rocket">🚀</span><span className="synDoodle globe">🌎</span><span className="synDoodle bulb">💡</span>
+            <span className="synDoodle planet">🪐</span><span className="synDoodle art">🎨</span><span className="synDoodle music">♫</span>
+            <span className="synHeroPill learn">Learn</span><span className="synHeroPill explore">Explore</span><span className="synHeroPill try">Try</span><span className="synHeroPill discover">Discover Me</span>
           </div>
         </div>
       </header>
 
-      <section className="synPublicSectionV018 alt" id="how-it-works"><div className="synPublicWrapV018">
-        <div className="synPublicSectionHeadV018"><p className="synPublicKickerV018">A BIGGER PICTURE FOR A BRIGHTER FUTURE</p><h2>A child's growth is bigger than schoolwork.</h2><p>Children learn from many places — school, interests, activities, experiences and their own voice. Most tools see one piece. SynapStride connects them, helping build a more complete picture and more relevant guidance along the way.</p></div>
-        <div className="synPublicSignalGridV018">{signals.map(([icon,title,text]) => <article className="synPublicCardV018" key={title}><div className="icon">{icon}</div><h3>{title}</h3><p>{text}</p></article>)}</div>
-      </div></section>
+      <main>
+        <section className="synJourneySection" id="how-it-works">
+          <div className="synPublicWrapV018 compact">
+            <div className="synSectionTitleRow">
+              <div><p className="synMiniLabel">WHAT YOUR CHILD CAN DO</p><h2>A place for every step of their journey.</h2></div>
+              <p>From homework to hobbies, curiosity to real-world experiences — SynapStride helps kids take the next step with confidence.</p>
+            </div>
+            <div className="synJourneyGrid">
+              {journey.map((item, index) => <article className={`synJourneyCard ${item.tone}`} key={item.title}>
+                <div className="synJourneyIcon">{item.icon}</div><div className="synJourneyNumber">0{index + 1}</div>
+                <h3>{item.title}</h3><p>{item.text}</p><span className="synRoundArrow">→</span>
+              </article>)}
+            </div>
+          </div>
+        </section>
 
-      <section className="synPublicSectionV018 warm"><div className="synPublicWrapV018 synPublicGrowthGridV018">
-        <div className="synPublicSectionHeadV018"><p className="synPublicKickerV018">ONE GUIDE THAT LEARNS AS THEY GROW</p><h2>Growth Intelligence in action.</h2><p>Every interaction can add another useful clue. SynapStride builds an evolving understanding from learning, interests, activities, experiences, reflections and parent perspective — helping identify what may help next and why.</p></div>
-        <div className="synPublicLoopV018"><div><span>📖</span>Learn</div><div><span>🧭</span>Explore</div><div><span>💡</span>Try</div><div><span>💬</span>Reflect</div></div>
-      </div></section>
+        <section className="synWhyGrowthSection">
+          <div className="synPublicWrapV018 compact synWhyGrowthGrid">
+            <article className="synWhyPanel">
+              <p className="synMiniLabel">WHY SYNAPSTRIDE</p>
+              <h2>Most AI helps with a question.<br/><span>SynapStride helps with the journey.</span></h2>
+              <div className="synCompareGrid">
+                <div className="synCompare typical"><h3>💬 &nbsp; Typical AI</h3><div className="synSimpleFlow"><span>Ask</span><i>→</i><span>Answer</span><i>→</i><span>Done</span></div><p>Great for a quick answer, but the journey usually stops there.</p></div>
+                <div className="synCompare stride"><h3><img src={synapStrideMark} alt=""/> SynapStride</h3><div className="synJourneyMini"><span>📘<small>Learn</small></span><i>→</i><span>🔭<small>Explore</small></span><i>→</i><span>🛠️<small>Try</small></span><i>→</i><span>💬<small>Reflect</small></span></div><strong>Understand the child</strong><b>↓</b><strong>Guide what's next</strong></div>
+              </div>
+              <p className="synWhyNote">The more your child learns, explores and experiences, the more SynapStride can understand what may be helpful next.</p>
+            </article>
 
-      <section className="synPublicSectionV018" id="for-kids"><div className="synPublicWrapV018">
-        <p className="synPublicKickerV018">BUILT FOR KIDS. USEFUL FOR PARENTS.</p>
-        <div className="synPublicAudienceV018">
-          <article className="synPublicAudienceCardV018 kids"><div className="synPublicAudienceArtV018">🧒💻</div><div><h3>For Kids</h3><strong>Learn. Explore. Try things. Have fun.</strong><p>Get help when stuck. Explore something interesting. Work through school assignments. Try activities and experiences. Have an AI companion that can understand relevant context along the way.</p></div></article>
-          <article className="synPublicAudienceCardV018 parents" id="for-parents"><div className="synPublicAudienceArtV018">👨‍👩‍👧</div><div><h3>For Parents</h3><strong>Useful now. Smarter over time.</strong><p>Get a broader picture of what your child is doing, learning and discovering — and contribute your own perspective without taking over their experience.</p></div></article>
-        </div>
-      </div></section>
+            <article className="synGrowthPanel">
+              <p className="synMiniLabel">HOW IT GROWS WITH YOUR CHILD</p>
+              <h2>It starts by helping today.<br/>It becomes more useful <span>over time.</span></h2>
+              <p className="synGrowthIntro">As your child learns, explores, tries new things and reflects, SynapStride builds a growing understanding of their interests, strengths and experiences.</p>
+              <div className="synGrowthDiagram">
+                <div className="synSignalStack">{growthSignals.map(([icon,label]) => <div key={label}><span>{icon}</span>{label}</div>)}</div>
+                <div className="synGrowthLines">➜</div>
+                <div className="synGrowthCore"><img src={synapStrideMark} alt=""/><strong>Growth<br/>Intelligence</strong></div>
+                <div className="synGrowthArrow">→</div>
+                <div className="synWhatsNext"><b>💡</b><strong>What's next?</strong><small>Personalized guidance for their growth journey.</small></div>
+              </div>
+            </article>
+          </div>
+        </section>
 
-      <section className="synPublicSectionV018 alt"><div className="synPublicWrapV018">
-        <div className="synPublicSectionHeadV018"><p className="synPublicKickerV018">WHAT CAN MY CHILD ACTUALLY DO WITH IT?</p><h2>Practical support for real life.</h2></div>
-        <div className="synPublicPracticalV018">{practical.map(([icon,title,text]) => <article className="synPublicCardV018" key={title}><div className="icon">{icon}</div><h3>{title}</h3><p>{text}</p></article>)}</div>
-      </div></section>
+        <section className="synParentsSection" id="for-parents">
+          <div className="synPublicWrapV018 compact synParentsPanel">
+            <div className="synParentsCopy">
+              <p className="synMiniLabel">FOR PARENTS</p><h2>For parents, it isn't another thing to manage.</h2>
+              <p>See what your child is exploring, what they're working on, what they're discovering about themselves, and where they may benefit from encouragement or another opportunity.</p>
+              <div className="synParentBenefits"><div><b>♥</b><strong>Help today</strong><small>Support their learning and interests now.</small></div><div><b>▥</b><strong>Understand over time</strong><small>See their growth and emerging interests.</small></div><div><b>●●●</b><strong>Guide what comes next</strong><small>Identify opportunities and encourage their journey.</small></div></div>
+            </div>
+            <div className="synFamilyScene" aria-label="Family learning together"><div className="synFamilyPeople synNeutralFamily" aria-hidden="true"><div className="synNeutralPerson synNeutralParent"><span className="synNeutralHead"></span><span className="synNeutralBody"></span></div><div className="synNeutralPerson synNeutralChildOne"><span className="synNeutralHead"></span><span className="synNeutralBody"></span></div><div className="synNeutralPerson synNeutralChildTwo"><span className="synNeutralHead"></span><span className="synNeutralBody"></span></div></div><div className="synFamilyDevice">▰</div><div className="synTrustList"><span>✓ Simple and easy to use</span><span>✓ Private and secure</span><span>✓ Built for real family life</span><span>✓ Designed for curious minds</span></div></div>
+          </div>
+        </section>
 
-      <section className="synPublicSectionV018" id="about"><div className="synPublicWrapV018 synPublicCompanyV018">
-        <div className="synPublicSectionHeadV018"><p className="synPublicKickerV018">ABOUT SYNAPSTRIDE</p><h2>Technology for the whole growth journey.</h2><p>SynapStride is building a personal growth platform designed to help children learn, explore their interests and develop through real experiences — with parents as part of the journey.</p></div>
-        <div className="companyBox"><strong>SynapStride LLC</strong><p>An Arizona-based technology company building AI-powered experiences for children and families.</p></div>
-      </div></section>
+        <section className="synFinalCta">
+          <div className="synScenery"><div className="synHikers synNeutralHikers" aria-hidden="true"><div className="synNeutralPerson synHikerOne"><span className="synNeutralHead"></span><span className="synNeutralBody"></span><span className="synBackpack"></span></div><div className="synNeutralPerson synHikerTwo"><span className="synNeutralHead"></span><span className="synNeutralBody"></span><span className="synBackpack"></span></div></div><div><h2>Every child is figuring out who they are.</h2><h3>Give them a place designed to grow with them.</h3><button type="button" className="synPublicBtnV018 primary" onClick={onGetStarted}>Create Your Family Space &nbsp; →</button></div></div>
+        </section>
 
-      <section className="synPublicCtaV018"><div className="synPublicCtaInnerV018"><div><h2>Ready to support what comes next?</h2><p>Join SynapStride and help your child learn, explore and grow.</p></div><button type="button" className="synPublicBtnV018 primary" onClick={onGetStarted}>Get Started →</button><button type="button" className="synPublicBtnV018" onClick={onSignIn}>Sign In</button></div></section>
+        <section className="synAboutStrip" id="about"><div><strong>SynapStride LLC</strong><span>An Arizona-based technology company building AI-powered experiences for children and families.</span></div></section>
+      </main>
 
-      <footer className="synPublicFooterV018">
-        <div className="synPublicFooterBrandV018"><button className="synPublicBrandV018" type="button" onClick={() => window.scrollTo({top:0,behavior:'smooth'})}><img src={synapStrideMark} alt=""/><span>Synap<span>Stride</span></span></button><p>© 2026 SynapStride LLC. All rights reserved.</p></div>
-        <div><h4>Product</h4><a href="#how-it-works">How It Works</a><a href="#for-kids">For Kids</a><a href="#for-parents">For Parents</a><button type="button" onClick={onWhy}>Why SynapStride</button></div>
-        <div><h4>Company</h4><a href="#about">About</a><button type="button" onClick={() => window.alert('Contact page coming soon.')}>Contact</button></div>
-        <div><h4>Legal</h4><button type="button" onClick={() => window.alert('Privacy Policy page coming soon.')}>Privacy Policy</button><button type="button" onClick={() => window.alert('Terms of Use page coming soon.')}>Terms of Use</button></div>
+      <footer className="synPublicFooterV018 simple">
+        <button className="synPublicBrandV018" type="button" onClick={() => window.scrollTo({top:0,behavior:'smooth'})}><img src={synapStrideMark} alt=""/><span>Synap<span>Stride</span></span></button>
+        <div className="synFooterLinks"><a href="#about">About</a><button type="button" onClick={() => { window.scrollTo({ top: 0, behavior: 'auto' }); onContact?.() }}>Contact</button><button type="button" onClick={onPrivacy}>Privacy</button><button type="button" onClick={onTerms}>Terms</button></div>
+        <p>© 2026 SynapStride LLC</p>
       </footer>
     </div>
+  )
+}
+
+function ChildPrivacyConsentScreen({ parentEmail, onAccept, onReview, onBack }) {
+  const [confirmed, setConfirmed] = useState(false)
+
+  return (
+    <section className="synPrivacyPage">
+      <div className="synPrivacyBrand">
+        <img src={synapStrideMark} alt="" />
+        <strong>Synap<span>Stride</span></strong>
+      </div>
+      <div className="synConsentCard">
+        <button type="button" className="synAuthBackV012" onClick={onBack}>← Back</button>
+        <div className="synPrivacyEyebrow">PARENT PRIVACY NOTICE</div>
+        <h1>Before we create your child&apos;s space</h1>
+        <p className="synPrivacyLead">
+          SynapStride uses information about your child&apos;s learning, interests, activities and experiences to provide personalized guidance and build an evolving Growth Profile.
+        </p>
+
+        <div className="synConsentGrid">
+          <div><span>✨</span><strong>We use it to help them</strong><p>Personalize learning, exploration, activities and guidance.</p></div>
+          <div><span>🤖</span><strong>AI helps provide guidance</strong><p>Some information may be processed by our AI technology providers to create personalized responses.</p></div>
+          <div><span>🚫</span><strong>We don&apos;t sell child data</strong><p>We do not use children&apos;s personal information for targeted advertising.</p></div>
+          <div><span>🛡️</span><strong>You&apos;re in control</strong><p>Parents can review our privacy practices and will have controls for access, deletion and consent.</p></div>
+        </div>
+
+        <button type="button" className="synPrivacyNoticeLink" onClick={onReview}>Review Children&apos;s Privacy Notice →</button>
+
+        <label className="synConsentCheck">
+          <input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />
+          <span>I am the parent or legal guardian and consent to SynapStride collecting and using my child&apos;s information as described in the Children&apos;s Privacy Notice.</span>
+        </label>
+
+        <button type="button" className="synConsentPrimary" disabled={!confirmed} onClick={onAccept}>
+          Agree &amp; Create Child Space →
+        </button>
+        <p className="synConsentIdentity">Parent account: {parentEmail || 'signed-in parent'}</p>
+        <p className="synConsentCaution">MVP privacy foundation: before broad public use by children under 13, SynapStride will add a production verifiable-parental-consent mechanism and parent data controls.</p>
+      </div>
+    </section>
+  )
+}
+
+function PrivacyPolicyScreen({ onBack }) {
+  return (
+    <section className="synPrivacyDocumentPage">
+      <header className="synPrivacyDocHeader">
+        <button type="button" className="synPublicBrandV018" onClick={onBack}><img src={synapStrideMark} alt=""/><span>Synap<span>Stride</span></span></button>
+        <button type="button" className="synPrivacyBack" onClick={onBack}>← Back</button>
+      </header>
+      <article className="synPrivacyDocument">
+        <p className="synPrivacyEyebrow">PRIVACY</p>
+        <h1>Privacy Policy &amp; Children&apos;s Privacy Notice</h1>
+        <p className="synPrivacyUpdated">Draft for MVP review · October 3, 2026</p>
+        <div className="synLegalDraftBanner"><strong>Pre-launch draft.</strong> This notice describes the current SynapStride MVP and is being finalized before broad public child use.</div>
+
+        <h2>Our approach</h2>
+        <p>SynapStride LLC builds tools that help children learn, explore interests, reflect on experiences and receive personalized guidance. We design SynapStride around parent-led family accounts and collect information to provide the service—not to sell children&apos;s personal information or target advertising to them.</p>
+
+        <h2>Information we collect</h2>
+        <p>Depending on how a family uses SynapStride, information may include a parent&apos;s account information; a child&apos;s first name or nickname, age, grade, avatar and optional child username; learning topics and schoolwork; interests, activities and experiences; child reflections and questions; parent observations and goals; and product-generated Growth Intelligence such as evidence, recommendations and guidance outcomes.</p>
+
+        <h2>How we use information</h2>
+        <p>We use information to operate the family and child spaces, provide learning and exploration guidance, personalize recommendations, maintain the child&apos;s evolving Growth Profile, improve the experience, protect the service and support parents in understanding their child&apos;s journey.</p>
+
+        <h2>AI processing</h2>
+        <p>SynapStride uses AI-assisted features. Information relevant to a request may be sent through SynapStride&apos;s service infrastructure to AI technology providers to generate guidance, interpret context or support personalization. SynapStride may also retain derived signals and outcomes that are useful to the child&apos;s Growth Profile.</p>
+
+        <h2>Children under 13</h2>
+        <p>SynapStride is designed to be parent-led. For children under 13, we intend to provide parents with direct notice and obtain verifiable parental consent before collecting personal information from the child, except where an applicable legal exception permits otherwise. The current MVP consent screen is a product foundation and is not represented as the final production verification mechanism.</p>
+
+        <h2>Sharing</h2>
+        <p>We do not sell children&apos;s personal information and do not use it for targeted advertising. We may use service providers that are necessary to operate SynapStride, such as hosting, security, authentication and AI-processing providers. We intend to limit information shared with providers to what is reasonably necessary for those services and require appropriate protections.</p>
+
+        <h2>Parent choices and controls</h2>
+        <p>Parents may contact SynapStride to ask about information associated with their family, request access or deletion, or withdraw consent. Product-based access, deletion and consent-management controls are planned before broad public child use.</p>
+
+        <h2>Retention and security</h2>
+        <p>We intend to retain children&apos;s personal information only as long as reasonably necessary for the purpose for which it was collected, subject to legal, security and backup requirements. The MVP currently uses local browser storage for portions of family and Growth Intelligence state while production account and data infrastructure is being completed.</p>
+
+        <h2>Contact</h2>
+        <p>Privacy questions, parental-rights requests and questions about a child&apos;s information can be directed to SynapStride LLC at <a href="mailto:privacy@synapstride.com">privacy@synapstride.com</a>.</p>
+
+        <p className="synLegalDisclaimer">This draft is provided as a product/compliance working document and is not legal advice. SynapStride LLC should have the final policy and parental-consent implementation reviewed by qualified counsel before broad public use by children under 13.</p>
+      </article>
+    </section>
+  )
+}
+
+function TermsOfUseScreen({ onBack }) {
+  return (
+    <section className="synPrivacyDocumentPage">
+      <header className="synPrivacyDocHeader">
+        <button type="button" className="synPublicBrandV018" onClick={onBack}><img src={synapStrideMark} alt=""/><span>Synap<span>Stride</span></span></button>
+        <button type="button" className="synPrivacyBack" onClick={onBack}>← Back</button>
+      </header>
+      <article className="synPrivacyDocument">
+        <p className="synPrivacyEyebrow">TERMS</p>
+        <h1>Terms of Use</h1>
+        <p className="synPrivacyUpdated">Draft for MVP review · October 3, 2026</p>
+        <div className="synLegalDraftBanner"><strong>Pre-launch draft.</strong> These terms describe the current SynapStride MVP and will be finalized before broad public launch.</div>
+
+        <h2>About SynapStride</h2>
+        <p>SynapStride is operated by SynapStride LLC. The service provides tools that help families support children as they learn, explore interests, reflect on experiences and receive personalized guidance. These Terms of Use govern access to and use of the SynapStride website and service.</p>
+
+        <h2>Parent-led family accounts</h2>
+        <p>SynapStride is designed around a parent or legal guardian creating and managing the family account. A parent or legal guardian is responsible for creating or authorizing child profiles and child access, providing accurate information, maintaining account security and supervising use of the service as appropriate for the child.</p>
+
+        <h2>Using SynapStride</h2>
+        <p>You agree to use SynapStride only for lawful purposes and in a way that does not harm children, other users, the service or its systems. You may not attempt to gain unauthorized access, interfere with operation of the service, misuse another person&apos;s account, introduce malicious code, scrape or reverse engineer protected portions of the service except where applicable law expressly permits it.</p>
+
+        <h2>AI-generated guidance</h2>
+        <p>SynapStride uses artificial intelligence to help generate explanations, suggestions, recommendations and other guidance. AI-generated content may be incomplete, inaccurate or inappropriate for a particular situation and should not be treated as professional, medical, legal, financial or other expert advice. Parents and children should use judgment and, where appropriate, verify important information with a qualified adult, educator or professional.</p>
+
+        <h2>Educational use</h2>
+        <p>SynapStride is intended to support learning and growth, not replace a parent, teacher, school or qualified professional. The service does not guarantee academic outcomes, admission results, career outcomes or any particular result from following a recommendation.</p>
+
+        <h2>Your content</h2>
+        <p>Families may provide information, questions, reflections, activities and other content to SynapStride. You retain ownership of content you provide. You authorize SynapStride to process that content as reasonably necessary to operate, personalize, secure and improve the service, subject to our Privacy Policy and Children&apos;s Privacy Notice.</p>
+
+        <h2>SynapStride content and intellectual property</h2>
+        <p>SynapStride&apos;s software, design, branding, interfaces and original service content are owned by SynapStride LLC or its licensors and are protected by applicable intellectual-property laws. These terms give you permission to use the service; they do not transfer ownership of SynapStride intellectual property.</p>
+
+        <h2>Third-party services and resources</h2>
+        <p>SynapStride may use or link to third-party services and educational resources. Those services may have their own terms and privacy practices. A link or recommendation does not mean SynapStride controls or guarantees the third-party service, resource or content.</p>
+
+        <h2>Privacy and children&apos;s information</h2>
+        <p>Our collection and use of personal information is described in the SynapStride Privacy Policy &amp; Children&apos;s Privacy Notice. Parent consent and child privacy protections are being finalized before broad public use by children under 13.</p>
+
+        <h2>MVP and service changes</h2>
+        <p>SynapStride is currently an evolving MVP. Features may be added, changed, interrupted or removed as the product develops. We may update these terms as the service changes and will post an updated effective date when a production version is published.</p>
+
+        <h2>Accounts and termination</h2>
+        <p>We may suspend or terminate access when reasonably necessary to protect children, users, SynapStride or others; respond to unlawful or abusive activity; or comply with legal obligations. A parent may stop using the service at any time. Production account and data-deletion procedures will be published before broad public launch.</p>
+
+        <h2>Disclaimers and limitation of liability</h2>
+        <p>To the extent permitted by applicable law, the service is provided on an &quot;as is&quot; and &quot;as available&quot; basis without guarantees that it will always be uninterrupted, error-free or suitable for every purpose. Any limitations of liability in the final production terms will be written to preserve rights and remedies that cannot legally be waived.</p>
+
+        <h2>Contact</h2>
+        <p>Questions about these terms may be directed to SynapStride LLC at <a href="mailto:info@synapstride.com">info@synapstride.com</a>.</p>
+
+        <p className="synLegalDisclaimer">This pre-launch draft is a product/legal working document and is not legal advice. SynapStride LLC should have the final production terms reviewed by qualified counsel before broad public launch.</p>
+      </article>
+    </section>
+  )
+}
+
+function ContactScreen({ onBack }) {
+  return (
+    <section className="synPrivacyDocumentPage">
+      <header className="synPrivacyDocHeader">
+        <button type="button" className="synPublicBrandV018" onClick={onBack}><img src={synapStrideMark} alt=""/><span>Synap<span>Stride</span></span></button>
+        <button type="button" className="synPrivacyBack" onClick={onBack}>← Back</button>
+      </header>
+      <article className="synPrivacyDocument synContactDocument">
+        <p className="synPrivacyEyebrow">CONTACT</p>
+        <h1>Contact SynapStride</h1>
+        <p className="synPrivacyLead">Have a question about SynapStride, your family account, privacy, partnerships or the product? We&apos;d be happy to hear from you.</p>
+
+        <div className="synContactGrid">
+          <div className="synContactCard">
+            <h2>General inquiries</h2>
+            <p>Questions about SynapStride, partnerships or the product.</p>
+            <div className="synContactEmailRow">
+              <a className="synContactEmailLink" href="mailto:info@synapstride.com">info@synapstride.com</a>
+            </div>
+          </div>
+          <div className="synContactCard">
+            <h2>Privacy &amp; children&apos;s data</h2>
+            <p>Questions about privacy, parental rights or your child&apos;s information.</p>
+            <div className="synContactEmailRow">
+              <a className="synContactEmailLink" href="mailto:privacy@synapstride.com">privacy@synapstride.com</a>
+            </div>
+          </div>
+        </div>
+
+        <h2>Company</h2>
+        <p><strong>SynapStride LLC</strong><br/>Arizona, United States</p>
+        <p className="synContactResponse">We aim to respond to inquiries within 2–3 business days.</p>
+      </article>
+    </section>
   )
 }
 
@@ -3449,6 +3772,8 @@ function SettingsView({
   recommendations = [],
   modelBackedUnderstanding = null,
   parentAccount,
+  childPrivacyConsent,
+  onPrivacy,
   onSignOut,
   onReset,
 }) {
@@ -3496,6 +3821,22 @@ function SettingsView({
               Age {childProfile?.age || '—'} · {childProfile?.grade || 'Grade not set'}
             </p>
             <small>Profile editing can be added when account management is connected.</small>
+          </div>
+        </article>
+
+        <article className="synSettingsCardV01112 synPrivacySettingsCard">
+          <span className="synSettingsCardIconV01112">🛡️</span>
+          <div>
+            <span className="synSettingsEyebrowV01112">PRIVACY &amp; DATA</span>
+            <h2>Child privacy</h2>
+            <p>
+              Parent consent: <strong>{childPrivacyConsent?.status === 'active' ? 'Active' : 'Not recorded'}</strong>
+              {childPrivacyConsent?.acceptedAt ? ` · ${new Date(childPrivacyConsent.acceptedAt).toLocaleDateString()}` : ''}
+            </p>
+            <button type="button" className="synPrivacyTextButton" onClick={onPrivacy}>
+              View Children&apos;s Privacy Notice
+            </button>
+            <small>Data download, deletion, and consent withdrawal controls will be added before broad public child use.</small>
           </div>
         </article>
 
