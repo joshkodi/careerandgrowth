@@ -21,6 +21,7 @@ import './InterestsActivitiesV0104D.css'
 import './ChildHomeV0118.css'
 import './SchoolLearningFormV013.css'
 import './SchoolCompanionV015.css'
+import '../SchoolWorkspaceV015.css'
 import './AssignmentJourneyV0165.css'
 import SchoolWorkIntakeV015 from './SchoolWorkIntakeV015'
 import { buildSchoolWorkPlan } from '../intelligence/schoolWorkPlanningEngine'
@@ -28,6 +29,7 @@ import './FirstUseHomeV014.css'
 import './AvatarV014.css'
 import Avatar from './Avatar'
 import CompanionAvatar from './CompanionAvatar'
+import SynapStrideThinking from './SynapStrideThinking'
 import ChildCoreHomeV015 from './ChildCoreHomeV015'
 
 import ExperienceResearchPanel from './ExperienceResearchPanel'
@@ -874,10 +876,7 @@ function FirstUseHomeV014({
           </div>
 
           {guideBusy && (
-            <div className="companionThinkingV017" aria-live="polite">
-              <CompanionAvatar state="thinking" size={46} />
-              <div><strong>Thinking about that...</strong><small>Your Companion is working on a helpful answer.</small></div>
-            </div>
+            <SynapStrideThinking message="Thinking about your question and finding a helpful answer." />
           )}
 
           {!guideBusy && guideReply ? (
@@ -2212,6 +2211,8 @@ function JourneyPanel({
     setCompletedFilter,
   ] = useState('all')
 
+  const [schoolListView, setSchoolListView] = useState(null)
+
   const [
     showAddMenu,
     setShowAddMenu,
@@ -2503,16 +2504,19 @@ function JourneyPanel({
                 .NEED_HELP
           )
 
+        const upcoming =
+          schoolItems.filter(
+            (item) => item.status === journeyStatuses.PLANNED
+          )
+
         const workingOn =
           schoolItems.filter(
             (item) =>
-              item.status !==
-                journeyStatuses
-                  .COMPLETED &&
-              item.status !==
-                journeyStatuses
-                  .NEED_HELP
+              item.status !== journeyStatuses.COMPLETED &&
+              item.status !== journeyStatuses.NEED_HELP &&
+              item.status !== journeyStatuses.PLANNED
           )
+          .sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))
 
         const completed =
           schoolItems.filter(
@@ -2524,6 +2528,7 @@ function JourneyPanel({
 
         const recent =
           [...schoolItems]
+            .filter((item) => item.status !== journeyStatuses.COMPLETED)
             .sort(
               (a, b) =>
                 new Date(
@@ -2557,6 +2562,7 @@ function JourneyPanel({
 
           needsAttention,
           workingOn,
+          upcoming,
           completed,
           recent,
           subjects,
@@ -3863,6 +3869,13 @@ function JourneyPanel({
       steps = steps.map((step, index) => ({ ...step, label: labels[index] || step.label }))
     }
 
+    // v0.19 Stage 3A.2: a completed assignment is a terminal journey state.
+    // Do not keep a synthetic "current" Finish step after assignment completion.
+    if (item.status === journeyStatuses.COMPLETED) {
+      steps = steps.map((step) => ({ ...step, status: 'completed' }))
+      return { ...source, steps, currentStepId: null }
+    }
+
     const explicitCurrent = steps.find((step) => step.status === 'current')
     const firstIncomplete = steps.find((step) => step.status !== 'completed')
     const storedCurrent = steps.find((step) => step.id === source.currentStepId)
@@ -3872,7 +3885,6 @@ function JourneyPanel({
       firstIncomplete?.id ||
       (storedCurrent && storedCurrent.status !== 'completed' ? storedCurrent.id : null) ||
       (looksLikeLegacyProjectPlan && source.currentStepId === 'step_2' ? steps[0]?.id : null) ||
-      steps[steps.length - 1]?.id ||
       null
 
     return { ...source, steps, currentStepId }
@@ -3928,6 +3940,7 @@ function JourneyPanel({
         : plan.currentStepId || plan.steps[0]?.id
 
     setHelpJourneyId(null)
+    setHelpDraft({ modeId: '', studentNote: '' })
     if (stepId) {
       setActiveAssignmentStep({ itemId: item.id, stepId })
     }
@@ -3990,17 +4003,20 @@ function JourneyPanel({
   }
 
   const getProjectChoiceOptionsV0169 = (item = {}) => {
-    const text = `${item.title || ''} ${item.topic || ''} ${item.description || ''}`.toLowerCase()
-    if (text.includes('renewable') || text.includes('energy')) {
+    // v0.19: assignment interpretation owns the candidate topics. The UI no longer
+    // needs domain-specific renewable-energy choices baked into React.
+    const suggestedTopics = Array.isArray(item.assignmentUnderstanding?.suggestedTopics)
+      ? item.assignmentUnderstanding.suggestedTopics.filter(Boolean).slice(0, 8)
+      : []
+    const icons = ['🎯', '✨', '🔎', '🌎', '💡', '🧭', '⭐', '🚀']
+
+    if (suggestedTopics.length) {
       return [
-        ['Solar Energy', '☀️', 'Energy from the sun'],
-        ['Wind Energy', '💨', 'Power from the wind'],
-        ['Hydroelectric', '💧', 'Energy from moving water'],
-        ['Geothermal', '🌋', 'Heat from inside Earth'],
-        ['Biomass', '🌱', 'Energy from plants and materials'],
+        ...suggestedTopics.map((topic, index) => [topic, icons[index % icons.length], 'A topic SynapStride found in your assignment']),
         ['__other__', '⭐', 'I have another idea'],
       ]
     }
+
     return [[item.topic || item.title || 'My topic', '🎯', 'Use the assignment topic'], ['__other__', '⭐', 'Choose something more specific']]
   }
 
@@ -4067,6 +4083,82 @@ function JourneyPanel({
     })
   }
 
+  // v0.19 Stage 3B — model-backed Create coach. The model coaches the child
+  // using assignment + learning + current-work context, while SynapStride owns
+  // the section structure, persistence, completion, and navigation.
+  const runInlineCreateCompanionV019 = async (item, payload = {}) => {
+    const state = getStepWorkspaceState(item)
+    const section = payload.section || {}
+    const focus = payload.focus || state.focus || item.topic || ''
+    const mode = payload.mode || 'ideas'
+    const currentWork = String(state.creationSections?.[section.id] || '').trim()
+    const learningNotes = Object.values(state.researchNotes || {}).map(value => String(value || '').trim()).filter(Boolean)
+    const requirements = (item.assignmentUnderstanding?.requirements || []).map(value => typeof value === 'string' ? value : value?.text || value?.title || '').filter(Boolean)
+    const learningNeeds = (item.assignmentUnderstanding?.learningNeeds || []).map(value => typeof value === 'string' ? value : value?.text || value?.title || '').filter(Boolean)
+    const deterministicFallback = getInlineCoachResponseV0173({ ...payload, focus, section })
+
+    // Keep the live request deliberately close to the already-proven Learn
+    // companion contract. The important Create context is carried in the child
+    // message itself so it cannot be lost by companionContextBuilder's compact
+    // immediate-context projection.
+    const contextLines = [
+      `Assignment: ${item.title || focus || 'school assignment'}.`,
+      section.title ? `Current part: ${section.title}.` : '',
+      section.prompt ? `What this part asks for: ${section.prompt}.` : '',
+      requirements.length ? `Teacher requirements: ${requirements.join('; ')}.` : '',
+      learningNeeds.length ? `What I learned first: ${learningNeeds.join('; ')}.` : '',
+      learningNotes.length ? `My learning notes: ${learningNotes.slice(0, 6).join('; ')}.` : '',
+      currentWork ? `What I have written so far: ${currentWork}` : `I have not written this part yet.`,
+    ].filter(Boolean).join('\n')
+
+    const request = mode === 'write'
+      ? `Help me write my own school assignment without writing the finished answer for me. Give me one small next step, a short sentence starter, or one question that helps me continue in my own words.\n\n${contextLines}`
+      : `Help me think of ideas for my school assignment without writing the finished answer for me. Give me 2 or 3 short directions I could choose from, based on what my teacher asked for and what I learned.\n\n${contextLines}`
+
+    updateStepWorkspaceState(item, {
+      inlineCoach: { ...payload, scope: 'create', sectionId: section.id || payload.sectionId || null, mode: 'loading', modeRequested: mode, response: 'Thinking about this part…' },
+    })
+
+    const invokeLiveCreateCoach = (message) => runChildAwareCompanion({
+      message,
+      messageId: `school-inline-${Date.now()}`,
+      childUnderstanding: modelBackedUnderstanding,
+      growthContext: sharedIntelligenceRecommendationLoop || null,
+      immediateContext: {
+        surface: 'school_learning',
+        experience: { id: item.id || null, title: item.title || null, topic: focus || item.topic || null, path: item.path || journeyPaths.SCHOOL_LEARNING },
+        action: mode,
+      },
+      conversation: [],
+      fallbackText: deterministicFallback,
+      fallbackAction: 'none',
+    })
+
+    try {
+      let runtime = await invokeLiveCreateCoach(request)
+
+      // Stage 3B.1: if the first model attempt safely falls back, retry once
+      // through the exact minimal School Companion shape already proven by Learn.
+      // This avoids presenting a deterministic response as a successful AI coach.
+      if (!runtime?.model?.liveModel) {
+        const retryRequest = mode === 'write'
+          ? `Help me with the next small step for writing "${section.title || 'this part'}" of my ${item.title || focus || 'school assignment'}. Coach me; do not write the finished answer for me. ${currentWork ? `I have written: ${currentWork}` : 'I have not started writing yet.'}`
+          : `Help me think of 2 or 3 simple ideas for "${section.title || 'this part'}" of my ${item.title || focus || 'school assignment'}. Coach me; do not write the finished answer for me.`
+        runtime = await invokeLiveCreateCoach(retryRequest)
+      }
+
+      const responseText = String(runtime?.response?.text || runtime?.text || deterministicFallback || 'I can help you take one small step.')
+      updateStepWorkspaceState(item, {
+        inlineCoach: { ...payload, scope: 'create', sectionId: section.id || payload.sectionId || null, mode: 'answer', response: responseText, model: runtime?.model || null },
+      })
+    } catch (error) {
+      console.error('SynapStride Create coach failed safely.', error)
+      updateStepWorkspaceState(item, {
+        inlineCoach: { ...payload, scope: 'create', sectionId: section.id || payload.sectionId || null, mode: 'answer', response: deterministicFallback, model: { provider: 'fallback', liveModel: false, error: error?.message || String(error) } },
+      })
+    }
+  }
+
   const runInlineLearningCompanionV017 = async (item, payload = {}, childQuestion = '') => {
     const state = getStepWorkspaceState(item)
     const focus = payload.focus || state.focus || item.topic || ''
@@ -4088,15 +4180,25 @@ function JourneyPanel({
           surface: 'school_learning',
           experience: { id: item.id || null, title: item.title || null, topic: focus || item.topic || null, path: item.path || journeyPaths.SCHOOL_LEARNING },
           assignmentStep: 'learn',
+          assignmentUnderstanding: item.assignmentUnderstanding || null,
+          assignmentRequirements: item.assignmentUnderstanding?.requirements || [],
+          learningNeeds: item.assignmentUnderstanding?.learningNeeds || [],
           learningFocus: { id: activity.id || null, title: activity.title || null, short: activity.short || null },
+          selectedProjectFocus: focus || null,
           action: mode,
         },
         conversation: [],
         fallbackText: deterministicFallback,
         fallbackAction: 'none',
       })
+      const responseText = String(
+        runtime?.response?.text ||
+        runtime?.text ||
+        deterministicFallback ||
+        'I can help explain this another way.'
+      )
       updateStepWorkspaceState(item, {
-        inlineCoach: { ...payload, activityId: activity.id || payload.activityId || null, mode: 'answer', response: runtime.response.text, model: runtime.model },
+        inlineCoach: { ...payload, activityId: activity.id || payload.activityId || null, mode: 'answer', response: responseText, model: runtime?.model || null },
         inlineQuestion: childQuestion || state.inlineQuestion || '',
       })
     } catch (error) {
@@ -4110,27 +4212,107 @@ function JourneyPanel({
     const state = getStepWorkspaceState(item)
     const requirements = getAssignmentRequirementsV0168(item)
     const focus = state.focus || item.topic || ''
-    const researchActivities = [
-      { id:'basics', icon:'💡', title:`What is ${focus || 'your topic'}?`, short:'What is it?', hint:'Understand the basic idea in your own words.', lesson:`Start with the big idea: explain what ${focus || 'your topic'} is in a simple way. Think about what it does and why people use it.` },
-      { id:'how', icon:'⚙️', title:`How does ${focus || 'it'} work?`, short:'How it works', hint:'Learn the important parts or steps.', lesson:`Look for the main steps that make ${focus || 'it'} work. Try to explain the process in an order that another kid could follow.` },
-      { id:'examples', icon:'🏠', title:`Where is ${focus || 'it'} used?`, short:'Real-world uses', hint:'Find useful real-world examples.', lesson:`Find a few places or situations where ${focus || 'it'} is used in real life. Specific examples will make your project easier to understand.` },
-      { id:'pros_cons', icon:'⚖️', title:'Good things & challenges', short:'Benefits & challenges', hint:'Explore benefits, challenges, and key facts.', lesson:`Think about both sides: what makes ${focus || 'this topic'} useful, and what problems or limitations can come with it?` },
-    ]
-    const activeLearn = researchActivities.find(a=>a.id===(state.activeLearnId||'basics')) || researchActivities[0]
-    const researchDone = researchActivities.filter(a=>String(state.researchNotes?.[a.id]||'').trim()).length
 
-    const createSections = [
-      {id:'title',icon:'🏷️',title:'Title',prompt:`Give your ${focus || 'project'} a clear title.`,noteId:null},
-      {id:'basics',icon:'💡',title:`What is ${focus || 'it'}?`,prompt:'Explain the main idea in your own words.',noteId:'basics'},
-      {id:'how',icon:'⚙️',title:'How does it work?',prompt:'Explain the important steps or parts.',noteId:'how'},
-      {id:'examples',icon:'🏠',title:'Real-world uses',prompt:'Add useful examples or real-world connections.',noteId:'examples'},
-      {id:'pros_cons',icon:'⚖️',title:'Benefits & challenges',prompt:'Share both good things and challenges.',noteId:'pros_cons'},
-      {id:'conclusion',icon:'🎉',title:'Conclusion',prompt:'Wrap up with the main thing you want someone to remember.',noteId:null},
+    // v0.19 Stage 2F — learning-target ownership.
+    // Stage 1 assignment interpretation owns WHAT the child needs to learn.
+    // Personalization/Companion may change HOW a need is taught, but must not
+    // replace the curriculum with the assignment text or deliverable.
+    const assignmentTextV019 = String(item.description || '').trim()
+    const deliverableV019 = String(item.assignmentUnderstanding?.deliverable || '').trim()
+    const normalizedComparableV019 = (value = '') =>
+      String(value).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+    const assignmentComparableV019 = normalizedComparableV019(assignmentTextV019)
+    const deliverableComparableV019 = normalizedComparableV019(deliverableV019)
+
+    const interpretedLearningNeeds = Array.isArray(item.assignmentUnderstanding?.learningNeeds)
+      ? item.assignmentUnderstanding.learningNeeds
+          .map((need) => String(need || '').trim())
+          .filter(Boolean)
+          .filter((need) => {
+            const comparable = normalizedComparableV019(need)
+            if (!comparable) return false
+            // Guard against old/migrated records where the assignment or
+            // deliverable was accidentally stored as a learning target.
+            if (assignmentComparableV019 && comparable === assignmentComparableV019) return false
+            if (deliverableComparableV019 && comparable === deliverableComparableV019) return false
+            if (comparable.startsWith('create a ') && comparable.includes('presentation')) return false
+            return true
+          })
+      : []
+
+    // Do not use state.focus to invent the Learn curriculum. `state.focus` is a
+    // project-choice/workspace value; the assignment interpretation is the
+    // authoritative curriculum. This fallback is only for legacy records that
+    // genuinely have no Stage 1 learningNeeds.
+    const curriculumTopicV019 =
+      (String(item.topic || '').trim() && String(item.topic || '').trim().length <= 80
+        ? String(item.topic).trim()
+        : '') ||
+      (String(item.title || '').trim() && String(item.title || '').trim().length <= 80
+        ? String(item.title).trim()
+        : '') ||
+      'your topic'
+
+    const fallbackLearningNeeds = [
+      `Understand the main idea of ${curriculumTopicV019}`,
+      `Understand how ${curriculumTopicV019} works`,
+      `Know the important facts you need for the assignment`,
     ]
-    const activeCreate = createSections.find(s=>s.id===(state.activeCreateId||'basics')) || createSections[1]
-    const activeCreateText = state.creationSections?.[activeCreate.id] ?? (activeCreate.id==='basics' ? state.creationNotes : '') ?? ''
+    const learningNeeds = (interpretedLearningNeeds.length ? interpretedLearningNeeds : fallbackLearningNeeds).slice(0, 6)
+    const learnIcons = ['💡', '⚙️', '🔎', '🧠', '📚', '🌎']
+    const researchActivities = learningNeeds.map((need, index) => ({
+      id: `need_${index + 1}`,
+      icon: learnIcons[index % learnIcons.length],
+      title: need,
+      short: need,
+      hint: 'Learn just what you need for this assignment.',
+      lesson: focus
+        ? `Let’s understand this for your ${focus} project. SynapStride can explain it, give an example, or answer what you’re wondering.`
+        : 'SynapStride can explain this, give an example, or answer what you’re wondering.',
+    }))
+    const activeLearn = researchActivities.find(a=>a.id===state.activeLearnId) || null
+    const showLearnGoalV019 = state.learnViewV019 === 'goal' && !!activeLearn
+    const researchDone = researchActivities.filter(a=>state.learningConfidence?.[a.id]==='got_it').length
+
+    // v0.19 Stage 3A — assignment-driven Create workspace.
+    // The interpreted assignment requirements own WHAT the child creates.
+    // Avoid the old fixed Title / What is it / How / Uses / Pros & cons / Conclusion template.
+    const createRequirementCandidatesV019 = requirements
+      .map((requirement) => String(requirement || '').trim())
+      .filter(Boolean)
+      .filter((requirement) => {
+        const comparable = normalizedComparableV019(requirement)
+        if (!comparable) return false
+        // Deliverable/container requirements describe the artifact rather than a piece of content.
+        if (/^(create|make|build|prepare|design)\b/.test(comparable) && /(presentation|slides|poster|report|essay|project|document|video)/.test(comparable)) return false
+        return true
+      })
+      .slice(0, 8)
+
+    const createSourceV019 = createRequirementCandidatesV019.length
+      ? createRequirementCandidatesV019
+      : interpretedLearningNeeds.length
+        ? interpretedLearningNeeds
+        : requirements.slice(0, 6)
+
+    const createIconsV019 = ['✏️','💡','⚙️','🔎','⚖️','📚','🌎','🎯']
+    const createSections = createSourceV019.map((requirement, index) => ({
+      id: `requirement_${index + 1}`,
+      icon: createIconsV019[index % createIconsV019.length],
+      title: requirement.replace(/[.!?]+$/,'').replace(/^(explain|describe|include|show|identify|compare|list)\s+/i,'').trim() || `Part ${index + 1}`,
+      prompt: requirement,
+      noteId: researchActivities[index]?.id || null,
+      requirement,
+    }))
+
+    if (!createSections.length) createSections.push({id:'project_work',icon:'✏️',title:'Your project',prompt:`Build your ${deliverableV019 || focus || 'project'} in your own words.`,noteId:null})
+
+    const defaultCreateIdV019 = createSections[0]?.id
+    const activeCreate = createSections.find(s=>s.id===(state.activeCreateId||defaultCreateIdV019)) || createSections[0]
+    const activeCreateText = state.creationSections?.[activeCreate.id] ?? ''
     const sourceLearning = activeCreate.noteId ? String(state.researchNotes?.[activeCreate.noteId]||'').trim() : ''
-    const createDone = createSections.filter(s=>String(state.creationSections?.[s.id] ?? (s.id==='basics'?state.creationNotes:'') ?? '').trim()).length
+    const createDone = createSections.filter(s=>state.createCompleted?.[s.id]===true).length
+    const createCompleteV019 = createSections.length > 0 && createDone === createSections.length
 
     const reviewItems=[...requirements.slice(0,3), focus?`My project is about ${focus}.`:'My project has a clear focus.','I checked spelling, visuals, and my final work.']
     const reviewDone=reviewItems.filter((_,i)=>state.reviewChecks?.[`check_${i}`]).length
@@ -4164,30 +4346,94 @@ function JourneyPanel({
       {shouldOfferProjectChoiceV0171(item) && !state.focus && <div className="synGetStartedPromptV0172"><span>👆</span><p><strong>Pick a starting point first.</strong><small>Then I’ll show you the simple game plan for the rest of the project.</small></p><button onClick={()=>beginLearningHelp(item.id)}>✨ Help me choose</button></div>}
     </div>
 
-    if(stepIndex===1)return <div className="synVStage">
-      <div className="synVHeading"><span>EXPLORE & LEARN 🔎</span><h4>{focus?`Let’s learn about ${focus}!`:'Pick your focus first'}</h4><p>Choose something to explore. We’ll work on one idea at a time.</p></div>
-      <div className="synLearnTopicsV0170">{researchActivities.map((a,i)=>{const done=!!String(state.researchNotes?.[a.id]||'').trim();return <button key={a.id} className={`${activeLearn.id===a.id?'active':''} ${done?'done':''}`} onClick={()=>updateStepWorkspaceState(item,{activeLearnId:a.id})}><span>{a.icon}</span><p><strong>{a.short}</strong><small>{a.hint}</small></p>{done?<b>✓</b>:<b>{i+1}</b>}</button>})}</div>
-      <div className="synLearnWorkspaceV0170">
-        <div className="synLearnLessonV0170"><span>{activeLearn.icon}</span><div><small>LEARN</small><h5>{activeLearn.title}</h5><p>{activeLearn.lesson}</p></div></div>
-        <div className="synLearnActionsV0170"><button onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{mode:'ask',scope:'learn',activityId:activeLearn.id},inlineQuestion:''})}>💬 Ask SynapStride</button><button onClick={()=>runInlineLearningCompanionV017(item,{mode:'explain',scope:'learn',focus,activity:activeLearn})}>📖 Explain more</button><button onClick={()=>runInlineLearningCompanionV017(item,{mode:'example',scope:'learn',focus,activity:activeLearn})}>🌎 Show me an example</button></div>
-        {state.inlineCoach?.scope==='learn' && state.inlineCoach?.activityId===activeLearn.id && <div className="synInlineCoachV0173">
-          <div className="synInlineCoachHeadV0173"><span>🤖</span><p><strong>SynapStride</strong><small>Right here with you</small></p><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null,inlineQuestion:''})}>×</button></div>
-          {state.inlineCoach.mode==='ask' ? <div className="synInlineAskV0173"><p>What do you want to know about <strong>{activeLearn.short.toLowerCase()}</strong>?</p><div><input value={state.inlineQuestion||''} placeholder="Type your question…" onChange={e=>updateStepWorkspaceState(item,{inlineQuestion:e.target.value})}/><button type="button" disabled={!String(state.inlineQuestion||'').trim()} onClick={()=>runInlineLearningCompanionV017(item,{mode:'ask',scope:'learn',focus,activity:activeLearn},state.inlineQuestion)}>Ask →</button></div></div> : <><p className="synInlineCoachResponseV0173">{state.inlineCoach.response}</p>{import.meta.env.DEV && state.inlineCoach.model && <small style={{display:'block',margin:'6px 0',opacity:.65}}>AI source: {modelSourceLabelV017(state.inlineCoach.model)}</small>}<div className="synInlineCoachFollowV0173"><button type="button" onClick={()=>runInlineLearningCompanionV017(item,{mode:'explain',scope:'learn',focus,activity:activeLearn},`Explain ${activeLearn.title} another way.`)}>Explain another way</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{mode:'ask',scope:'learn',activityId:activeLearn.id},inlineQuestion:''})}>I have a question</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null,inlineQuestion:''})}>✓ Got it</button></div></>}
-        </div>}
-        <label className="synTakeawayV0170"><strong>What I learned</strong><small>Save one useful thought in your own words.</small><textarea rows="3" value={state.researchNotes?.[activeLearn.id]||''} placeholder="One thing I learned is…" onChange={e=>updateStepWorkspaceState(item,{researchNotes:{...(state.researchNotes||{}),[activeLearn.id]:e.target.value}})}/></label>
+    if(stepIndex===1 && researchActivities.length > 0 && researchDone === researchActivities.length && !state.learnCompletionReview)return <div className="synVStage synLearnStageV019 synLearnCompleteV019">
+      <div className="synLearnCompleteHeroV019">
+        <div className="synLearnCompleteIconV019">🏆</div>
+        <span>STEP 2 COMPLETE</span>
+        <h4>You’ve finished learning!</h4>
+        <p>You completed all {researchActivities.length} learning goals for this assignment.</p>
       </div>
-      <div className="synVProgress"><p><strong>Your learning progress</strong><span>{researchDone} of 4 explored</span></p><div><i style={{width:`${researchDone*25}%`}}/></div></div>
+      <div className="synLearnCompleteGoalsV019">
+        {researchActivities.map((activity)=><div key={activity.id}><b>✓</b><span>{activity.title}</span></div>)}
+      </div>
+      <div className="synLearnCompleteNextV019">
+        <span>✏️</span><div><strong>What’s next?</strong><p>Now it’s time to create your {deliverableV019 || 'project'} using what you’ve learned.</p></div>
+      </div>
+      <div className="synLearnCompleteActionsV019">
+        <button type="button" className="primary" onClick={()=>completeAssignmentStep(item, selectedStep.id)}>Start creating →</button>
+        <button type="button" onClick={()=>updateStepWorkspaceState(item,{learnCompletionReview:true,inlineCoach:null,inlineQuestion:''})}>Review what I learned</button>
+      </div>
+    </div>
+
+    if(stepIndex===1)return <div className="synVStage synLearnStageV019">
+      {!showLearnGoalV019 ? <>
+        <div className="synVHeading synLearnOverviewHeadingV019"><span>LEARN 🔎</span><h4>{focus?`Let’s learn what you need for ${focus}`:'Let’s learn what you need'}</h4><p>Choose any goal. If you already know it, mark it understood. If you want help, open it and SynapStride can teach it your way.</p></div>
+        <div className="synLearnOverviewMetaV019"><strong>{researchDone} of {researchActivities.length} understood</strong><div><i style={{width:`${researchActivities.length?Math.round((researchDone/researchActivities.length)*100):0}%`}} /></div></div>
+        <div className="synLearnGoalMapV019">
+          {researchActivities.map((a,i)=>{const understood=state.learningConfidence?.[a.id]==='got_it'; const inProgress=!understood && state.learningConfidence?.[a.id]; return <div key={a.id} className={`synLearnGoalCardV019 ${understood?'done':''}`}>
+            <button type="button" className="synLearnGoalOpenV019" onClick={()=>updateStepWorkspaceState(item,{activeLearnId:a.id,learnViewV019:'goal',inlineCoach:null,inlineQuestion:''})}>
+              <span className="synLearnGoalIconV019">{a.icon}</span><span className="synLearnGoalCopyV019"><small>GOAL {i+1} OF {researchActivities.length}</small><strong>{a.title}</strong><em>{a.hint}</em></span><span className={`synLearnGoalStatusV019 ${understood?'done':inProgress?'progress':''}`}>{understood?'✓ Understood':inProgress?'In progress':'Not started'}</span><b>›</b>
+            </button>
+            {!understood && <button type="button" className="synLearnKnowInlineV019" onClick={()=>updateStepWorkspaceState(item,{learningConfidence:{...(state.learningConfidence||{}),[a.id]:'got_it'},activeLearnId:null,learnViewV019:'overview',inlineCoach:null,inlineQuestion:'',learnCompletionReview:false})}>✓ I know this</button>}
+          </div>})}
+        </div>
+      </> : <>
+        <button type="button" className="synBackToGoalsV019" onClick={()=>updateStepWorkspaceState(item,{activeLearnId:null,learnViewV019:'overview',inlineCoach:null,inlineQuestion:''})}>← Back to learning goals</button>
+        <div className="synLearnGoalHeaderV019"><span>{activeLearn.icon}</span><div><small>LEARNING GOAL</small><h4>{activeLearn.title}</h4><p>{activeLearn.lesson}</p></div>{state.learningConfidence?.[activeLearn.id]==='got_it'&&<b>✓ Understood</b>}</div>
+        <div className="synLearnWorkspaceV0170 synLearnWorkspaceV019 synLearnFocusedV019">
+          {!state.inlineCoach || state.inlineCoach?.scope!=='learn' || state.inlineCoach?.activityId!==activeLearn.id ? <div className="synLearnStartV019"><button type="button" onClick={()=>runInlineLearningCompanionV017(item,{mode:'explain',scope:'learn',focus,activity:activeLearn})}>✨ Teach me this</button><button type="button" className="secondary synKnowThisV019" disabled={state.learningConfidence?.[activeLearn.id]==='got_it'} onClick={()=>updateStepWorkspaceState(item,{learningConfidence:{...(state.learningConfidence||{}),[activeLearn.id]:'got_it'},activeLearnId:null,learnViewV019:'overview',inlineCoach:null,inlineQuestion:'',learnCompletionReview:false})}>✓ I know this</button><button type="button" className="secondary" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{mode:'ask',scope:'learn',activityId:activeLearn.id},inlineQuestion:''})}>💬 I have a question</button></div> : null}
+          {state.inlineCoach?.scope==='learn' && state.inlineCoach?.activityId===activeLearn.id && <div className="synInlineCoachV0173 synInlineCoachLearnV019">
+            <div className="synInlineCoachHeadV0173"><span>🤖</span><p><strong>SynapStride</strong><small>{state.inlineCoach.mode==='loading'?'Working with you':'Learning this with you'}</small></p><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null,inlineQuestion:''})}>×</button></div>
+            {state.inlineCoach.mode==='ask' ? <div className="synInlineAskV0173"><p>What are you wondering about?</p><div><input value={state.inlineQuestion||''} placeholder="Ask in your own words…" onChange={e=>updateStepWorkspaceState(item,{inlineQuestion:e.target.value})}/><button type="button" disabled={!String(state.inlineQuestion||'').trim()} onClick={()=>runInlineLearningCompanionV017(item,{mode:'ask',scope:'learn',focus,activity:activeLearn},state.inlineQuestion)}>Ask →</button></div></div> : <>{state.inlineCoach.mode==='loading'?<SynapStrideThinking message={`Looking at your assignment and finding the best way to explain ${activeLearn.title}.`} />:<p className="synInlineCoachResponseV0173">{state.inlineCoach.response}</p>}{import.meta.env.DEV && state.inlineCoach.model && <small style={{display:'block',margin:'6px 0',opacity:.65}}>AI source: {state.inlineCoach.model?.liveModel ? `LIVE MODEL${state.inlineCoach.model?.backendModel || state.inlineCoach.model?.modelId ? ` · ${state.inlineCoach.model.backendModel || state.inlineCoach.model.modelId}` : ''}` : `FALLBACK · ${state.inlineCoach.model?.provider || 'local'}`}</small>}{state.inlineCoach.mode!=='loading'&&<div className="synUnderstandCheckV019"><strong>Does that make sense?</strong><div><button type="button" onClick={()=>{const nextConfidence={...(state.learningConfidence||{}),[activeLearn.id]:'got_it'};updateStepWorkspaceState(item,{learningConfidence:nextConfidence,activeLearnId:null,learnViewV019:'overview',inlineCoach:null,inlineQuestion:'',learnCompletionReview:false})}}>👍 Yep</button><button type="button" onClick={()=>{updateStepWorkspaceState(item,{learningConfidence:{...(state.learningConfidence||{}),[activeLearn.id]:'kind_of'}});runInlineLearningCompanionV017(item,{mode:'kind_of',scope:'learn',focus,activity:activeLearn})}}>🤔 Kind of</button><button type="button" onClick={()=>{updateStepWorkspaceState(item,{learningConfidence:{...(state.learningConfidence||{}),[activeLearn.id]:'not_yet'}});runInlineLearningCompanionV017(item,{mode:'not_yet',scope:'learn',focus,activity:activeLearn})}}>🧒 Not yet</button></div><button type="button" className="synAskAnotherV019" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{mode:'ask',scope:'learn',activityId:activeLearn.id},inlineQuestion:''})}>I have another question</button></div>}</>}
+          </div>}
+          <label className="synTakeawayV0170 synTakeawayV019"><strong>Want to save a thought? <em>Optional</em></strong><small>Write something in your own words if it will help you later in Create.</small><textarea rows="2" value={state.researchNotes?.[activeLearn.id]||''} placeholder="Something I want to remember…" onChange={e=>updateStepWorkspaceState(item,{researchNotes:{...(state.researchNotes||{}),[activeLearn.id]:e.target.value}})}/></label>
+        </div>
+      </>}
+      <div className="synLearnProgressV019"><strong>Your learning progress</strong><span>{researchDone} of {researchActivities.length} understood</span><div><i style={{width:`${researchActivities.length?Math.round((researchDone/researchActivities.length)*100):0}%`}} /></div></div>
+    </div>
+
+    if(stepIndex===2 && createCompleteV019)return <div className="synVStage synCreateCompleteV019">
+      <div className="synLearnCompleteHeroV019">
+        <div className="synLearnCompleteIconV019">🎉</div>
+        <span>STEP 3 COMPLETE</span>
+        <h4>You’ve finished creating!</h4>
+        <p>All {createSections.length} parts of your {deliverableV019 || focus || 'project'} are complete.</p>
+      </div>
+      <div className="synLearnCompleteGoalsV019">
+        {createSections.map((section)=><div key={section.id}><b>✓</b><span>{section.title}</span></div>)}
+      </div>
+      <div className="synLearnCompleteNextV019">
+        <span>✅</span><div><strong>What’s next?</strong><p>Review your work against the assignment before you finish.</p></div>
+      </div>
+      <div className="synLearnCompleteActionsV019">
+        <button type="button" className="primary" onClick={()=>completeAssignmentStep(item, selectedStep.id)}>Review my work →</button>
+        <button type="button" onClick={()=>{
+          const firstSection=createSections[0]
+          updateStepWorkspaceState(item,{createCompleted:{},activeCreateId:firstSection?.id||null,createCompletionV019:false,inlineCoach:null})
+        }}>Go back to Create</button>
+      </div>
     </div>
 
     if(stepIndex===2)return <div className="synVStage">
-      <div className="synVHeading"><span>CREATE 🛠️</span><h4>Let’s make your {focus||'project'}!</h4><p>Pick a section and build it using what you learned.</p></div>
-      <div className="synVBuilder"><div className="synVSections">{createSections.map((s,i)=>{const text=String(state.creationSections?.[s.id] ?? (s.id==='basics'?state.creationNotes:'') ?? '').trim();return <button type="button" className={`${activeCreate.id===s.id?'active':''} ${text?'done':''}`} key={s.id} onClick={()=>updateStepWorkspaceState(item,{activeCreateId:s.id})}><em>{s.icon}</em><p><strong>{i+1}. {s.title}</strong><small>{text?'Saved':s.prompt}</small></p><b>{text?'✓':'›'}</b></button>})}</div>
-        <div className="synVEditor"><span>SECTION {createSections.findIndex(s=>s.id===activeCreate.id)+1} OF 6</span><h5>{activeCreate.icon} {activeCreate.title}</h5><p className="synCreatePromptV0170">{activeCreate.prompt}</p>
+      <div className="synVHeading"><span>CREATE 🛠️</span><h4>Let’s build your {deliverableV019 || focus || 'project'}!</h4><p>These parts come from what your assignment asks you to make. We’ll do them one at a time.</p></div>
+      <div className="synVBuilder"><div className="synVSections">{createSections.map((s,i)=>{const text=String(state.creationSections?.[s.id] ?? '').trim();const completed=state.createCompleted?.[s.id]===true;return <button type="button" className={`${activeCreate.id===s.id?'active':''} ${completed?'done':''}`} key={s.id} onClick={()=>updateStepWorkspaceState(item,{activeCreateId:s.id,inlineCoach:null})}><em>{s.icon}</em><p><strong>{i+1}. {s.title}</strong><small>{completed?'Done ✓':text?'In progress':s.prompt}</small></p><b>{completed?'✓':'›'}</b></button>})}</div>
+        <div className="synVEditor"><span>PART {createSections.findIndex(s=>s.id===activeCreate.id)+1} OF {createSections.length}</span><h5>{activeCreate.icon} {activeCreate.title}</h5><p className="synCreatePromptV0170">{activeCreate.prompt}</p>
           {sourceLearning&&<aside className="synCarryForwardV0170"><strong>📝 From what you learned</strong><p>{sourceLearning}</p><button type="button" onClick={()=>updateStepWorkspaceState(item,{creationSections:{...(state.creationSections||{}),[activeCreate.id]:sourceLearning}})}>Use this as a starting point</button></aside>}
-          <textarea rows="8" value={activeCreateText} placeholder={`Add your ${activeCreate.title.toLowerCase()} here…`} onChange={e=>updateStepWorkspaceState(item,{creationSections:{...(state.creationSections||{}),[activeCreate.id]:e.target.value},...(activeCreate.id==='basics'?{creationNotes:e.target.value}:{})})}/>
-          <div><button onClick={()=>showInlineCoachV0173(item,{mode:'write',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>✨ Help me write</button><button onClick={()=>showInlineCoachV0173(item,{mode:'ideas',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>💡 Give me ideas</button>{sourceLearning&&<button type="button" onClick={()=>updateStepWorkspaceState(item,{creationSections:{...(state.creationSections||{}),[activeCreate.id]:sourceLearning}})}>📝 Use my learning</button>}</div>
-          {state.inlineCoach?.scope==='create' && state.inlineCoach?.sectionId===activeCreate.id && <div className="synInlineCoachV0173 synInlineCoachCreateV0173"><div className="synInlineCoachHeadV0173"><span>🤖</span><p><strong>SynapStride</strong><small>Helping with {activeCreate.title}</small></p><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null})}>×</button></div><p className="synInlineCoachResponseV0173">{state.inlineCoach.response}</p><div className="synInlineCoachFollowV0173"><button type="button" onClick={()=>showInlineCoachV0173(item,{mode:'ideas',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>Another idea</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null})}>✓ I’ll try it</button></div></div>}
-          <div className="synSectionProgressV0170">{createDone} of 6 sections started</div>
+          <textarea rows="8" value={activeCreateText} placeholder="Write this part in your own words…" onChange={e=>updateStepWorkspaceState(item,{creationSections:{...(state.creationSections||{}),[activeCreate.id]:e.target.value}})}/>
+          <div><button onClick={()=>runInlineCreateCompanionV019(item,{mode:'write',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>✨ Help me write</button><button onClick={()=>runInlineCreateCompanionV019(item,{mode:'ideas',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>💡 Give me ideas</button>{sourceLearning&&<button type="button" onClick={()=>updateStepWorkspaceState(item,{creationSections:{...(state.creationSections||{}),[activeCreate.id]:sourceLearning}})}>📝 Use my learning</button>}</div>
+          {state.inlineCoach?.scope==='create' && state.inlineCoach?.sectionId===activeCreate.id && <div className="synInlineCoachV0173 synInlineCoachCreateV0173"><div className="synInlineCoachHeadV0173"><span>🤖</span><p><strong>SynapStride</strong><small>Helping with {activeCreate.title}</small></p><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null})}>×</button></div>{state.inlineCoach.mode==='loading'?<SynapStrideThinking message={state.inlineCoach.modeRequested==='write'?'Looking at what you wrote and finding a helpful next step.':'Coming up with ideas that fit this part of your assignment.'} />:<p className="synInlineCoachResponseV0173">{state.inlineCoach.response}</p>}{import.meta.env.DEV && state.inlineCoach.model && <small style={{display:'block',margin:'6px 0',opacity:.65}}>AI source: {state.inlineCoach.model?.liveModel ? `LIVE MODEL${state.inlineCoach.model?.backendModel || state.inlineCoach.model?.modelId ? ` · ${state.inlineCoach.model.backendModel || state.inlineCoach.model.modelId}` : ''}` : `FALLBACK · ${state.inlineCoach.model?.provider || 'local'}`}</small>}<div className="synInlineCoachFollowV0173"><button type="button" onClick={()=>runInlineCreateCompanionV019(item,{mode:'ideas',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>Another idea</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null})}>✓ I’ll try it</button></div></div>}
+          <div className="synSectionProgressV0170">{createDone} of {createSections.length} parts completed</div>
+          <div className="synCreateNextV019"><button type="button" className="primary" disabled={!String(activeCreateText).trim()} onClick={()=>{
+            // v0.19 Stage 3C.2 — persist the latest editor text and completion in one atomic update.
+            // This avoids a stale journey-item write when the child clicks Done immediately after typing.
+            const latest = getStepWorkspaceState(item)
+            const creationSections = {...(latest.creationSections||{}),[activeCreate.id]:activeCreateText}
+            const completed = {...(latest.createCompleted||{}),[activeCreate.id]:true}
+            const currentIndex = createSections.findIndex(s=>s.id===activeCreate.id)
+            const next = createSections.slice(currentIndex+1).find(s=>!completed[s.id]) || createSections.slice(0,currentIndex).find(s=>!completed[s.id])
+            const allDone = createSections.every(s=>completed[s.id]===true)
+            updateStepWorkspaceState(item,{creationSections,createCompleted:completed,activeCreateId:next?.id||activeCreate.id,inlineCoach:null,createCompletionV019:allDone})
+          }}>✓ Done with this part {createDone + (state.createCompleted?.[activeCreate.id]===true?0:1) < createSections.length ? '— Continue →' : ''}</button></div>
         </div>
       </div>
     </div>
@@ -4237,7 +4483,13 @@ function JourneyPanel({
     if (next) {
       setActiveAssignmentStep({ itemId: item.id, stepId: next.id })
     } else {
+      // v0.19 Stage 3A.1 — completing the final meaningful journey step
+      // completes the assignment itself. Do not ask the child to perform a
+      // second administrative “Mark complete” action. Keep the assignment
+      // open so the dedicated completion state can provide closure.
+      onLearningItemStatus?.(item.id, journeyStatuses.COMPLETED)
       setActiveAssignmentStep(null)
+      setHelpJourneyId(null)
     }
   }
 
@@ -5041,20 +5293,38 @@ function JourneyPanel({
             </section>
           )}
 
-          {schoolView === 'tracker' ? (
-            <div className="mgSchoolDashboardV092">
+          {schoolView === 'tracker' ? (!expandedJourneyId ? (
+            <div className="mgSchoolDashboardV092 synSchoolDashboardFocusV019">
               <div className="mgSchoolTrackerColumnV092">
+                {learningTracker.recent && (() => {
+                  const item = learningTracker.recent
+                  const plan = getAssignmentWorkPlan(item)
+                  const currentIndex = Math.max(0, plan.steps.findIndex((step) => step.id === plan.currentStepId))
+                  const currentStep = plan.steps[currentIndex]
+                  const stepLabel = currentStep?.label || 'Continue'
+                  const state = getStepWorkspaceState(item)
+                  const needs = Array.isArray(item.assignmentUnderstanding?.learningNeeds) ? item.assignmentUnderstanding.learningNeeds.slice(0, 6) : []
+                  const understood = needs.filter((_, index) => state.learningConfidence?.[`need_${index + 1}`] === 'got_it').length
+                  return (
+                    <section className="synContinueCardV019">
+                      <div className="synContinueCardHeadingV019"><span>▶</span><div><strong>Continue where you left off</strong><small>Pick up right where you were.</small></div></div>
+                      <div className="synContinueCardBodyV019">
+                        <div><h3>{item.title}</h3><p>Step {currentIndex + 1} of {plan.steps.length} · {stepLabel}</p>{/learn/i.test(stepLabel) && needs.length > 0 && <p><b>{understood} of {needs.length}</b> learning goals understood</p>}</div>
+                        <button type="button" onClick={() => { openSchoolItem(item.id); window.requestAnimationFrame(() => openAssignmentStep(item, plan.currentStepId)) }}>Continue {String(stepLabel).toLowerCase()} →</button>
+                      </div>
+                    </section>
+                  )
+                })()}
+
                 {learningTracker.needsAttention.length > 0 && (
                   <div className="mgSchoolGroupV092 attention">
                     <div className="mgSchoolGroupTitleV092">
                       <span>!</span>
-                      <h3>
-                        Needs Attention ({learningTracker.needsAttention.length})
-                      </h3>
+                      <h3>Needs Attention ({learningTracker.needsAttention.length})</h3>{learningTracker.needsAttention.length > 2 && <button className="synSeeAllInlineV019" type="button" onClick={() => setSchoolListView(schoolListView === 'attention' ? null : 'attention')}>{schoolListView === 'attention' ? 'Show less' : 'See all'}</button>}
                     </div>
 
                     <div className="mgSchoolRowsV092">
-                      {learningTracker.needsAttention.map((item) => (
+                      {learningTracker.needsAttention.slice(0, schoolListView === 'attention' ? undefined : 2).map((item) => (
                         <button
                           type="button"
                           key={item.id}
@@ -5091,13 +5361,11 @@ function JourneyPanel({
                 <div className="mgSchoolGroupV092">
                   <div className="mgSchoolGroupTitleV092 working">
                     <span>◷</span>
-                    <h3>
-                      Working On ({learningTracker.workingOn.length})
-                    </h3>
+                    <h3>Working On ({learningTracker.workingOn.length})</h3>{learningTracker.workingOn.length > 3 && <button className="synSeeAllInlineV019" type="button" onClick={() => setSchoolListView(schoolListView === 'working' ? null : 'working')}>{schoolListView === 'working' ? 'Show less' : 'See all'}</button>}
                   </div>
 
                   <div className="mgSchoolRowsV092">
-                    {learningTracker.workingOn.map((item) => (
+                    {learningTracker.workingOn.filter((item) => schoolListView === 'working' || item.id !== learningTracker.recent?.id).slice(0, schoolListView === 'working' ? undefined : 3).map((item) => (
                       <button
                         type="button"
                         key={item.id}
@@ -5140,6 +5408,22 @@ function JourneyPanel({
                   </div>
                 </div>
 
+                {learningTracker.upcoming.length > 0 && (
+                  <div className="mgSchoolGroupV092 synUpcomingGroupV019">
+                    <div className="mgSchoolGroupTitleV092 upcoming"><span>▣</span><h3>Upcoming ({learningTracker.upcoming.length})</h3></div>
+                    <div className="mgSchoolRowsV092">
+                      {learningTracker.upcoming.slice(0, schoolListView === 'upcoming' ? undefined : 2).map((item) => (
+                        <button type="button" key={item.id} onClick={() => openSchoolItem(item.id)}>
+                          <span className="mgSchoolItemIconV092">{item.emoji || '📘'}</span>
+                          <span className="mgSchoolItemMainV092"><strong>{item.title}</strong><small><b>Upcoming</b>{item.dueDate && <> · Due {formatSchoolDate(item.dueDate)}</>}</small></span>
+                          <span className="mgSchoolItemActionV092">View</span><b className="mgSchoolRowChevronV092">›</b>
+                        </button>
+                      ))}
+                    </div>
+                    {learningTracker.upcoming.length > 2 && <button className="synSeeAllV019" type="button" onClick={() => setSchoolListView(schoolListView === 'upcoming' ? null : 'upcoming')}>{schoolListView === 'upcoming' ? 'Show less' : `See all (${learningTracker.upcoming.length}) →`}</button>}
+                  </div>
+                )}
+
                 {learningTracker.completed.length > 0 && (
                   <div className="mgSchoolGroupV092 completed mgCompletedPreviewV09">
                     <div className="mgCompletedPreviewHeaderV09">
@@ -5167,7 +5451,7 @@ function JourneyPanel({
                     </div>
 
                     <div className="mgSchoolRowsV092 mgCompletedPreviewRowsV09">
-                      {learningTracker.completed.slice(0, 3).map((item) => (
+                      {learningTracker.completed.slice(0, schoolListView === 'completed' ? undefined : 1).map((item) => (
                         <button
                           type="button"
                           key={item.id}
@@ -5213,16 +5497,8 @@ function JourneyPanel({
                 </div>
               </div>
 
-              <SchoolCalendar
-                items={getJourneyItemsByPath(
-                  unifiedJourneyItems,
-                  journeyPaths.SCHOOL_LEARNING
-                )}
-                onOpenItem={openSchoolItem}
-                expanded={false}
-              />
             </div>
-          ) : schoolView === 'calendar' ? (
+          ) : null) : schoolView === 'calendar' ? (
             <SchoolCalendar
               items={getJourneyItemsByPath(
                 unifiedJourneyItems,
@@ -5299,6 +5575,7 @@ function JourneyPanel({
           </div>
 
           <div className="synAssignmentDetailHeaderActionsV0921">
+            {visibleJourneyItems.find((entry) => entry.id === expandedJourneyId)?.status !== journeyStatuses.COMPLETED && (
             <button
               type="button"
               className="edit"
@@ -5311,6 +5588,7 @@ function JourneyPanel({
             >
               ✎ Edit assignment
             </button>
+            )}
 
             <button
               type="button"
@@ -5321,7 +5599,7 @@ function JourneyPanel({
                 setAssignmentEditDraft(null)
               }}
             >
-              Close details
+              ← Back to School & Learning
             </button>
           </div>
         </div>
@@ -5553,63 +5831,13 @@ function JourneyPanel({
                         </section>
                       )}
 
-                      <section
-                        className={
-                          item.status === journeyStatuses.COMPLETED
-                            ? 'synWorkspaceAssignmentStateV0910 synAssignmentCompletedStateV0913'
-                            : `synWorkspaceAssignmentStateV0910${
-                                helpJourneyId === item.id ||
-                                (item.learningSupportRequest && item.learningSupportRequest?.outcome?.outcomeType !== 'resolved')
-                                  ? ' help-active-v0165'
-                                  : ''
-                              }`
-                        }
-                        aria-label="Assignment status and help actions"
-                      >
-                        {item.status === journeyStatuses.COMPLETED ? (
-                          <div className="synAssignmentCompletedConfirmationV0913">
-                            <div className="synAssignmentCompletedCheckV0913">
-                              ✓
-                            </div>
-
-                            <div className="synAssignmentCompletedCopyV0913">
-                              <span className="cgEyebrowV09">
-                                ASSIGNMENT COMPLETED
-                              </span>
-
-                              <h3>Nice work — this assignment is complete.</h3>
-
-                              <p>
-                                It has moved to your Completed history. You can
-                                still open it anytime, and if this was a mistake
-                                you can put it back in Working On.
-                              </p>
-                            </div>
-
-                            <div className="synAssignmentCompletedActionsV0913">
-                              <button
-                                type="button"
-                                className="primary"
-                                onClick={() =>
-                                  reopenSchoolAssignment(item.id)
-                                }
-                              >
-                                ↻ Reopen assignment
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setExpandedJourneyId(null)
-                                  setHelpJourneyId(null)
-                                  setSchoolView('completed')
-                                }}
-                              >
-                                View completed work
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
+                      {item.status !== journeyStatuses.COMPLETED && (
+                        <section
+                          className={`synWorkspaceAssignmentStateV0910${
+                            helpJourneyId === item.id ? ' help-active-v0165' : ''
+                          }`}
+                          aria-label="Assignment status and help actions"
+                        >
                           <>
                             <div className="synAssignmentJourneyHeaderV0165">
                               <div>
@@ -5639,6 +5867,20 @@ function JourneyPanel({
                                 plan.steps.findIndex((step) => step.id === selectedStepId)
                               )
 
+                              // v0.19 Stage 2C.2 — the journey header must reflect semantic
+                              // Learn completion as soon as all authoritative learning goals are
+                              // understood, even before the child chooses Start creating.
+                              const breadcrumbLearnNeeds = Array.isArray(item.assignmentUnderstanding?.learningNeeds)
+                                ? item.assignmentUnderstanding.learningNeeds
+                                    .map((need) => String(need || '').trim())
+                                    .filter(Boolean)
+                                    .slice(0, 6)
+                                : []
+                              const breadcrumbLearnState = getStepWorkspaceState(item)
+                              const breadcrumbLearnComplete = breadcrumbLearnNeeds.length > 0 && breadcrumbLearnNeeds.every(
+                                (_, learnIndex) => breadcrumbLearnState.learningConfidence?.[`need_${learnIndex + 1}`] === 'got_it'
+                              )
+
                               return plan.steps.length > 0 ? (
                                 <nav
                                   className="synAssignmentBreadcrumbV0166"
@@ -5654,8 +5896,10 @@ function JourneyPanel({
                                   <div className="synAssignmentBreadcrumbTrackV0166">
                                     {plan.steps.map((step, index) => {
                                       const isSelected = step.id === selectedStepId
-                                      const isDone = step.status === 'completed'
-                                      const isCurrent = step.id === plan.currentStepId
+                                      const isLearnBreadcrumb = /learn/i.test(step.label || '')
+                                      const isDone = step.status === 'completed' || (isLearnBreadcrumb && breadcrumbLearnComplete)
+                                      const isCreateAfterLearn = breadcrumbLearnComplete && index === 2 && step.status !== 'completed'
+                                      const isCurrent = step.id === plan.currentStepId || isCreateAfterLearn
 
                                       return (
                                         <button
@@ -5710,13 +5954,12 @@ function JourneyPanel({
                               </button>
                             </div>
                           </>
-                        )}
-                      </section>
+                        </section>
+                      )}
 
                       <div
                         className={
-                          helpJourneyId === item.id ||
-                          (item.learningSupportRequest && item.learningSupportRequest?.outcome?.outcomeType !== 'resolved')
+                          helpJourneyId === item.id
                             ? 'synWorkspaceBodyV098 ssSchoolWorkspaceV015 help-open'
                             : 'synWorkspaceBodyV098 ssSchoolWorkspaceV015 assignment-only'
                         }
@@ -5744,11 +5987,13 @@ function JourneyPanel({
                                 <>
                                   <div className="synJourneyStepListV0165">
                                     {plan.steps.map((step, index) => {
-                                      const isCurrent = step.id === plan.currentStepId
+                                      const assignmentIsComplete = item.status === journeyStatuses.COMPLETED
+                                      const isCurrent = !assignmentIsComplete && step.id === plan.currentStepId
                                       const isSelected =
+                                        !assignmentIsComplete &&
                                         activeAssignmentStep?.itemId === item.id &&
                                         activeAssignmentStep.stepId === step.id
-                                      const isDone = step.status === 'completed'
+                                      const isDone = assignmentIsComplete || step.status === 'completed'
                                       return (
                                         <button
                                           type="button"
@@ -5766,6 +6011,24 @@ function JourneyPanel({
                                     })}
                                   </div>
 
+                                  {item.status === journeyStatuses.COMPLETED && (
+                                    <section className="synWorkspaceAssignmentStateV0910 synAssignmentCompletedStateV0913" aria-label="Assignment complete">
+                                      <div className="synAssignmentCompletedConfirmationV0913">
+                                        <div className="synAssignmentCompletedCheckV0913">🎉</div>
+                                        <div className="synAssignmentCompletedCopyV0913">
+                                          <span className="cgEyebrowV09">ASSIGNMENT COMPLETE</span>
+                                          <h3>You did it!</h3>
+                                          <p><strong>{item.title || 'This assignment'}</strong> is complete. You got started, learned what you needed, created your work, and finished your final review. Nice work!</p>
+                                        </div>
+                                        <div className="synAssignmentCompletedActionsV0913">
+                                          <button type="button" className="primary" onClick={() => { setExpandedJourneyId(null); setHelpJourneyId(null); setActiveAssignmentStep(null); setSchoolView('tracker') }}>← Back to School & Learning</button>
+                                          <button type="button" onClick={() => { setExpandedJourneyId(null); setHelpJourneyId(null); setActiveAssignmentStep(null); onHome?.() }}>🏠 Go to Home</button>
+                                          <button type="button" onClick={() => { setExpandedJourneyId(null); setHelpJourneyId(null); setActiveAssignmentStep(null); setSchoolView('completed') }}>View completed work</button>
+                                        </div>
+                                      </div>
+                                    </section>
+                                  )}
+
                                   {activeAssignmentStep?.itemId === item.id && selectedStep && (
                                     <div className="synCurrentStepWorkspaceV0165">
                                       <span className="synCurrentStepKickerV0165">
@@ -5782,15 +6045,21 @@ function JourneyPanel({
                                           ← Previous
                                         </button>
 
-                                        {selectedStep.status !== 'completed' ? (
-                                          <button
-                                            type="button"
-                                            className="primary"
-                                            onClick={() => completeAssignmentStep(item, selectedStep.id)}
-                                          >
-                                            ✓ Finish step & continue →
-                                          </button>
-                                        ) : plan.steps.findIndex((step) => step.id === selectedStep.id) === plan.steps.length - 1 ? (
+                                        {selectedStep.status !== 'completed' ? (() => {
+                                          const isLearnStep = /learn/i.test(selectedStep.label || '')
+                                          const isCreateStep = /create/i.test(selectedStep.label || '')
+                                          const learnState = getStepWorkspaceState(item)
+                                          const learnNeeds = Array.isArray(item.assignmentUnderstanding?.learningNeeds)
+                                            ? item.assignmentUnderstanding.learningNeeds.map((need)=>String(need||'').trim()).filter(Boolean).slice(0, 6)
+                                            : []
+                                          const allLearned = learnNeeds.length > 0 && learnNeeds.every((_, index) => learnState.learningConfidence?.[`need_${index + 1}`] === 'got_it')
+                                          if (isLearnStep || isCreateStep) return null
+                                          return (
+                                            <button type="button" className="primary" onClick={() => completeAssignmentStep(item, selectedStep.id)}>
+                                              ✓ Finish step & continue →
+                                            </button>
+                                          )
+                                        })() : plan.steps.findIndex((step) => step.id === selectedStep.id) === plan.steps.length - 1 ? (
                                           <button
                                             type="button"
                                             className="primary"
@@ -6050,8 +6319,7 @@ function JourneyPanel({
                         {item.status !== journeyStatuses.COMPLETED ? (
                         <main
                           className={
-                            helpJourneyId === item.id ||
-                            (item.learningSupportRequest && item.learningSupportRequest?.outcome?.outcomeType !== 'resolved')
+                            helpJourneyId === item.id
                               ? 'synWorkspaceHelpV098 ssSchoolCompanionV015'
                               : 'synWorkspaceHelpV098 ssSchoolCompanionV015 is-collapsed'
                           }

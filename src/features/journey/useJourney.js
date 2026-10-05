@@ -725,6 +725,8 @@ export default function useJourney({
           resumeContext: learningItem.resumeContext || null,
           importSource: learningItem.importSource || null,
           extractionMode: learningItem.extractionMode || null,
+          assignmentUnderstanding:
+            learningItem.assignmentUnderstanding || null,
 
           metadata: {
             ...(learningItem.metadata || {}),

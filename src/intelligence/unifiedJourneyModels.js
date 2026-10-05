@@ -454,6 +454,7 @@ export const createUnifiedJourneyItem =
     resumeContext = null,
     importSource = null,
     extractionMode = null,
+    assignmentUnderstanding = null,
 
     status =
       journeyStatuses.PLANNED,
@@ -555,6 +556,11 @@ export const createUnifiedJourneyItem =
       resumeContext,
       importSource,
       extractionMode,
+      assignmentUnderstanding:
+        assignmentUnderstanding &&
+        typeof assignmentUnderstanding === 'object'
+          ? assignmentUnderstanding
+          : null,
 
       status:
         resolvedStatus,

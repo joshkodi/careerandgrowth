@@ -22,7 +22,7 @@ export function createMockModelProvider({ responder = null } = {}) {
 export function createSynapStrideApiProvider() {
   return {
     async reason(request = {}) {
-      const { endpoint, timeoutMs = 8000 } = request
+      const { endpoint, timeoutMs = 20000 } = request
       if (!endpoint) throw new Error('VITE_MODEL_API_URL is required when using the SynapStride API model provider.')
 
       const controller = new AbortController()

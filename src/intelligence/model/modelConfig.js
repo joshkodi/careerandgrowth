@@ -9,7 +9,7 @@ export const defaultModelConfig = Object.freeze({
   provider: env.VITE_MODEL_PROVIDER || MODEL_PROVIDER_TYPES.MOCK,
   modelId: env.VITE_MODEL_ID || 'synapstride-mock-v1',
   endpoint: env.VITE_MODEL_API_URL || '',
-  timeoutMs: 8000,
+  timeoutMs: 20000,
   maxRetries: 1,
   structuredOutput: true,
 })

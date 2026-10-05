@@ -40,6 +40,22 @@ textarea {
   font: inherit;
 }
 
+/* SynapStride currently ships as a light UI. Keep native form controls from
+   inheriting the browser/OS dark palette when the device prefers dark mode. */
+input,
+select,
+textarea {
+  color-scheme: light;
+  background-color: #ffffff;
+  color: var(--cg-ink);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--cg-faint);
+  opacity: 1;
+}
+
 button {
   -webkit-tap-highlight-color: transparent;
 }

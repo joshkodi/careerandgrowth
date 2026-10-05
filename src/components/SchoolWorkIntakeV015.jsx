@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
-import { interpretSchoolWorkWithModelV018 } from '../intelligence/schoolWorkInterpretationV018'
+import { interpretSchoolWorkWithModelV019 } from '../intelligence/schoolWorkInterpretationV019'
 import './SchoolWorkIntakeV015.css'
+import SynapStrideThinking from './SynapStrideThinking'
 
 export default function SchoolWorkIntakeV015({ onCancel, onCreate, onUpload }) {
   const [mode, setMode] = useState('choose')
@@ -16,7 +17,7 @@ export default function SchoolWorkIntakeV015({ onCancel, onCreate, onUpload }) {
     setInterpreting(true)
     setInterpretationMeta(null)
     try {
-      const result = await interpretSchoolWorkWithModelV018(text)
+      const result = await interpretSchoolWorkWithModelV019(text)
       setDraft(result.item)
       setInterpretationMeta(result.model)
     } finally {
@@ -27,30 +28,30 @@ export default function SchoolWorkIntakeV015({ onCancel, onCreate, onUpload }) {
   if (summary) {
     return (
       <section className="schoolIntakeV015 schoolIntakeConfirmV015">
-        <div className="schoolIntakeKickerV015">✦ I think I’ve got it</div>
+        <div className="schoolIntakeKickerV015">✦ Here’s what I understood</div>
         <h2>{summary.title}</h2>
-        <p className="schoolIntakeMetaV015">{[summary.subject, summary.activityType?.replaceAll('_', ' ')].filter(Boolean).join(' · ') || 'School work'}</p>
+        <p className="schoolIntakeMetaV015">{[summary.subject, summary.activityType?.replaceAll('_', ' '), summary.dueDate ? `Due ${summary.dueDate.replace(/^due\s+/i, '')}` : ''].filter(Boolean).join(' · ') || 'School work'}</p>
         <p className="schoolIntakeDescriptionV015">{summary.description}</p>
         {summary.assignmentUnderstanding && (
-          <div className="schoolUnderstandingV018">
+          <div className="schoolUnderstandingV019">
             {summary.assignmentUnderstanding.deliverable && <div><strong>What you’re making</strong><p>{summary.assignmentUnderstanding.deliverable}</p></div>}
             {summary.assignmentUnderstanding.requirements?.length > 0 && <div><strong>Your teacher wants you to</strong><ul>{summary.assignmentUnderstanding.requirements.map((requirement, index) => <li key={`${requirement}-${index}`}>{requirement}</li>)}</ul></div>}
             {summary.assignmentUnderstanding.learningNeeds?.length > 0 && <div><strong>What you may need to learn</strong><ul>{summary.assignmentUnderstanding.learningNeeds.map((need, index) => <li key={`${need}-${index}`}>{need}</li>)}</ul></div>}
-            {summary.assignmentUnderstanding.clarificationQuestion && <div className="schoolClarificationV018"><strong>One thing I’m not sure about</strong><p>{summary.assignmentUnderstanding.clarificationQuestion}</p></div>}
+            {summary.assignmentUnderstanding.clarificationQuestion && <div className="schoolClarificationV019"><strong>One thing I’m not sure about</strong><p>{summary.assignmentUnderstanding.clarificationQuestion}</p></div>}
           </div>
         )}
         <div className="schoolPlanPreviewV015">
-          <strong>Here’s a simple way to get started</strong>
+          <strong>Here’s your path</strong>
           {summary.workPlan.steps.map((step, index) => (
             <div key={step.id} className={index === 0 ? 'current' : ''}>
               <span>{index === 0 ? '●' : '○'}</span><span>{step.label}</span>
             </div>
           ))}
         </div>
-        {import.meta.env.DEV && interpretationMeta && <small className="schoolInterpretationSourceV018">Assignment understanding: {interpretationMeta.liveModel ? 'live AI' : 'safe fallback'}</small>}
+        {import.meta.env.DEV && interpretationMeta && <small className="schoolInterpretationSourceV019">Assignment understanding: {interpretationMeta.liveModel ? 'live AI' : 'safe fallback'}</small>}
         <div className="schoolIntakeActionsV015">
           <button type="button" className="secondary" onClick={() => { setDraft(null); setInterpretationMeta(null) }}>Change it</button>
-          <button type="button" className="primary" onClick={() => onCreate?.(summary)}>Yep, add it →</button>
+          <button type="button" className="primary" onClick={() => onCreate?.(summary)}>Looks right — start →</button>
         </div>
       </section>
     )
@@ -87,7 +88,7 @@ export default function SchoolWorkIntakeV015({ onCancel, onCreate, onUpload }) {
           </div>
         </div>
       )}
-      {interpreting && <div className="schoolThinkingV018" role="status" aria-live="polite"><span>✦</span><div><strong>Reading your assignment…</strong><small>I’m figuring out what you need to do and what might help.</small></div></div>}
+      {interpreting && <SynapStrideThinking message="Looking at your assignment and figuring out how to set it up." />}
       <p className="schoolIntakeHintV015">✦ SynapStride will figure out what it can. You can always change something.</p>
     </section>
   )

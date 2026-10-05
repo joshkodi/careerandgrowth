@@ -12565,3 +12565,13 @@ button {
     flex-direction: column;
   }
 }
+
+/* v0.19 Stage 2C — journey continuity + focused assignment workspace */
+.synSchoolDashboardFocusV019{display:block;max-width:1100px;margin:0 auto}
+.synContinueCardV019{border:1.5px solid #b9e7c9;background:linear-gradient(135deg,#f1fff6,#f7f5ff);border-radius:18px;padding:16px 18px;margin-bottom:18px;box-shadow:0 8px 24px rgba(43,94,65,.07)}
+.synContinueCardHeadingV019{display:flex;align-items:center;gap:10px;color:#168a43;margin-bottom:12px}.synContinueCardHeadingV019>span{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#16a34a;color:#fff;font-size:11px}.synContinueCardHeadingV019 strong{display:block;font-size:16px}.synContinueCardHeadingV019 small{display:block;color:#64748b;margin-top:2px}
+.synContinueCardBodyV019{display:flex;align-items:center;justify-content:space-between;gap:18px;background:#fff;border:1px solid #e6eee9;border-radius:14px;padding:15px}.synContinueCardBodyV019 h3{margin:0 0 5px;font-size:17px}.synContinueCardBodyV019 p{margin:3px 0;color:#64748b;font-size:12px}.synContinueCardBodyV019 button{border:0;border-radius:10px;background:#16a34a;color:#fff;font-weight:850;padding:12px 22px;cursor:pointer;white-space:nowrap}
+.mgSchoolGroupTitleV092{position:relative}.mgSchoolGroupTitleV092.working{color:#2563eb}.mgSchoolGroupTitleV092.upcoming{color:#d38b00}.synSeeAllInlineV019{margin-left:auto;border:0;background:transparent;color:#3156d9;font-size:11px;font-weight:800;cursor:pointer}.synSeeAllV019{display:block;margin:7px 4px 0 auto;border:0;background:transparent;color:#3156d9;font-size:11px;font-weight:800;cursor:pointer}
+.synUpcomingGroupV019 .mgSchoolItemMainV092 small b{color:#d38b00}
+.mgSchoolDetailV091{margin-top:0!important}
+@media(max-width:760px){.synContinueCardBodyV019{align-items:stretch;flex-direction:column}.synContinueCardBodyV019 button{width:100%}}
