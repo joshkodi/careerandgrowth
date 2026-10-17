@@ -1,4 +1,4 @@
-import { reasonWithModel } from './model/modelGateway'
+import { executeAiTask } from './model/aiExecution'
 
 export const semanticResourceAssessmentSchema = {
   required: ['conceptMatch', 'developmentalFit', 'guidanceMatch', 'overallFit', 'recommendation'],
@@ -29,7 +29,7 @@ function fallbackAssessment(evaluatedItem = {}) {
 export async function evaluateResourceSemantically({ evaluatedItem, semanticContext = {}, resourcePlan = {}, modelConfig = {} } = {}) {
   const fallbackOutput = fallbackAssessment(evaluatedItem)
   try {
-    const result = await reasonWithModel({
+    const result = await executeAiTask({
       task: 'resource_evaluation',
       context: { semanticContext, resourcePlan, resource: evaluatedItem?.resource, deterministicEvaluation: evaluatedItem?.evaluation },
       outputSchema: semanticResourceAssessmentSchema,

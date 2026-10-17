@@ -1,4 +1,4 @@
-import { reasonWithModel } from '../model/modelGateway'
+import { executeAiTask } from '../model/aiExecution'
 import { buildSemanticAnalysisContext } from './semanticAnalysisContextBuilder'
 
 export const semanticAnalysisSchema = Object.freeze({
@@ -26,7 +26,7 @@ export async function inferSemanticIntent({ message, experience = null, growthCo
   const fallback = inferLocalSemanticIntent({ message, experience })
   try {
     const context = buildSemanticAnalysisContext({ message, experience, growthContext, companionContext })
-    const result = await reasonWithModel({ task: 'semantic_analysis', context, outputSchema: semanticAnalysisSchema, fallbackOutput: fallback }, modelConfig)
+    const result = await executeAiTask({ task: 'semantic_analysis', context, outputSchema: semanticAnalysisSchema, fallbackOutput: fallback }, modelConfig)
     return { ...result.output, source: result.meta.mocked ? 'model_mock' : 'model_semantic', model: result.meta }
   } catch (error) { return { ...fallback, error: error?.message || String(error) } }
 }

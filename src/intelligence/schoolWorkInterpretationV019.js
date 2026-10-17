@@ -1,4 +1,5 @@
-import { reasonWithModel } from './model/modelGateway'
+import { executeAiTask } from './model/aiExecution'
+import { modelFallbackMeta } from './model/modelDiagnostics'
 import { interpretSchoolWorkText } from './schoolWorkPlanningEngine'
 import { normalizeSchoolSubject } from './schoolLearningTaxonomy'
 
@@ -165,7 +166,7 @@ export async function interpretSchoolWorkWithModelV019(text = '', { modelConfig 
   }
 
   try {
-    const result = await reasonWithModel({
+    const result = await executeAiTask({
       task: 'school_work_interpretation',
       context,
       outputSchema: schoolWorkInterpretationSchemaV019,
@@ -191,7 +192,7 @@ export async function interpretSchoolWorkWithModelV019(text = '', { modelConfig 
   } catch (error) {
     return {
       item: { ...fallback, interpretationError: error?.message || String(error) },
-      model: null,
+      model: modelFallbackMeta(error),
     }
   }
 }

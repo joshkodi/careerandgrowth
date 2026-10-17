@@ -1,9 +1,9 @@
-import { reasonWithModel } from '../model/modelGateway'
+import { executeAiTask } from '../model/aiExecution'
 import { childUnderstandingOutputSchema, emptyChildUnderstandingOutput } from './childUnderstandingModels'
 import { validateChildUnderstandingInterpretation } from './childUnderstandingValidator'
 
 export async function reasonAboutChild({ context, modelConfig } = {}) {
-  const result = await reasonWithModel({
+  const result = await executeAiTask({
     task: 'child_understanding',
     context,
     outputSchema: childUnderstandingOutputSchema,

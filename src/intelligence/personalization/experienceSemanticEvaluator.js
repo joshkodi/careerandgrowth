@@ -1,4 +1,4 @@
-import { reasonWithModel } from '../model/modelGateway'
+import { executeAiTask } from '../model/aiExecution'
 import { experiencePersonalizationSchema } from './personalizationModels'
 
 const normalizeCandidate = (candidate = {}) => ({
@@ -27,7 +27,7 @@ export async function evaluateExperiencesSemantically({ personalizationContext, 
     })),
   }
 
-  const result = await reasonWithModel({
+  const result = await executeAiTask({
     task: 'experience_personalization',
     context: { personalization: personalizationContext, candidates: normalizedCandidates },
     outputSchema: experiencePersonalizationSchema,

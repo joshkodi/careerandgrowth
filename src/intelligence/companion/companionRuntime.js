@@ -1,4 +1,5 @@
-import { reasonWithModel } from '../model/modelGateway'
+import { executeAiTask } from '../model/aiExecution'
+import { modelFallbackMeta } from '../model/modelDiagnostics'
 import { recordIntelligenceTrace } from '../observability/intelligenceTrace'
 import { companionConversationSchema, companionStageVersion } from './companionModels'
 import { inferCompanionIntent } from './companionIntentEngine'
@@ -14,9 +15,9 @@ export async function runChildAwareCompanion({ message, messageId, childUndersta
   const fallbackOutput = { text: fallbackText || 'Tell me what you want to work through and I’ll help choose a useful next step.', intent: intentResult.intent, personalizationNeed: intentResult.personalizationNeed, checkUnderstanding: true, followUpOptions: [], actionProposal: { action: fallbackAction || 'none' }, evidenceCandidates: deterministicEvidence }
   let result
   try {
-    result = await reasonWithModel({ task: 'companion_conversation', context, outputSchema: companionConversationSchema, fallbackOutput }, modelConfig)
+    result = await executeAiTask({ task: 'companion_conversation', context, outputSchema: companionConversationSchema, fallbackOutput }, modelConfig)
   } catch (error) {
-    result = { output: fallbackOutput, meta: { provider: 'fallback', model: null, mocked: true, error: error?.message || String(error) } }
+    result = { output: fallbackOutput, meta: modelFallbackMeta(error, startedAt) }
   }
   const validated = validateCompanionOutput({ ...result.output, evidenceCandidates: [...deterministicEvidence, ...(result.output?.evidenceCandidates || [])] })
   recordIntelligenceTrace({ type: 'child_aware_companion', version: companionStageVersion, childId: childUnderstanding?.child?.id || null, intent: validated.intent, personalizationNeed: validated.personalizationNeed, proposedAction: validated.actionProposal?.action, evidenceCandidateCount: validated.evidenceCandidates.length, model: result.meta, latencyMs: Date.now() - startedAt })

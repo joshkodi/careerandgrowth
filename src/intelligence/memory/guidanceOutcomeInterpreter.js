@@ -1,4 +1,4 @@
-import { reasonWithModel } from '../model/modelGateway'
+import { executeAiTask } from '../model/aiExecution'
 import { localMemoryRepository } from './memoryRepository'
 import { memoryTypes } from './memoryModels'
 
@@ -40,7 +40,7 @@ export async function interpretPreviousGuidanceOutcome({ childId, message, seman
 
   const fallback = fallbackInterpretation(message)
   try {
-    const result = await reasonWithModel({
+    const result = await executeAiTask({
       task: 'interpret_guidance_outcome',
       context: {
         previousGuidance: {

@@ -1,4 +1,4 @@
-import { reasonWithModel } from './model/modelGateway'
+import { executeAiTask } from './model/aiExecution'
 import { interpretSchoolWorkText } from './schoolWorkPlanningEngine'
 import { normalizeSchoolSubject } from './schoolLearningTaxonomy'
 
@@ -90,7 +90,7 @@ export async function interpretSchoolWorkWithModelV018(text = '', { modelConfig 
   }
 
   try {
-    const result = await reasonWithModel({
+    const result = await executeAiTask({
       task: 'school_work_interpretation',
       context,
       outputSchema: schoolWorkInterpretationSchemaV018,

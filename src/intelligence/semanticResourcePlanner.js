@@ -1,4 +1,4 @@
-import { reasonWithModel } from './model/modelGateway'
+import { executeAiTask } from './model/aiExecution'
 import { resourceTypes } from './resourceDiscoveryEngine'
 
 export const resourcePlanSchema = {
@@ -36,7 +36,7 @@ function fallbackPlan({ semanticContext = {}, discoveryRequest = {} } = {}) {
 export async function planSemanticResources({ semanticContext = {}, discoveryRequest = {}, modelConfig = {} } = {}) {
   const fallbackOutput = fallbackPlan({ semanticContext, discoveryRequest })
   try {
-    const result = await reasonWithModel({
+    const result = await executeAiTask({
       task: 'resource_plan',
       context: { semanticContext, discoveryRequest },
       outputSchema: resourcePlanSchema,
