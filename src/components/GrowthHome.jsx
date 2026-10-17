@@ -4207,6 +4207,87 @@ function JourneyPanel({
     }
   }
 
+  // v0.19 Stage 5A: advisory review using the deployed Companion contract.
+  const runAssignmentReviewV019 = async (item, sections, requirements, fingerprint) => {
+    updateStepWorkspaceState(item, { intelligentReviewV019: { status: 'loading', fingerprint } })
+    const state = getStepWorkspaceState(item)
+    const work = sections.map(section => ({
+      part: section.title,
+      requirement: section.requirement || section.prompt,
+      childText: String(state.creationSections?.[section.id] || '').trim(),
+    }))
+    const message = [
+      'You are helping a child CHECK their own school assignment. Never write the assignment for them.',
+      'Compare the teacher requirements with the actual saved work. Do not assume missing content is present.',
+      'Reply briefly using these exact headings: Looks covered; Check or add; One next step.',
+      'Mention specific requirements and evidence from the child work. If unclear, say what to check.',
+      'Do not grade, invent facts, claim to have inspected files, or declare the work complete.',
+      `Assignment title: ${item.title || 'School assignment'}`,
+      `Teacher requirements: ${JSON.stringify(requirements)}`,
+      `Saved Create parts: ${JSON.stringify(work)}`,
+    ].join('\n')
+    try {
+      const runtime = await runChildAwareCompanion({
+        message,
+        messageId: `finish-review-${Date.now()}`,
+        childUnderstanding: modelBackedUnderstanding,
+        growthContext: sharedIntelligenceRecommendationLoop || null,
+        immediateContext: {
+          surface: 'school_learning',
+          experience: { id: item.id || null, title: item.title || null, topic: item.topic || null, path: item.path || journeyPaths.SCHOOL_LEARNING },
+          assignmentStep: 'finish',
+          action: 'review',
+        },
+        conversation: [],
+        fallbackText: 'AI review is unavailable right now. Use the teacher requirements and the checklist below to check your own work.',
+        fallbackAction: 'none',
+      })
+      updateStepWorkspaceState(item, { intelligentReviewV019: {
+        status: runtime?.model?.liveModel ? 'ready' : 'unavailable',
+        fingerprint,
+        feedback: String(runtime?.response?.text || ''),
+        model: runtime?.model || null,
+      } })
+    } catch (error) {
+      console.error('SynapStride Finish review failed safely.', error)
+      updateStepWorkspaceState(item, { intelligentReviewV019: { status: 'unavailable', fingerprint } })
+    }
+  }
+
+  // v0.19 Stage 5B: preserve completed workflow state while reopening a Create part.
+  const improveAssignmentWorkV019 = (item, sectionId = null) => {
+    const plan = getAssignmentWorkPlan(item)
+    const createStep = plan.steps.find(step => /create/i.test(step.label || ''))
+    if (!createStep) return
+    const state = getStepWorkspaceState(item)
+    updateStepWorkspaceState(item, {
+      improvingFromFinishV019: true,
+      activeCreateId: sectionId || state.activeCreateId || null,
+      inlineCoach: null,
+    })
+    setHelpJourneyId(null)
+    setActiveAssignmentStep({ itemId: item.id, stepId: createStep.id })
+  }
+
+  const returnToFinishReviewV019 = (item) => {
+    const plan = getAssignmentWorkPlan(item)
+    const finishStep = plan.steps.find(step => /finish/i.test(step.label || '')) || plan.steps[plan.steps.length - 1]
+    updateStepWorkspaceState(item, { improvingFromFinishV019: false, inlineCoach: null })
+    if (finishStep) setActiveAssignmentStep({ itemId: item.id, stepId: finishStep.id })
+  }
+
+  // Format only the model's limited review markdown, without injecting HTML.
+  const renderReviewFeedbackV019 = (feedback) => {
+    const lines = String(feedback || '').split(/\n+/).map(line => line.trim()).filter(Boolean)
+    return lines.map((line, index) => {
+      const normalized = line.replace(/^#{1,4}\s*/, '').replace(/^\*\*(.*?)\*\*$/, '$1')
+      const isHeading = /^(looks covered|check or add|one next step)\s*:?$/i.test(normalized)
+      if (isHeading) return <h6 key={index}>{normalized.replace(/:$/, '')}</h6>
+      const segments = line.split(/(\*\*[^*]+\*\*)/g)
+      return <p key={index}>{segments.map((segment, partIndex) => segment.startsWith('**') && segment.endsWith('**') ? <strong key={partIndex}>{segment.slice(2,-2)}</strong> : <span key={partIndex}>{segment}</span>)}</p>
+    })
+  }
+
   const renderIntelligentStepWorkspaceV0168 = (item, plan, selectedStep) => {
     const stepIndex = plan.steps.findIndex((step) => step.id === selectedStep.id)
     const state = getStepWorkspaceState(item)
@@ -4314,6 +4395,13 @@ function JourneyPanel({
     const createDone = createSections.filter(s=>state.createCompleted?.[s.id]===true).length
     const createCompleteV019 = createSections.length > 0 && createDone === createSections.length
 
+    const reviewFingerprintV019 = JSON.stringify({
+      requirements,
+      work: createSections.map(section => [section.id, String(state.creationSections?.[section.id] || '')]),
+    })
+    const reviewV019 = state.intelligentReviewV019 || null
+    const reviewCurrentV019 = reviewV019?.fingerprint === reviewFingerprintV019
+
     const reviewItems=[...requirements.slice(0,3), focus?`My project is about ${focus}.`:'My project has a clear focus.','I checked spelling, visuals, and my final work.']
     const reviewDone=reviewItems.filter((_,i)=>state.reviewChecks?.[`check_${i}`]).length
 
@@ -4392,7 +4480,7 @@ function JourneyPanel({
       <div className="synLearnProgressV019"><strong>Your learning progress</strong><span>{researchDone} of {researchActivities.length} understood</span><div><i style={{width:`${researchActivities.length?Math.round((researchDone/researchActivities.length)*100):0}%`}} /></div></div>
     </div>
 
-    if(stepIndex===2 && createCompleteV019)return <div className="synVStage synCreateCompleteV019">
+    if(stepIndex===2 && createCompleteV019 && !state.improvingFromFinishV019)return <div className="synVStage synCreateCompleteV019">
       <div className="synLearnCompleteHeroV019">
         <div className="synLearnCompleteIconV019">🎉</div>
         <span>STEP 3 COMPLETE</span>
@@ -4415,15 +4503,22 @@ function JourneyPanel({
     </div>
 
     if(stepIndex===2)return <div className="synVStage">
+      {state.improvingFromFinishV019 && <section className="synImprovementBannerV019" aria-label="Improve your assignment">
+        <strong>✏️ Improving your work</strong>
+        <p>Make your changes below. Your earlier review is saved, and you can return to Finish whenever you're ready.</p>
+        {state.intelligentReviewV019?.feedback && <details><summary>See SynapStride's earlier suggestions</summary><div className="synReviewFormattedV019">{renderReviewFeedbackV019(state.intelligentReviewV019.feedback)}</div></details>}
+        <button type="button" className="primary" onClick={()=>returnToFinishReviewV019(item)}>← Back to Finish · Review again</button>
+      </section>}
       <div className="synVHeading"><span>CREATE 🛠️</span><h4>Let’s build your {deliverableV019 || focus || 'project'}!</h4><p>These parts come from what your assignment asks you to make. We’ll do them one at a time.</p></div>
       <div className="synVBuilder"><div className="synVSections">{createSections.map((s,i)=>{const text=String(state.creationSections?.[s.id] ?? '').trim();const completed=state.createCompleted?.[s.id]===true;return <button type="button" className={`${activeCreate.id===s.id?'active':''} ${completed?'done':''}`} key={s.id} onClick={()=>updateStepWorkspaceState(item,{activeCreateId:s.id,inlineCoach:null})}><em>{s.icon}</em><p><strong>{i+1}. {s.title}</strong><small>{completed?'Done ✓':text?'In progress':s.prompt}</small></p><b>{completed?'✓':'›'}</b></button>})}</div>
         <div className="synVEditor"><span>PART {createSections.findIndex(s=>s.id===activeCreate.id)+1} OF {createSections.length}</span><h5>{activeCreate.icon} {activeCreate.title}</h5><p className="synCreatePromptV0170">{activeCreate.prompt}</p>
           {sourceLearning&&<aside className="synCarryForwardV0170"><strong>📝 From what you learned</strong><p>{sourceLearning}</p><button type="button" onClick={()=>updateStepWorkspaceState(item,{creationSections:{...(state.creationSections||{}),[activeCreate.id]:sourceLearning}})}>Use this as a starting point</button></aside>}
+          {state.improvingFromFinishV019 && <p className="synEditingHintV019">Changes save as you type. You don't need to redo this step.</p>}
           <textarea rows="8" value={activeCreateText} placeholder="Write this part in your own words…" onChange={e=>updateStepWorkspaceState(item,{creationSections:{...(state.creationSections||{}),[activeCreate.id]:e.target.value}})}/>
           <div><button onClick={()=>runInlineCreateCompanionV019(item,{mode:'write',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>✨ Help me write</button><button onClick={()=>runInlineCreateCompanionV019(item,{mode:'ideas',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>💡 Give me ideas</button>{sourceLearning&&<button type="button" onClick={()=>updateStepWorkspaceState(item,{creationSections:{...(state.creationSections||{}),[activeCreate.id]:sourceLearning}})}>📝 Use my learning</button>}</div>
           {state.inlineCoach?.scope==='create' && state.inlineCoach?.sectionId===activeCreate.id && <div className="synInlineCoachV0173 synInlineCoachCreateV0173"><div className="synInlineCoachHeadV0173"><span>🤖</span><p><strong>SynapStride</strong><small>Helping with {activeCreate.title}</small></p><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null})}>×</button></div>{state.inlineCoach.mode==='loading'?<SynapStrideThinking message={state.inlineCoach.modeRequested==='write'?'Looking at what you wrote and finding a helpful next step.':'Coming up with ideas that fit this part of your assignment.'} />:<p className="synInlineCoachResponseV0173">{state.inlineCoach.response}</p>}{import.meta.env.DEV && state.inlineCoach.model && <small style={{display:'block',margin:'6px 0',opacity:.65}}>AI source: {state.inlineCoach.model?.liveModel ? `LIVE MODEL${state.inlineCoach.model?.backendModel || state.inlineCoach.model?.modelId ? ` · ${state.inlineCoach.model.backendModel || state.inlineCoach.model.modelId}` : ''}` : `FALLBACK · ${state.inlineCoach.model?.provider || 'local'}`}</small>}<div className="synInlineCoachFollowV0173"><button type="button" onClick={()=>runInlineCreateCompanionV019(item,{mode:'ideas',scope:'create',sectionId:activeCreate.id,focus,section:activeCreate})}>Another idea</button><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null})}>✓ I’ll try it</button></div></div>}
           <div className="synSectionProgressV0170">{createDone} of {createSections.length} parts completed</div>
-          <div className="synCreateNextV019"><button type="button" className="primary" disabled={!String(activeCreateText).trim()} onClick={()=>{
+          {!state.improvingFromFinishV019 && <div className="synCreateNextV019"><button type="button" className="primary" disabled={!String(activeCreateText).trim()} onClick={()=>{
             // v0.19 Stage 3C.2 — persist the latest editor text and completion in one atomic update.
             // This avoids a stale journey-item write when the child clicks Done immediately after typing.
             const latest = getStepWorkspaceState(item)
@@ -4433,14 +4528,37 @@ function JourneyPanel({
             const next = createSections.slice(currentIndex+1).find(s=>!completed[s.id]) || createSections.slice(0,currentIndex).find(s=>!completed[s.id])
             const allDone = createSections.every(s=>completed[s.id]===true)
             updateStepWorkspaceState(item,{creationSections,createCompleted:completed,activeCreateId:next?.id||activeCreate.id,inlineCoach:null,createCompletionV019:allDone})
-          }}>✓ Done with this part {createDone + (state.createCompleted?.[activeCreate.id]===true?0:1) < createSections.length ? '— Continue →' : ''}</button></div>
+          }}>✓ Done with this part {createDone + (state.createCompleted?.[activeCreate.id]===true?0:1) < createSections.length ? '— Continue →' : ''}</button></div>}
         </div>
       </div>
     </div>
 
     return <div className="synVStage">
       <div className="synVHeading"><span>FINAL CHECK ✅</span><h4>You’re almost done! 🎉</h4><p>Let’s make sure your project has everything your teacher asked for.</p></div>
-      <div className="synVFinish"><div className="synVCheck"><header><strong>Project checklist</strong><span>{reviewDone} of {reviewItems.length} complete</span></header><div className="synVBar"><i style={{width:`${Math.round(reviewDone/Math.max(reviewItems.length,1)*100)}%`}}/></div>{reviewItems.map((r,i)=>{const k=`check_${i}`,c=!!state.reviewChecks?.[k];return <label className={c?'done':''} key={k}><input type="checkbox" checked={c} onChange={e=>updateStepWorkspaceState(item,{reviewChecks:{...(state.reviewChecks||{}),[k]:e.target.checked}})}/><span>{r}</span>{!c&&<small>Fix this →</small>}</label>})}</div><aside className="synVCelebrate"><div>🤖🎉</div><strong>{reviewDone===reviewItems.length?'You did it!':'You’re doing great!'}</strong><p>{reviewDone===reviewItems.length?'Everything looks ready.':'Just a few more things and you’ll be ready.'}</p><button onClick={()=>beginLearningHelp(item.id)}>Ask SynapStride</button></aside></div>
+      <section className="synIntelligentReviewV019" aria-label="SynapStride assignment review">
+        <h5>🤖 Let's review your work</h5>
+        <p>I'll compare what you wrote with your teacher's instructions. You decide when it's ready.</p>
+        {reviewV019?.status === 'loading' && reviewCurrentV019
+          ? <SynapStrideThinking message="Checking your saved work against the assignment requirements." />
+          : <button type="button"
+              disabled={!createSections.some(section => String(state.creationSections?.[section.id] || '').trim())}
+              onClick={() => runAssignmentReviewV019(item, createSections, requirements, reviewFingerprintV019)}>
+              ✨ {reviewCurrentV019 && reviewV019?.status === 'ready' ? 'Review again' : 'Review my work'}
+            </button>}
+        {reviewV019 && !reviewCurrentV019 && reviewV019.status !== 'loading' &&
+          <p role="status">Your work has changed since the last review. Review again for updated feedback.</p>}
+        {reviewCurrentV019 && reviewV019?.status === 'ready' &&
+          <div className="synReviewFeedbackV019" aria-live="polite">
+            <strong>Here's what I noticed</strong>
+            <div className="synReviewFormattedV019">{renderReviewFeedbackV019(reviewV019.feedback)}</div>
+            <button type="button" className="synImproveWorkButtonV019" onClick={()=>improveAssignmentWorkV019(item, createSections[0]?.id)}>✏️ Improve my work →</button>
+            <small>AI feedback is a suggestion, not a grade. Always check your teacher's instructions.</small>
+            {import.meta.env.DEV && <small className="synReviewSourceV019">AI source: LIVE MODEL</small>}
+          </div>}
+        {reviewCurrentV019 && reviewV019?.status === 'unavailable' &&
+          <p role="status">AI review isn't available right now. You can still use the checklist below and finish your assignment.</p>}
+      </section>
+      <div className="synVFinish"><div className="synVCheck"><header><strong>Project checklist</strong><span>{reviewDone} of {reviewItems.length} complete</span></header><div className="synVBar"><i style={{width:`${Math.round(reviewDone/Math.max(reviewItems.length,1)*100)}%`}}/></div>{reviewItems.map((r,i)=>{const k=`check_${i}`,c=!!state.reviewChecks?.[k];return <label className={c?'done':''} key={k}><input type="checkbox" checked={c} onChange={e=>updateStepWorkspaceState(item,{reviewChecks:{...(state.reviewChecks||{}),[k]:e.target.checked}})}/><span>{r}</span>{!c&&<button type="button" className="synChecklistFixV019" onClick={(event)=>{event.preventDefault();event.stopPropagation();improveAssignmentWorkV019(item,createSections[Math.min(i,createSections.length-1)]?.id)}}>Fix this →</button>}</label>})}</div><aside className="synVCelebrate"><div>🤖🎉</div><strong>{reviewDone===reviewItems.length?'You did it!':'You’re doing great!'}</strong><p>{reviewDone===reviewItems.length?'Everything looks ready.':'Just a few more things and you’ll be ready.'}</p><button onClick={()=>beginLearningHelp(item.id)}>Ask SynapStride</button></aside></div>
     </div>
   }
 

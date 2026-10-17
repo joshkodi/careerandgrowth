@@ -3593,3 +3593,25 @@
     padding-top: 14px;
   }
 }
+
+/* Stage 5A — optional, advisory review in Finish */
+.synIntelligentReviewV019{background:#f7f5ff;border:1px solid #e2ddf7;border-radius:18px;padding:20px;margin:16px 0;color:#27334b}
+.synIntelligentReviewV019 h5{font-size:1.1rem;margin:0 0 8px}
+.synIntelligentReviewV019 p{line-height:1.55}
+.synIntelligentReviewV019>button{background:#6657d7;color:#fff;border:0;border-radius:12px;padding:11px 16px;font:inherit;font-weight:700;cursor:pointer}
+.synIntelligentReviewV019>button:disabled{opacity:.5;cursor:not-allowed}
+.synReviewFeedbackV019{background:white;border:1px solid #ddd8f6;border-radius:14px;padding:16px;margin-top:14px}
+.synReviewFeedbackV019 p{white-space:pre-wrap;overflow-wrap:anywhere}
+.synReviewFeedbackV019 small{color:#60677c}
+.synReviewSourceV019{display:block;margin-top:8px}
+
+/* v0.19 Stage 5B: guided improvement and readable review */
+.synImprovementBannerV019{background:#f5f2ff;border:1px solid #d9d1fa;border-radius:16px;padding:18px;margin-bottom:20px;color:#26314e}
+.synImprovementBannerV019 p{margin:8px 0 12px;line-height:1.5}
+.synImprovementBannerV019 details{margin:12px 0}.synImprovementBannerV019 summary{cursor:pointer;font-weight:650}
+.synImprovementBannerV019 button,.synImproveWorkButtonV019{background:#6552d7;color:#fff;border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;margin:12px 0}
+.synReviewFormattedV019{text-align:left;white-space:normal;overflow-wrap:anywhere}
+.synReviewFormattedV019 h6{font-size:1rem;color:#2e2869;margin:15px 0 6px}
+.synReviewFormattedV019 p{margin:6px 0 10px;line-height:1.6;white-space:pre-wrap}
+.synChecklistFixV019{border:0;background:transparent;color:#a36500;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.synEditingHintV019{color:#514593;font-size:.9rem}
