@@ -55,6 +55,7 @@ import {
 } from '../intelligence/learningResourceMatcher'
 import { decideLearningExperience, LEARNING_EXPERIENCES } from '../intelligence/learningExperienceDecision'
 import { selectLearningExperience } from '../intelligence/learningExperienceModel'
+import { getActiveFamilyId, getFamilyStorageKey } from '../storage/familyStorage'
 
 import {
   extractAssignmentsFromImage,
@@ -1121,6 +1122,8 @@ function LearningGoalResourceV019({ item, childProfile, goal }) {
     setExperience(decideLearningExperience({ goal, hasTrustedResource }))
     selectLearningExperience({
       goal,
+      childId: childProfile?.id || (childProfile?.name?.trim() ? `profile:${childProfile.name.trim().toLowerCase()}:${childProfile.age || ''}` : null),
+      assignmentId: item?.id || null,
       assignmentTitle: item?.title || item?.name || '',
       grade: childProfile?.grade || '',
       hasTrustedResource,
@@ -1128,7 +1131,7 @@ function LearningGoalResourceV019({ item, childProfile, goal }) {
       if (active) setExperience(result)
     }).catch(() => { /* The deterministic suggestion remains available. */ })
     return () => { active = false }
-  }, [goal?.id, goal?.title, goal?.hint, goal?.lesson, item?.id, item?.title, item?.name, childProfile?.grade, hasTrustedResource])
+  }, [goal?.id, goal?.title, goal?.hint, goal?.lesson, item?.id, item?.title, item?.name, childProfile?.id, childProfile?.name, childProfile?.age, childProfile?.grade, hasTrustedResource])
   return <section className="synGoalResourceV019" aria-label="Suggested learning experience">
     <div className="synGoalResourceHeaderV019"><strong>✨ A way to learn this goal</strong><small>For: {goal.title}</small></div>
     <p><strong>{experience.title}</strong></p>
@@ -2279,6 +2282,15 @@ function JourneyPanel({
       )
   )
 
+  const navigationKey = getActiveFamilyId() ? getFamilyStorageKey('synapstride.schoolNavigation.v1', getActiveFamilyId()) : null
+  const restoredNavigation = useMemo(() => {
+    if (!navigationKey) return null
+    try {
+      const saved = JSON.parse(window.sessionStorage.getItem(navigationKey) || 'null')
+      return saved?.schema === 1 && saved?.child === (childProfile?.id || childProfile?.name || '') ? saved : null
+    } catch { return null }
+  }, [navigationKey, childProfile?.id, childProfile?.name])
+
   const [
     schoolView,
     setSchoolView,
@@ -2354,13 +2366,20 @@ function JourneyPanel({
   const [
     expandedJourneyId,
     setExpandedJourneyId,
-  ] = useState(null)
+  ] = useState(() => restoredNavigation?.itemId || null)
 
   const [
     activeAssignmentStep,
     setActiveAssignmentStep,
-  ] = useState(null)
+  ] = useState(() => restoredNavigation?.step || null)
 
+  useEffect(() => {
+    if (!navigationKey) return
+    try {
+      if (expandedJourneyId) window.sessionStorage.setItem(navigationKey, JSON.stringify({ schema: 1, child: childProfile?.id || childProfile?.name || '', itemId: expandedJourneyId, step: activeAssignmentStep }))
+      else window.sessionStorage.removeItem(navigationKey)
+    } catch { /* storage unavailable */ }
+  }, [navigationKey, childProfile?.id, childProfile?.name, expandedJourneyId, activeAssignmentStep])
 
   const [
     editingJourneyId,
@@ -2834,7 +2853,9 @@ function JourneyPanel({
       ?.interests_activities
       ?.discoveredOpportunities || []
 
-    if (!modelBackedUnderstanding || !candidates.length) {
+    // Activity-ranking AI is not needed while a child works on schoolwork.
+    // Preserve the local deterministic candidates without invoking Bedrock.
+    if (requestedGrowthView === 'school' || !modelBackedUnderstanding || !candidates.length) {
       setPersonalizedActivityOpportunities(candidates.slice(0, 3))
       return () => { cancelled = true }
     }
@@ -2857,7 +2878,7 @@ function JourneyPanel({
       })
 
     return () => { cancelled = true }
-  }, [intelligenceRecommendationLoop, modelBackedUnderstanding, growthActivities])
+  }, [intelligenceRecommendationLoop, modelBackedUnderstanding, growthActivities, requestedGrowthView])
 
 
   const fallbackLearningNextSteps =

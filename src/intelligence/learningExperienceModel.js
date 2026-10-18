@@ -4,6 +4,7 @@
  */
 import { executeAiTask } from './model/aiExecution'
 import { decideLearningExperience, LEARNING_EXPERIENCES } from './learningExperienceDecision'
+import { getLearningExperienceScope, readLearningExperience, saveLearningExperience } from './learningExperiencePersistence'
 
 const allowed = new Set(Object.values(LEARNING_EXPERIENCES))
 const cache = new Map()
@@ -56,16 +57,27 @@ function validateProposal(proposal, fallback, hasTrustedResource) {
   return { ...fallback, type: proposal.type, title, why, source: 'model' }
 }
 
-async function selectLearningExperienceUncached({ goal, assignmentTitle, grade, hasTrustedResource = false } = {}) {
+async function selectLearningExperienceUncached({ goal, assignmentTitle, assignmentId, childId, grade, hasTrustedResource = false } = {}) {
   const fallback = { ...decideLearningExperience({ goal, hasTrustedResource }), source: 'fallback' }
   if (!goal?.title) return fallback
-  const key = JSON.stringify([goal.title, goal.hint, assignmentTitle, grade, hasTrustedResource])
+  const familyId = getLearningExperienceScope()
+  const key = JSON.stringify([familyId, childId, assignmentId, goal.id, goal.title, goal.hint, goal.lesson, assignmentTitle, grade, hasTrustedResource])
+  // Persist only when the authenticated family, child, assignment and goal
+  // are identifiable. Missing identifiers never create a cross-child cache.
+  const persistentKey = familyId && childId && assignmentId && goal.id ? key : null
   const cached = cache.get(key)
   if (cached && cached.expires > Date.now()) {
     if (import.meta.env.DEV) console.info('[SynapStride Learning Experience]', { outcome: 'CACHE_HIT', source: cached.value.source })
     return cached.value
   }
   if (cached) cache.delete(key)
+  const saved = persistentKey ? readLearningExperience(familyId, persistentKey, hasTrustedResource) : null
+  if (saved) {
+    if (cache.size >= MAX_CACHE) cache.clear()
+    cache.set(key, { value: saved, expires: Date.now() + 5 * 60 * 1000 })
+    if (import.meta.env.DEV) console.info('[SynapStride Learning Experience]', { outcome: 'PERSISTENT_CACHE_HIT', source: 'model' })
+    return saved
+  }
   // Only minimal task context is sent; the backend owns the actual model prompt.
   const message = [
     'For an educational product, choose the single best FIRST learning experience for this goal.',
@@ -94,14 +106,15 @@ async function selectLearningExperienceUncached({ goal, assignmentTitle, grade, 
   } catch (error) { if (import.meta.env.DEV) console.info('[SynapStride Learning Experience]', { outcome: 'MODEL_REQUEST_FAILED', code: error?.diagnosticCode || 'UNKNOWN' }) }
   if (cache.size >= MAX_CACHE) cache.clear()
   cache.set(key, { value: selection, expires: Date.now() + (selection.source === 'model' ? 5 * 60 * 1000 : FALLBACK_TTL_MS) })
+  if (persistentKey && selection.source === 'model') saveLearningExperience(familyId, persistentKey, selection, hasTrustedResource)
   return selection
 }
 
 // React can mount/re-render the same goal more than once before the first
 // decision completes. Coalesce these calls even if the gateway also dedupes.
 export function selectLearningExperience(args = {}) {
-  const { goal, assignmentTitle, grade, hasTrustedResource = false } = args
-  const key = JSON.stringify([goal?.title, goal?.hint, assignmentTitle, grade, hasTrustedResource])
+  const { goal, assignmentTitle, assignmentId, childId, grade, hasTrustedResource = false } = args
+  const key = JSON.stringify([getLearningExperienceScope(), childId, assignmentId, goal?.id, goal?.title, goal?.hint, goal?.lesson, assignmentTitle, grade, hasTrustedResource])
   const pending = pendingSelections.get(key)
   if (pending) return pending
   const request = selectLearningExperienceUncached(args).finally(() => {

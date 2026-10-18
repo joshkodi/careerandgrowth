@@ -322,7 +322,15 @@ function App() {
   const [
     myGrowthSection,
     setMyGrowthSection,
-  ] = useState('overview')
+  ] = useState(() => {
+    try {
+      const familyId = storedAuthSession?.familyId
+      if (!familyId) return 'overview'
+      const key = getFamilyStorageKey('synapstride.schoolNavigation.v1', familyId)
+      const saved = JSON.parse(window.sessionStorage.getItem(key) || 'null')
+      return saved?.schema === 1 && saved?.itemId ? 'school' : 'overview'
+    } catch { return 'overview' }
+  })
 
   const [whyReturnScreen, setWhyReturnScreen] =
     useState('landing')
@@ -1054,7 +1062,8 @@ function App() {
       promotionRegistry: holisticPatternPromotion,
     })
 
-    buildModelBackedChildUnderstanding({ growthContext })
+    const timer = setTimeout(() => {
+      buildModelBackedChildUnderstanding({ growthContext })
       .then((result) => {
         if (!cancelled) setModelBackedChildUnderstanding(result)
       })
@@ -1065,8 +1074,9 @@ function App() {
       .finally(() => {
         if (!cancelled) setIsChildUnderstandingLoading(false)
       })
+    }, 500)
 
-    return () => { cancelled = true }
+    return () => { cancelled = true; clearTimeout(timer) }
   }, [
     childProfile,
     evidenceEventCount,
