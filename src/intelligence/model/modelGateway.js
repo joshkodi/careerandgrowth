@@ -39,6 +39,16 @@ export function createSynapStrideApiProvider() {
           const error = new Error(`SynapStride model API returned HTTP ${response.status}.`)
           error.diagnosticCode = MODEL_OUTCOMES.HTTP_ERROR
           error.httpStatus = response.status
+          // API Gateway may surface a Bedrock ThrottlingException as HTTP 500.
+          // Distinguish it from a generic server error to avoid retry storms.
+          if (response.status === 429 || response.status === 500 || response.status === 503) {
+            try {
+              const body = await response.clone().json()
+              if (response.status === 429 || /ThrottlingException|TooManyRequests|rate exceeded|quota exceeded/i.test(String(body?.error || body?.message || ''))) {
+                error.isThrottled = true
+              }
+            } catch { if (response.status === 429) error.isThrottled = true }
+          }
           throw error
         }
         let payload
@@ -93,7 +103,10 @@ export async function reasonWithModel(request = {}, configOverrides = {}) {
     } catch (error) {
       error.diagnosticCode = classifyModelError(error)
       attemptHistory.push({ attempt, outcome: error.diagnosticCode, latencyMs: Date.now() - attemptStartedAt, httpStatus: error.httpStatus ?? null })
-      if (attempt <= maxRetries && isTransient(error)) continue
+      // Never immediately retry throttling; allow the UI fallback and avoid
+      // multiplying pressure on Bedrock. Other transient failures retain the
+      // existing single controlled retry.
+      if (attempt <= maxRetries && isTransient(error) && !error.isThrottled) continue
       error.attempts = attempt
       error.attemptHistory = attemptHistory
       recordModelDiagnostic({ task: request.task, meta: { provider: config.provider, outcome: error.diagnosticCode, latencyMs: Date.now() - startedAt, httpStatus: error.httpStatus, attempts: attempt, retries: attempt - 1, attemptHistory } })

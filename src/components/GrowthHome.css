@@ -3615,3 +3615,13 @@
 .synReviewFormattedV019 p{margin:6px 0 10px;line-height:1.6;white-space:pre-wrap}
 .synChecklistFixV019{border:0;background:transparent;color:#a36500;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap}
 .synEditingHintV019{color:#514593;font-size:.9rem}
+
+/* v0.19 Stage 6A: learning-goal-aware curated resource */
+.synGoalResourceV019{border:1px solid #ddd9f2;border-radius:16px;background:#faf9ff;padding:16px;margin:16px 0;color:#29334a}
+.synGoalResourceHeaderV019{display:flex;flex-direction:column;gap:3px}
+.synGoalResourceHeaderV019 small,.synGoalResourceV019>small{color:#60687a}
+.synGoalResourceV019 p{line-height:1.5;margin:10px 0}
+.synGoalResourceActionsV019{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.synGoalResourceActionsV019 a{background:#6657d7;color:white!important;border-radius:10px;padding:9px 13px;text-decoration:none;font-weight:650}
+.synGoalResourceActionsV019 button{border:1px solid #b8b0e4;background:white;color:#4d429d;border-radius:10px;padding:9px 13px;cursor:pointer}
+.synGoalResourceEmptyV019{color:#5e6575}

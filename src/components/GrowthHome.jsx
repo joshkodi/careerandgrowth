@@ -53,6 +53,8 @@ import {
 import {
   matchLearningResources,
 } from '../intelligence/learningResourceMatcher'
+import { decideLearningExperience, LEARNING_EXPERIENCES } from '../intelligence/learningExperienceDecision'
+import { selectLearningExperience } from '../intelligence/learningExperienceModel'
 
 import {
   extractAssignmentsFromImage,
@@ -1068,6 +1070,82 @@ function PostReflectionInsight({
 // ============================================================
 // JOURNEY PANEL
 // ============================================================
+
+// Stage 6A: A learning goal, not the assignment title, drives curated recommendations.
+// No generated links: every URL comes from SynapStride's trusted catalog.
+function LearningGoalResourceV019({ item, childProfile, goal }) {
+  const [showAlternative, setShowAlternative] = useState(false)
+  useEffect(() => setShowAlternative(false), [item?.id, goal?.id])
+  if (!goal?.title) return null
+  const base = buildAssignmentLearningContext({
+    journeyItem: item,
+    childProfile,
+    helpMode: 'understand',
+    learningIntent: goal.title,
+    studentNote: '',
+  })
+  // Keep subject/grade from the assignment, but prioritize the exact goal
+  // over the broad assignment title and other unrelated requirements.
+  const context = {
+    ...base,
+    topic: goal.title,
+    title: goal.title,
+    notes: goal.hint || goal.lesson || '',
+    taskText: '',
+    tasks: [],
+    skills: [],
+    keywords: [],
+    learningIntent: goal.title,
+  }
+  const results = matchLearningResources({ learningContext: context, limit: 3 })
+  const safeCandidates = (results.ranked || []).filter(({ resource, evaluation }) => {
+    if (!resource?.credibilityVerified || !resource?.url) return false
+    if (!/^https:\/\//i.test(resource.url)) return false
+    try { return new URL(resource.url).protocol === 'https:' } catch { return false }
+  })
+  // Require topic overlap as well as the matcher's overall ranking, so a
+  // generic subject match doesn't become a misleading recommendation.
+  const terms = String(goal.title).toLowerCase().match(/[a-z]{4,}/g) || []
+  const stop = new Set(['what','which','about','their','these','those','understand','explain','describe','different','important','means','work','works','know','learn','your','with','from','using','that','this','have'])
+  const meaningful = terms.filter(t => !stop.has(t))
+  const matched = safeCandidates.filter(({resource}) => {
+    const haystack = [resource.title,resource.description,...(resource.topics||[]),...(resource.skills||[])].join(' ').toLowerCase()
+    return meaningful.length > 0 && meaningful.some(term => haystack.includes(term))
+  })
+  const selected = matched[showAlternative ? 1 : 0]
+  const hasTrustedResource = matched.length > 0
+  const [experience, setExperience] = useState(() => decideLearningExperience({ goal, hasTrustedResource }))
+  useEffect(() => {
+    let active = true
+    // Show an immediate, safe recommendation while Claude evaluates this goal.
+    setExperience(decideLearningExperience({ goal, hasTrustedResource }))
+    selectLearningExperience({
+      goal,
+      assignmentTitle: item?.title || item?.name || '',
+      grade: childProfile?.grade || '',
+      hasTrustedResource,
+    }).then((result) => {
+      if (active) setExperience(result)
+    }).catch(() => { /* The deterministic suggestion remains available. */ })
+    return () => { active = false }
+  }, [goal?.id, goal?.title, goal?.hint, goal?.lesson, item?.id, item?.title, item?.name, childProfile?.grade, hasTrustedResource])
+  return <section className="synGoalResourceV019" aria-label="Suggested learning experience">
+    <div className="synGoalResourceHeaderV019"><strong>✨ A way to learn this goal</strong><small>For: {goal.title}</small></div>
+    <p><strong>{experience.title}</strong></p>
+    {import.meta.env.DEV && experience.source === 'model' && <small>AI-selected learning approach</small>}
+    <p>{experience.why}</p>
+    {experience.type !== LEARNING_EXPERIENCES.RESOURCE && <small>Use “Teach me this” or ask SynapStride a question to get started.</small>}
+    {selected ? <>
+      <p><strong>{selected.resource.title}</strong> · {selected.resource.provider}</p>
+      <p>{selected.resource.description}</p>
+      <div className="synGoalResourceActionsV019">
+        <a href={selected.resource.url} target="_blank" rel="noopener noreferrer">Open learning resource ↗</a>
+        {matched.length > 1 && <button type="button" onClick={() => setShowAlternative(v => !v)}>{showAlternative ? 'Show first choice' : 'Try another resource'}</button>}
+      </div>
+      <small>Optional help from a curated provider. Return here when you're ready.</small>
+    </> : null}
+  </section>
+}
 
 function LearningResourceRecommendations({
   item,
@@ -4474,6 +4552,7 @@ function JourneyPanel({
             <div className="synInlineCoachHeadV0173"><span>🤖</span><p><strong>SynapStride</strong><small>{state.inlineCoach.mode==='loading'?'Working with you':'Learning this with you'}</small></p><button type="button" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:null,inlineQuestion:''})}>×</button></div>
             {state.inlineCoach.mode==='ask' ? <div className="synInlineAskV0173"><p>What are you wondering about?</p><div><input value={state.inlineQuestion||''} placeholder="Ask in your own words…" onChange={e=>updateStepWorkspaceState(item,{inlineQuestion:e.target.value})}/><button type="button" disabled={!String(state.inlineQuestion||'').trim()} onClick={()=>runInlineLearningCompanionV017(item,{mode:'ask',scope:'learn',focus,activity:activeLearn},state.inlineQuestion)}>Ask →</button></div></div> : <>{state.inlineCoach.mode==='loading'?<SynapStrideThinking message={`Looking at your assignment and finding the best way to explain ${activeLearn.title}.`} />:<p className="synInlineCoachResponseV0173">{state.inlineCoach.response}</p>}{import.meta.env.DEV && state.inlineCoach.model && <small style={{display:'block',margin:'6px 0',opacity:.65}}>AI source: {state.inlineCoach.model?.liveModel ? `LIVE MODEL${state.inlineCoach.model?.backendModel || state.inlineCoach.model?.modelId ? ` · ${state.inlineCoach.model.backendModel || state.inlineCoach.model.modelId}` : ''}` : `FALLBACK · ${state.inlineCoach.model?.provider || 'local'}`}</small>}{state.inlineCoach.mode!=='loading'&&<div className="synUnderstandCheckV019"><strong>Does that make sense?</strong><div><button type="button" onClick={()=>{const nextConfidence={...(state.learningConfidence||{}),[activeLearn.id]:'got_it'};updateStepWorkspaceState(item,{learningConfidence:nextConfidence,activeLearnId:null,learnViewV019:'overview',inlineCoach:null,inlineQuestion:'',learnCompletionReview:false})}}>👍 Yep</button><button type="button" onClick={()=>{updateStepWorkspaceState(item,{learningConfidence:{...(state.learningConfidence||{}),[activeLearn.id]:'kind_of'}});runInlineLearningCompanionV017(item,{mode:'kind_of',scope:'learn',focus,activity:activeLearn})}}>🤔 Kind of</button><button type="button" onClick={()=>{updateStepWorkspaceState(item,{learningConfidence:{...(state.learningConfidence||{}),[activeLearn.id]:'not_yet'}});runInlineLearningCompanionV017(item,{mode:'not_yet',scope:'learn',focus,activity:activeLearn})}}>🧒 Not yet</button></div><button type="button" className="synAskAnotherV019" onClick={()=>updateStepWorkspaceState(item,{inlineCoach:{mode:'ask',scope:'learn',activityId:activeLearn.id},inlineQuestion:''})}>I have another question</button></div>}</>}
           </div>}
+          <LearningGoalResourceV019 item={item} childProfile={childProfile} goal={activeLearn} />
           <label className="synTakeawayV0170 synTakeawayV019"><strong>Want to save a thought? <em>Optional</em></strong><small>Write something in your own words if it will help you later in Create.</small><textarea rows="2" value={state.researchNotes?.[activeLearn.id]||''} placeholder="Something I want to remember…" onChange={e=>updateStepWorkspaceState(item,{researchNotes:{...(state.researchNotes||{}),[activeLearn.id]:e.target.value}})}/></label>
         </div>
       </>}
