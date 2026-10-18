@@ -53,6 +53,7 @@ import {
 import {
   matchLearningResources,
 } from '../intelligence/learningResourceMatcher'
+import { discoverLiveLearningResources } from '../intelligence/liveLearningResources'
 import { decideLearningExperience, LEARNING_EXPERIENCES } from '../intelligence/learningExperienceDecision'
 import { selectLearningExperience } from '../intelligence/learningExperienceModel'
 import { getActiveFamilyId, getFamilyStorageKey } from '../storage/familyStorage'
@@ -1076,7 +1077,18 @@ function PostReflectionInsight({
 // No generated links: every URL comes from SynapStride's trusted catalog.
 function LearningGoalResourceV019({ item, childProfile, goal }) {
   const [showAlternative, setShowAlternative] = useState(false)
+  const [live, setLive] = useState({ resources: [], status: 'loading' })
   useEffect(() => setShowAlternative(false), [item?.id, goal?.id])
+  useEffect(() => {
+    if (!goal?.title) return
+    let active = true
+    setLive({ resources: [], status: 'loading' })
+    discoverLiveLearningResources({
+      topic: item?.title || item?.name || goal.title,
+      learningGoal: goal.title, age: childProfile?.age || null,
+    }).then(result => { if (active) setLive(result) })
+    return () => { active = false }
+  }, [item?.id, item?.title, item?.name, goal?.id, goal?.title, childProfile?.age])
   if (!goal?.title) return null
   const base = buildAssignmentLearningContext({
     journeyItem: item,
@@ -1113,8 +1125,10 @@ function LearningGoalResourceV019({ item, childProfile, goal }) {
     const haystack = [resource.title,resource.description,...(resource.topics||[]),...(resource.skills||[])].join(' ').toLowerCase()
     return meaningful.length > 0 && meaningful.some(term => haystack.includes(term))
   })
-  const selected = matched[showAlternative ? 1 : 0]
-  const hasTrustedResource = matched.length > 0
+  const liveMatches = live.resources.map(resource => ({ resource }))
+  const available = liveMatches.length ? liveMatches : matched
+  const selected = available[showAlternative ? 1 : 0] || available[0]
+  const hasTrustedResource = available.length > 0
   const [experience, setExperience] = useState(() => decideLearningExperience({ goal, hasTrustedResource }))
   useEffect(() => {
     let active = true
@@ -1138,14 +1152,17 @@ function LearningGoalResourceV019({ item, childProfile, goal }) {
     {import.meta.env.DEV && experience.source === 'model' && <small>AI-selected learning approach</small>}
     <p>{experience.why}</p>
     {experience.type !== LEARNING_EXPERIENCES.RESOURCE && <small>Use “Teach me this” or ask SynapStride a question to get started.</small>}
+    {live.status === 'loading' && <small>Finding learning resources…</small>}
+    {live.status === 'unavailable' && !selected && <small>External learning resources are temporarily unavailable. You can still use ‘Teach me this’ or ask a question.</small>}
+    {live.status === 'unconfigured' && !selected && import.meta.env.DEV && <small>Resource discovery API URL is not configured.</small>}
     {selected ? <>
       <p><strong>{selected.resource.title}</strong> · {selected.resource.provider}</p>
       <p>{selected.resource.description}</p>
       <div className="synGoalResourceActionsV019">
         <a href={selected.resource.url} target="_blank" rel="noopener noreferrer">Open learning resource ↗</a>
-        {matched.length > 1 && <button type="button" onClick={() => setShowAlternative(v => !v)}>{showAlternative ? 'Show first choice' : 'Try another resource'}</button>}
+        {available.length > 1 && <button type="button" onClick={() => setShowAlternative(v => !v)}>{showAlternative ? 'Show first choice' : 'Try another resource'}</button>}
       </div>
-      <small>Optional help from a curated provider. Return here when you're ready.</small>
+      <small>{liveMatches.length ? 'Suggested web resource. Review with a parent when appropriate.' : 'Optional resource from the curated fallback. Return here when you’re ready.'}</small>
     </> : null}
   </section>
 }
